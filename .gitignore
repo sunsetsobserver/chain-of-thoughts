@@ -1,4 +1,5 @@
 working_files/
+generator_working_files/
 
 # Python caches & compiled files
 __pycache__/
