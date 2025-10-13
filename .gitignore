@@ -1,0 +1,10 @@
+working_files/
+
+# Python caches & compiled files
+__pycache__/
+*.pyc
+
+# Local env/config
+.env
+.env.*
+secrets.py

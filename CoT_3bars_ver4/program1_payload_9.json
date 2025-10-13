@@ -1,0 +1,590 @@
+{
+  "tick_unit": "1/16",
+  "bars": [
+    {
+      "meter": [
+        3,
+        4
+      ],
+      "start": 0
+    },
+    {
+      "meter": [
+        2,
+        4
+      ],
+      "start": 12
+    },
+    {
+      "meter": [
+        4,
+        4
+      ],
+      "start": 20
+    }
+  ],
+  "N_global": 10,
+  "top_feature": "p1_full_1759772204846",
+  "instrument_features": {
+    "alto_flute": "p1_alto_flute_1759772204846",
+    "violin": "p1_violin_1759772204846",
+    "bass_clarinet": "p1_bass_clarinet_1759772204846",
+    "trumpet": "p1_trumpet_1759772204846",
+    "cello": "p1_cello_1759772204846",
+    "double_bass": "p1_double_bass_1759772204846"
+  },
+  "tracks": {
+    "alto_flute": [
+      {
+        "feature_path": "/alto_flute/pitch",
+        "data": [
+          74,
+          77,
+          75,
+          80,
+          77,
+          80,
+          77,
+          83,
+          81,
+          74
+        ]
+      },
+      {
+        "feature_path": "/alto_flute/time",
+        "data": [
+          0,
+          2,
+          4,
+          6,
+          7,
+          9,
+          10,
+          12,
+          16,
+          24
+        ]
+      },
+      {
+        "feature_path": "/alto_flute/duration",
+        "data": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          1,
+          2,
+          4,
+          4,
+          3
+        ]
+      },
+      {
+        "feature_path": "/alto_flute/velocity",
+        "data": [
+          50,
+          55,
+          61,
+          66,
+          69,
+          75,
+          77,
+          124,
+          114,
+          30
+        ]
+      },
+      {
+        "feature_path": "/alto_flute/numerator",
+        "data": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          2,
+          2,
+          4
+        ]
+      },
+      {
+        "feature_path": "/alto_flute/denominator",
+        "data": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    ],
+    "violin": [
+      {
+        "feature_path": "/violin/pitch",
+        "data": [
+          86,
+          83,
+          87,
+          86,
+          81,
+          83,
+          83,
+          81,
+          58,
+          58
+        ]
+      },
+      {
+        "feature_path": "/violin/time",
+        "data": [
+          0,
+          2,
+          3,
+          5,
+          8,
+          10,
+          12,
+          16,
+          35,
+          35
+        ]
+      },
+      {
+        "feature_path": "/violin/duration",
+        "data": [
+          2,
+          1,
+          2,
+          3,
+          2,
+          2,
+          4,
+          4,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/violin/velocity",
+        "data": [
+          50,
+          55,
+          58,
+          64,
+          72,
+          77,
+          124,
+          114,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/violin/numerator",
+        "data": [
+          3,
+          3,
+          3,
+          3,
+          3,
+          3,
+          2,
+          2,
+          4,
+          4
+        ]
+      },
+      {
+        "feature_path": "/violin/denominator",
+        "data": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    ],
+    "bass_clarinet": [
+      {
+        "feature_path": "/bass_clarinet/pitch",
+        "data": [
+          50,
+          53,
+          54,
+          51,
+          56,
+          54,
+          58,
+          58,
+          58,
+          58
+        ]
+      },
+      {
+        "feature_path": "/bass_clarinet/time",
+        "data": [
+          1,
+          4,
+          7,
+          9,
+          12,
+          16,
+          35,
+          35,
+          35,
+          35
+        ]
+      },
+      {
+        "feature_path": "/bass_clarinet/duration",
+        "data": [
+          2,
+          2,
+          2,
+          3,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/bass_clarinet/velocity",
+        "data": [
+          53,
+          61,
+          69,
+          75,
+          124,
+          114,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/bass_clarinet/numerator",
+        "data": [
+          3,
+          3,
+          3,
+          3,
+          2,
+          2,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      {
+        "feature_path": "/bass_clarinet/denominator",
+        "data": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    ],
+    "trumpet": [
+      {
+        "feature_path": "/trumpet/pitch",
+        "data": [
+          83,
+          78,
+          81,
+          80,
+          80,
+          78,
+          81,
+          77,
+          58,
+          58
+        ]
+      },
+      {
+        "feature_path": "/trumpet/time",
+        "data": [
+          0,
+          6,
+          8,
+          11,
+          12,
+          16,
+          26,
+          34,
+          35,
+          35
+        ]
+      },
+      {
+        "feature_path": "/trumpet/duration",
+        "data": [
+          3,
+          2,
+          2,
+          1,
+          4,
+          4,
+          2,
+          2,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/trumpet/velocity",
+        "data": [
+          50,
+          66,
+          72,
+          80,
+          124,
+          114,
+          30,
+          30,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/trumpet/numerator",
+        "data": [
+          3,
+          3,
+          3,
+          3,
+          2,
+          2,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      {
+        "feature_path": "/trumpet/denominator",
+        "data": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    ],
+    "cello": [
+      {
+        "feature_path": "/cello/pitch",
+        "data": [
+          56,
+          57,
+          54,
+          50,
+          48,
+          58,
+          58,
+          58,
+          58,
+          58
+        ]
+      },
+      {
+        "feature_path": "/cello/time",
+        "data": [
+          2,
+          5,
+          7,
+          12,
+          16,
+          35,
+          35,
+          35,
+          35,
+          35
+        ]
+      },
+      {
+        "feature_path": "/cello/duration",
+        "data": [
+          2,
+          2,
+          3,
+          4,
+          4,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/cello/velocity",
+        "data": [
+          55,
+          64,
+          69,
+          124,
+          114,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/cello/numerator",
+        "data": [
+          3,
+          3,
+          3,
+          2,
+          2,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      {
+        "feature_path": "/cello/denominator",
+        "data": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    ],
+    "double_bass": [
+      {
+        "feature_path": "/double_bass/pitch",
+        "data": [
+          38,
+          42,
+          39,
+          35,
+          33,
+          38,
+          41,
+          58,
+          58,
+          58
+        ]
+      },
+      {
+        "feature_path": "/double_bass/time",
+        "data": [
+          0,
+          7,
+          10,
+          12,
+          16,
+          20,
+          30,
+          35,
+          35,
+          35
+        ]
+      },
+      {
+        "feature_path": "/double_bass/duration",
+        "data": [
+          4,
+          2,
+          2,
+          4,
+          4,
+          3,
+          4,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/double_bass/velocity",
+        "data": [
+          50,
+          69,
+          77,
+          124,
+          114,
+          30,
+          30,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "feature_path": "/double_bass/numerator",
+        "data": [
+          3,
+          3,
+          3,
+          2,
+          2,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      },
+      {
+        "feature_path": "/double_bass/denominator",
+        "data": [
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4,
+          4
+        ]
+      }
+    ]
+  }
+}
