@@ -465,13 +465,26 @@ BAR33_TICKS = 16   # 4/4
 BAR33_OFF   = 432
 BAR34_TICKS = 16   # 4/4
 BAR34_OFF   = 448
+BAR35_TICKS = 12   # 3/4
+BAR35_OFF   = 464
+BAR36_TICKS = 16   # 4/4
+BAR36_OFF   = 476
+BAR37_TICKS = 16   # 4/4
+BAR37_OFF   = 492
+BAR38_TICKS = 12   # 3/4
+BAR38_OFF   = 508
+BAR39_TICKS = 16   # 4/4
+BAR39_OFF   = 520
+BAR40_TICKS = 16   # 4/4
+BAR40_OFF   = 536
 
-GLOBAL_END = 464
+GLOBAL_END = 552
 
 VEL_LOOP_BG = 48       # background loop dynamic
 VEL_FORE_STAB = 92     # foreground staccato hits dynamic
 VEL_BAR19_RECAP = 104     # mf–f recap hit
 VEL_DRONE = 64
+VEL_DRONE_HARM = 76  # chordal additions during bars 21–34 (a touch brighter than VEL_DRONE)
 
 # Ranges (sounding MIDI)
 INSTRUMENTS = {
@@ -650,6 +663,12 @@ def _meter_at_time(t: int) -> Tuple[int, int]:
     elif t < 432:   return 4, 4   # bar 32
     elif t < 448:   return 4, 4   # bar 33
     elif t < 464:   return 4, 4   # bar 34
+    elif t < 476:   return 3, 4   # bar 35 (repeat of bar 4)
+    elif t < 492:   return 4, 4   # bar 36 (repeat of bar 5)
+    elif t < 508:   return 4, 4   # bar 37 (repeat of bar 6)
+    elif t < 520:   return 3, 4   # bar 38 (variation of bar 4)
+    elif t < 536:   return 4, 4   # bar 39 (variation of bar 5)
+    elif t < 552:   return 4, 4   # bar 40 (variation of bar 6)
     else:           return 4, 4
 
 def make_meter_arrays(N: int, abs_times: List[int]) -> Tuple[List[int], List[int]]:
@@ -1924,7 +1943,7 @@ def realize_bars456(pc_plan: dict) -> Dict[str, Dict[str, List[int]]]:
 
 
 
-# ---------------- Main Program 1 ----------------
+# ---------------- Main Program ----------------
 def main():
     if not OPENAI_API_KEY or not isinstance(OPENAI_API_KEY, str):
         raise RuntimeError("OPENAI_API_KEY missing in secrets.py")
@@ -2357,6 +2376,148 @@ def main():
                 out[instr]["velocity"].append(VEL_DRONE)
         return out
     
+    def enrich_bars2134_chords(per_instr_events: Dict[str, Dict[str, List[int]]],
+                           seed: int = None,
+                           density: float = 0.55,
+                           max_extra_per_bar: int = 2,
+                           max_new_per_onset: int = 1) -> None:
+        """
+        Post-process bars 21–34: at some onsets, add short notes in currently-silent instruments
+        to create verticals. Keeps ≤4 concurrent players, shortens if needed to fit the limit.
+        Mutates per_instr_events in place.
+        """
+        rng = random.Random(seed)
+        allowed_pc_steps = (3, 4, 5, 7, 8, 9)
+
+        def bar_bounds(bi: int) -> Tuple[int, int]:
+            start = BAR21_OFF + 16 * bi
+            return start, start + 16
+
+        def active_at(t_abs: int) -> List[Tuple[str, int]]:
+            """(instr, pitch) currently sounding at absolute tick t_abs."""
+            out = []
+            for instr in ORDERED_INSTRS:
+                T = per_instr_events[instr]["time"]
+                D = per_instr_events[instr]["duration"]
+                P = per_instr_events[instr]["pitch"]
+                for i in range(len(T)):
+                    if T[i] <= t_abs < T[i] + D[i]:
+                        out.append((instr, int(P[i])))
+            return out
+
+        def build_bar_snapshot(bi: int):
+            start, end = bar_bounds(bi)
+            # events starting in this bar
+            onsets = {}   # local_t -> (instr, pitch, dur)
+            present_instrs = set()
+            # occupancy per local tick (16 long)
+            occ = [0] * 16
+            sounding = []  # (instr, local_t, dur, pitch)
+            for instr in ORDERED_INSTRS:
+                T = per_instr_events[instr]["time"]
+                D = per_instr_events[instr]["duration"]
+                P = per_instr_events[instr]["pitch"]
+                for i in range(len(T)):
+                    t, d, p = int(T[i]), int(D[i]), int(P[i])
+                    if start <= t < end:
+                        lt = t - start
+                        onsets.setdefault(lt, (instr, p, d))
+                        present_instrs.add(instr)
+                        sounding.append((instr, lt, d, p))
+                    # fill occupancy if any part lies in this bar
+                    s0 = max(t, start); s1 = min(t + d, end)
+                    if s0 < s1:
+                        for k in range(s0 - start, s1 - start):
+                            occ[k] += 1
+            return onsets, present_instrs, occ
+
+        def choose_pitch_relative(base_pitch: int, instr: str) -> int:
+            """Pick nearest pitch in instr range whose pc forms a tertian/quartal interval with base."""
+            lo, hi = INSTRUMENTS[instr]["range"]
+            tess = INSTRUMENTS[instr]["tess"]
+            approx_center = _spread_bias(instr, _center_from_register_hint(tess, "mid"), "spread")
+            base_pc = base_pitch % 12
+            pcs = []
+            for d in allowed_pc_steps:
+                pcs.append((base_pc + d) % 12)
+                pcs.append((base_pc - d) % 12)
+            # stable but varied: small shuffle
+            rng.shuffle(pcs)
+            # try to avoid exact pitch dupes at the onset
+            return _nearest_pitch_for_pcset(pcs[0], approx_center, (lo, hi))
+
+        # iterate bars 21..34 (index 0..13)
+        for bi in range(14):
+            start, end = bar_bounds(bi)
+            onsets, present_instrs, occ = build_bar_snapshot(bi)
+            if not onsets:
+                continue
+
+            # candidate onsets: sort; we mildly prefer non-zero times to create motion
+            times_sorted = sorted(onsets.keys(), key=lambda t: (t == 0, t))
+            added_this_bar = 0
+
+            for lt in times_sorted:
+                if added_this_bar >= max_extra_per_bar:
+                    break
+                # density gate
+                if rng.random() > density:
+                    continue
+
+                abs_t = start + lt
+                currently_sounding = active_at(abs_t)  # [(instr, pitch), ...]
+                conc_now = len(currently_sounding)
+                if conc_now >= 4:
+                    continue
+
+                # reference pitch: the note that *starts* here if any, else the lowest sounding
+                base_instr, base_pitch, _ = onsets.get(lt, (None, None, None))
+                if base_pitch is None:
+                    if not currently_sounding:
+                        continue
+                    base_pitch = min(p for _, p in currently_sounding)
+
+                # eligible instruments: not already present in this bar AND not sounding now
+                busy_now = {i for i, _ in currently_sounding}
+                eligible = [i for i in ORDERED_INSTRS if i not in present_instrs and i not in busy_now]
+
+                if not eligible:
+                    continue
+
+                can_add = min(max_new_per_onset, 4 - conc_now)
+                picks = eligible[:can_add]  # deterministic order
+
+                for instr in picks:
+                    # find max duration s.t. occupancy never exceeds 4
+                    max_len = min(8, 16 - lt)  # short-ish pulses
+                    if max_len <= 0:
+                        continue
+                    # proposed pitch
+                    pitch = choose_pitch_relative(base_pitch, instr)
+
+                    # shrink to fit concurrency limit
+                    dur = 0
+                    for k in range(max_len):
+                        if occ[lt + k] >= 4:
+                            break
+                        dur += 1
+                    if dur < 3:
+                        continue  # too short to be useful
+
+                    # apply
+                    per_instr_events[instr]["time"].append(abs_t)
+                    per_instr_events[instr]["duration"].append(dur)
+                    per_instr_events[instr]["pitch"].append(int(pitch))
+                    per_instr_events[instr]["velocity"].append(VEL_DRONE_HARM)
+
+                    # update occupancy and book-keeping
+                    for k in range(dur):
+                        occ[lt + k] += 1
+                    present_instrs.add(instr)
+                    added_this_bar += 1
+                    if added_this_bar >= max_extra_per_bar:
+                        break
+    
     # ---- Short break (Bar 20: 1/4 silence), then Bars 21–34 long-drone phrase ----
     # (Break requires no events added; the meter map carries the bar.)
     plan2134 = request_bars2134_drones_strict(oai, attempts=8, temp=0.6)
@@ -2370,6 +2531,44 @@ def main():
         per_instr_events[instr]["pitch"]   += part["pitch"]
         per_instr_events[instr]["velocity"]+= part["velocity"]
 
+    # NEW: Add chordal movement in bars 21–34 by waking silent instruments on select onsets
+    seedG_enrich = random.randint(1, 10**9)
+    enrich_bars2134_chords(
+        per_instr_events,
+        seed=seedG_enrich,
+        density=0.6,           # more/less frequent chords
+        max_extra_per_bar=2,   # how many extra hits per bar
+        max_new_per_onset=1    # how many instruments join per onset
+    )
+
+        # ---- Bars 35–37: LITERAL repeat of Bars 4–6 (absolute shift) ----
+    # bars456 already realized earlier with absolute times at BAR4_OFF/BAR5_OFF/BAR6_OFF.
+    SHIFT_456_TO_35 = BAR35_OFF - BAR4_OFF   # 464 - 36 = 428
+    for instr in ORDERED_INSTRS:
+        src = bars456[instr]
+        per_instr_events[instr]["time"]     += [t + SHIFT_456_TO_35 for t in src["time"]]
+        per_instr_events[instr]["duration"] += src["duration"][:]
+        per_instr_events[instr]["pitch"]    += src["pitch"][:]
+        per_instr_events[instr]["velocity"] += src["velocity"][:]
+
+    # ---- Bars 38–40: VARIATION by re-running Contract C exactly the same way ----
+    # Reuse the same prompts sysC/usrC and same request path; just include agg456 in the prior list so it's nudged to differ.
+    pc456_var, agg456_var = request_fresh_aggregate(
+        make_prompts_fn=mk_prompts_C,
+        key_in_json="aggregate_scale",
+        client=oai,
+        prior_aggs=[b1_agg, contrast_agg] + extra_bar2_aggs + [agg456],
+        attempts=4, temp=1.15
+    )
+    bars456_var = realize_bars456(pc456_var)
+
+    SHIFT_456_TO_38 = BAR38_OFF - BAR4_OFF   # 508 - 36 = 472
+    for instr in ORDERED_INSTRS:
+        src = bars456_var[instr]
+        per_instr_events[instr]["time"]     += [t + SHIFT_456_TO_38 for t in src["time"]]
+        per_instr_events[instr]["duration"] += src["duration"][:]
+        per_instr_events[instr]["pitch"]    += src["pitch"][:]
+        per_instr_events[instr]["velocity"] += src["velocity"][:]
 
     # Non-chosen instruments in bar 3: stay silent unless we add padding later.
 
@@ -2563,7 +2762,14 @@ def main():
             {"meter":[4,4],"start":400},  # 31
             {"meter":[4,4],"start":416},  # 32
             {"meter":[4,4],"start":432},  # 33
-            {"meter":[4,4],"start":448}   # 34
+            {"meter":[4,4],"start":448},   # 34
+            {"meter":[3,4],"start":464},  # 35 (repeat of 4)
+            {"meter":[4,4],"start":476},  # 36 (repeat of 5)
+            {"meter":[4,4],"start":492},  # 37 (repeat of 6)
+            {"meter":[3,4],"start":508},  # 38 (variation of 4)
+            {"meter":[4,4],"start":520},  # 39 (variation of 5)
+            {"meter":[4,4],"start":536},  # 40 (variation of 6)
+
         ],
         "N_global": N_global,
         "top_feature": top_name,
