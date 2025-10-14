@@ -395,6 +395,20 @@ def scale_walk_assign_pitches_aggregate(times: List[int], agg: dict, rng: Tuple[
         out.append(nxt)
     return out
 
+# --- helper: compress first fragment plan so LLM won’t copy it verbatim ---
+def _compress_plan(bars_obj: dict) -> dict:
+    out = []
+    for i in range(4):
+        b = bars_obj["bars"][i]
+        out.append({
+            "rhythm": {k: {"time": v.get("time", []), "duration": v.get("duration", [])}
+                       for k, v in (b.get("rhythm", {}) or {}).items()},
+            "melody": {k: {"steps": (b.get("melody", {}) or {}).get(k, {}).get("steps", [])}
+                       for k in ORDERED_INSTRS if k in (b.get("melody", {}) or {})}
+        })
+    return {"bars": out}
+
+
 # ---------------- Musical constants ----------------
 
 BAR1_TICKS = 12    # 3/4
@@ -477,14 +491,36 @@ BAR39_TICKS = 16   # 4/4
 BAR39_OFF   = 520
 BAR40_TICKS = 16   # 4/4
 BAR40_OFF   = 536
+BAR41_TICKS = 4    # 1/4 short break
+BAR41_OFF   = 552
+BAR42_TICKS = 12   # 3/4
+BAR42_OFF   = 556
+BAR43_TICKS = 12   # 3/4
+BAR43_OFF   = 568
+BAR44_TICKS = 12   # 3/4
+BAR44_OFF   = 580
+BAR45_TICKS = 12   # 3/4
+BAR45_OFF   = 592
+BAR46_TICKS = 12
+BAR46_OFF   = 604
+BAR47_TICKS = 12
+BAR47_OFF   = 616
+BAR48_TICKS = 12
+BAR48_OFF   = 628
+BAR49_TICKS = 12
+BAR49_OFF   = 640
 
-GLOBAL_END = 552
+# Move the global end to the end of bar 49
+GLOBAL_END  = 652
 
 VEL_LOOP_BG = 48       # background loop dynamic
 VEL_FORE_STAB = 92     # foreground staccato hits dynamic
 VEL_BAR19_RECAP = 104     # mf–f recap hit
 VEL_DRONE = 64
 VEL_DRONE_HARM = 76  # chordal additions during bars 21–34 (a touch brighter than VEL_DRONE)
+VEL_PPP = 22           # very, very soft for Bars 42–45 (all except trumpet)
+VEL_TRUMPET_LOUD = 110 # loud trumpet line for Bars 42–44
+
 
 # Ranges (sounding MIDI)
 INSTRUMENTS = {
@@ -669,6 +705,15 @@ def _meter_at_time(t: int) -> Tuple[int, int]:
     elif t < 520:   return 3, 4   # bar 38 (variation of bar 4)
     elif t < 536:   return 4, 4   # bar 39 (variation of bar 5)
     elif t < 552:   return 4, 4   # bar 40 (variation of bar 6)
+    elif t < 556:   return 1, 4   # bar 41 short break
+    elif t < 568:   return 3, 4   # bar 42
+    elif t < 580:   return 3, 4   # bar 43
+    elif t < 592:   return 3, 4   # bar 44
+    elif t < 604:   return 3, 4   # bar 45
+    elif t < 616: return 3, 4   # bar 46
+    elif t < 628: return 3, 4   # bar 47
+    elif t < 640: return 3, 4   # bar 48
+    elif t < 652: return 3, 4   # bar 49 / global end
     else:           return 4, 4
 
 def make_meter_arrays(N: int, abs_times: List[int]) -> Tuple[List[int], List[int]]:
@@ -684,19 +729,19 @@ def make_meter_arrays(N: int, abs_times: List[int]) -> Tuple[List[int], List[int
 
 def prompt_bar2_free_aggregate(tag: str, prior_map: dict) -> Tuple[str, str]:
     system = """
-You output ONLY strict JSON. No prose.
-Return:
-{ "aggregate_scale": {
-    "name":"string","tonic_midi":int,
-    "bands":[{"midi_lo":int,"midi_hi":int,"pcs":[int,int,int(,int)]}, ...]
-}}
-Hard constraints:
-- Each band's pcs length is 3 or 4.
-- Bands’ pcs are pairwise disjoint; union across all bands is exactly 12.
-- pcs are ABSOLUTE 0..11; ORDER within each band matters (used for degree stepping).
-- Avoid pure equal-step bands (no [0,3,6,9] or [0,4,8] rotations).
-Validation: if any rule fails, regenerate internally and return only a valid JSON object.
-"""
+    You output ONLY strict JSON. No prose.
+    Return:
+    { "aggregate_scale": {
+        "name":"string","tonic_midi":int,
+        "bands":[{"midi_lo":int,"midi_hi":int,"pcs":[int,int,int(,int)]}, ...]
+    }}
+    Hard constraints:
+    - Each band's pcs length is 3 or 4.
+    - Bands’ pcs are pairwise disjoint; union across all bands is exactly 12.
+    - pcs are ABSOLUTE 0..11; ORDER within each band matters (used for degree stepping).
+    - Avoid pure equal-step bands (no [0,3,6,9] or [0,4,8] rotations).
+    Validation: if any rule fails, regenerate internally and return only a valid JSON object.
+    """
     user = (
         f"Make a fresh, characterful aggregate for Bar 2 ({tag}). "
         "Aim for strong registral personality (sensible low/mid/high ranges), and be different from Bar 1.\n"
@@ -769,6 +814,62 @@ def bar2_two_hits_from_free_aggs(aggA: dict, aggB: dict, seed: int = None) -> Di
         }
     return voices
 
+def choose_trumpet_long_notes_via_llm(oai, agg, seed, instr="trumpet", avoid_midis=None):
+    """
+    Return 3 absolute MIDI notes for the trumpet:
+    - within instrument range
+    - pitch classes from the aggregate's pcs
+    - different from avoid_midis if provided
+    - include at least one leap >= 3 semitones
+    Falls back to a safe pattern if the LLM slips.
+    """
+    import json, random
+    rng  = INSTRUMENTS[instr]["range"]
+    tess = INSTRUMENTS[instr]["tess"]
+    pcs_union = sorted({pc for b in agg.get("bands", []) for pc in b.get("pcs", [])}) or [0,4,7]
+
+    system = "You output ONLY strict JSON with a single key 'pitches' (array of 3 integers). No prose."
+    user = {
+        "task": "choose-three-long-notes",
+        "instrument": instr,
+        "range_midi": list(rng),
+        "tessitura_hint": list(tess),
+        "allowed_pitch_classes": pcs_union,
+        "avoid_midis": [int(x) for x in (avoid_midis or [])],
+        "hard_rules": [
+            "Return exactly three integers in 'pitches'.",
+            "All pitches must be within the given range.",
+            "Each pitch-class (mod 12) must be in allowed_pitch_classes.",
+            "Include at least one leap of 3 semitones or more.",
+            "If avoid_midis is non-empty, do not return the exact same triple."
+        ],
+        "creative_seed": int(seed)
+    }
+    try:
+        resp = call_llm_json(oai, system, json.dumps(user), model="gpt-4.1", temperature=1.05)
+        cand = resp.get("pitches", [])
+        out = []
+        for p in cand[:3]:
+            try:
+                p = int(p)
+            except:
+                continue
+            if rng[0] <= p <= rng[1] and (p % 12) in pcs_union:
+                out.append(p)
+        if len(out) == 3:
+            return out
+    except Exception:
+        pass
+
+    # Fallback: center-ish pattern with a leap
+    center = (tess[0] + tess[1]) // 2
+    rnd = random.Random(seed)
+    pcs = pcs_union[:]; rnd.shuffle(pcs); pcs = (pcs + pcs)[:3]
+    approx_seq = [center - 2, center + 3, center - 5]  # includes a leap
+    out = []
+    for approx, pc in zip(approx_seq, pcs):
+        out.append(nearest_pitch_for_pc_aggregate(pc, clamp(approx, rng[0], rng[1]), rng, agg))
+    return [int(x) for x in out]
 
 # ---------------- LLM Contracts ----------------
 def prompt_bar1_contract() -> Tuple[str, str]:
@@ -1720,20 +1821,20 @@ def collect_pitches_in_window(per_instr_events: Dict[str, Dict[str, List[int]]],
 
 def prompt_bar19_recap_chord(candidates: Dict[str, List[int]]) -> Tuple[str, str]:
     system = """
-You output ONLY strict JSON. No prose.
+    You output ONLY strict JSON. No prose.
 
-Return:
-{ "bar19_chord": {
-  "alto_flute": int, "violin": int, "bass_clarinet": int,
-  "trumpet": int, "cello": int, "double_bass": int
-}}
+    Return:
+    { "bar19_chord": {
+    "alto_flute": int, "violin": int, "bass_clarinet": int,
+    "trumpet": int, "cello": int, "double_bass": int
+    }}
 
-Hard constraints:
-- For EACH instrument, you MUST choose exactly ONE MIDI pitch from the provided candidate list for that instrument.
-- Choose a sonority with rich 3rds/4ths across voices (tertiary/quartal flavor), but DO NOT invent pitches.
-- Avoid exact pitch duplicates if possible; octave doublings are acceptable.
-Validate internally and only return a valid JSON object.
-"""
+    Hard constraints:
+    - For EACH instrument, you MUST choose exactly ONE MIDI pitch from the provided candidate list for that instrument.
+    - Choose a sonority with rich 3rds/4ths across voices (tertiary/quartal flavor), but DO NOT invent pitches.
+    - Avoid exact pitch duplicates if possible; octave doublings are acceptable.
+    Validate internally and only return a valid JSON object.
+    """
     user = "Candidates per instrument (MIDI, allowed set to choose from):\n" + json.dumps(candidates, indent=2)
     return system.strip(), user.strip()
 
@@ -1941,7 +2042,61 @@ def realize_bars456(pc_plan: dict) -> Dict[str, Dict[str, List[int]]]:
 
     return out
 
+def prompt_4x3over4_from_bar1_contract() -> Tuple[str, str]:
+    system = """
+    You output ONLY strict JSON. No prose.
 
+    Goal: Compose FOUR consecutive bars of 3/4 (12 ticks each; total 48 ticks) for SIX monophonic instruments,
+    AND define a Lutosławski-style AGGREGATE (register-banded). This is the SAME schema and rules as Bar 1,
+    but repeated across four separate 3/4 bars.
+
+    Return JSON with EXACTLY this shape:
+    {
+    "aggregate_scale": {
+        "name": "string",
+        "tonic_midi": int,
+        "bands": [
+        {"midi_lo": int, "midi_hi": int, "pcs": [int,int,int(,int)]},
+        ...
+        ]
+    },
+    "bars": [
+        {
+        "rhythm": {
+            "<instr>": {"time":[ints 0..11 strictly inc], "duration":[>0, same len]}, ... all six ...
+        },
+        "melody": {
+            "<instr>": {"start_hint":"low|mid|high", "steps":[len(time)-1 ints]}, ... all six ...
+        }
+        },
+        { ... }, { ... }, { ... }  // exactly 4 bar objects
+    ],
+    "meta": { "bands_count": int, "band_lengths": [ints], "union_size": int }
+    }
+
+    AGGREGATE HARD CONSTRAINTS:
+    - pcs are ABSOLUTE pitch-classes (C=0..B=11).
+    - Each band's pcs length is EXACTLY 3 or 4.
+    - Bands’ pcs are pairwise DISJOINT; the UNION across all bands is EXACTLY 12.
+    - ORDER of pcs within each band matters (used for degree stepping).
+    - Avoid pure equal-step bands (prefer none).
+
+    Per-bar material constraints (apply IN EACH of the four bars):
+    - Instruments: alto_flute, violin, bass_clarinet, trumpet, cello, double_bass (all six appear).
+    - Monophony per instrument: times strictly increasing; time[i] + duration[i] <= 12.
+    - len(steps) == max(0, len(time)-1) for each instrument.
+
+    Validation checklist (you MUST satisfy before returning JSON):
+    1) Aggregate passes all hard rules.
+    2) In EVERY bar and for EACH instrument: arrays align, times strictly increasing, durations positive and within bar, steps length matches.
+    If any check fails, regenerate internally and return only a valid JSON object.
+    """
+    user = """
+    Instruments: alto_flute, violin, bass_clarinet, trumpet, cello, double_bass.
+    Soft target onset counts per bar (guideline): AF 6..10, Vn 5..9, BCl 3..6, Tpt 2..5, Vc 2..5, Db 2..4.
+    Return VALID JSON ONLY (no comments, no prose).
+    """
+    return system.strip(), user.strip()
 
 # ---------------- Main Program ----------------
 def main():
@@ -2135,9 +2290,6 @@ def main():
     sysE, usrE = prompt_bars1014_loop_stabs_contract(b1_agg, bar3, pc456, cloud789)
     seedE = random.randint(1, 10**9)
     usrE += f"\nCreativeSeed: {seedE}\nRule: Use CreativeSeed to break ties (loop selection, rhythms, events)."
-
-    def mk_prompts_E():
-        return sysE, usrE
 
     plan1014, agg1014 = request_bars1014_strict(
         client=oai,
@@ -2356,6 +2508,87 @@ def main():
                 last_err = msg
                 continue
         raise RuntimeError("Bars 21–34 long-drone plan failed validation:\n" + (last_err or "(no details)"))
+    
+    def realize_4x3over4(plan: dict,
+                     validated_agg: dict,
+                     bar_offsets: List[int],
+                     ticks_per_bar: int = 12) -> Dict[str, Dict[str, List[int]]]:
+        """
+        Realize a 4×3/4 fragment returned by prompt_4x3over4_from_bar1_contract().
+
+        Inputs
+        - plan: JSON with keys:
+            {
+                "aggregate_scale": {...},        # already validated externally
+                "bars": [
+                { "rhythm": { "<instr>": {"time":[...], "duration":[...]} , ... },
+                    "melody": { "<instr>": {"start_hint":"low|mid|high","steps":[...]} , ... }
+                },
+                ... (4 bars total)
+                ]
+            }
+        - validated_agg: aggregate dict already run through agg_validate_prepare_or_repair
+        - bar_offsets: absolute start ticks for the 4 bars (len == 4)
+        - ticks_per_bar: expected to be 12 (3/4 at 1/16 tick), but kept parametric
+
+        Output
+        - { "<instr>": {"time":[], "duration":[], "pitch":[], "velocity":[]}, ... }
+            (velocity is set to a quiet default; you already override it at append-time)
+        """
+        if not (isinstance(plan, dict) and isinstance(plan.get("bars"), list) and len(plan["bars"]) == 4):
+            raise RuntimeError("realize_4x3over4: plan.bars must be a list of 4 bar objects")
+        if not (isinstance(bar_offsets, list) and len(bar_offsets) == 4):
+            raise RuntimeError("realize_4x3over4: bar_offsets must be a list of 4 absolute ticks")
+
+        out = {instr: {"time": [], "duration": [], "pitch": [], "velocity": []}
+            for instr in ORDERED_INSTRS}
+
+        agg = validated_agg  # already validated outside
+
+        for bi in range(4):
+            bar = plan["bars"][bi] or {}
+            rhythm = (bar.get("rhythm") or {})
+            melody = (bar.get("melody") or {})
+            off = int(bar_offsets[bi])
+
+            for instr in ORDERED_INSTRS:
+                if instr not in rhythm:
+                    # Keep strict: if the plan omitted an instrument, fail fast so we can fix upstream.
+                    raise RuntimeError(f"4×3/4 bar {bi} rhythm missing instrument '{instr}'")
+
+                # --- Clean local time/duration
+                t_local = [int(x) for x in (rhythm[instr].get("time") or [])]
+                d_local = [int(x) for x in (rhythm[instr].get("duration") or [])]
+
+                t_local = enforce_monophony_times([x for x in t_local if 0 <= x < ticks_per_bar])
+                t_local, d_local = cap_durations_local(t_local, d_local, ticks_per_bar)
+
+                # --- Melody → pitches via aggregate degree-walk (fallback to scale-walk if steps mismatch)
+                rng  = INSTRUMENTS[instr]["tess"]
+                tess = INSTRUMENTS[instr]["tess"]
+                mdef = (melody.get(instr) or {})
+                steps = mdef.get("steps", [])
+                start_hint = mdef.get("start_hint", "mid")
+
+                if isinstance(steps, list) and len(steps) == max(0, len(t_local) - 1):
+                    pitches = pitches_from_steps_aggregate(t_local, steps, agg, rng, tess, start_hint)
+                else:
+                    pitches = scale_walk_assign_pitches_aggregate(t_local, agg, rng, tess)
+
+                # --- Absolute placement
+                t_abs = absolute_times(t_local, off)
+
+                # Default quiet velocity (you override when appending; harmless to include here)
+                vels = [VEL_BAR3_PP for _ in t_abs]
+
+                # Append
+                out[instr]["time"]     += t_abs
+                out[instr]["duration"] += d_local
+                out[instr]["pitch"]    += pitches
+                out[instr]["velocity"] += vels
+
+        return out
+
 
     def realize_bars2134_drones(plan: dict) -> Dict[str, Dict[str, List[int]]]:
         """Realize Bars 21–34 from the validated plan. (Bar 20 is a silent short break.)"""
@@ -2570,6 +2803,129 @@ def main():
         per_instr_events[instr]["pitch"]    += src["pitch"][:]
         per_instr_events[instr]["velocity"] += src["velocity"][:]
 
+    # ---- Bar 41: short break (1/4) ----
+    # Intentional silence; we do NOT append any events. Meter map will carry the bar.
+
+    # ---- Bars 42–45: re-run Bar 1’s contract as a 4×3/4 fragment ----
+    sysX, usrX = prompt_4x3over4_from_bar1_contract()
+    seedX = random.randint(1, 10**9)
+    usrX += f"\nCreativeSeed: {seedX}\nRule: When multiple valid choices exist, bias decisions with CreativeSeed (aggregate & rhythms)."
+
+    bars4x, = (call_llm_json(oai, sysX, usrX, model="gpt-4.1", temperature=0.8),)
+
+    # we assume your first fragment plan JSON object is named `bars4x` (the LLM plan, not the realized notes)
+    prev_plan_min = _compress_plan(bars4x)
+
+    # Validate/prepare aggregate for this 4×3/4 fragment
+    if "aggregate_scale" not in bars4x or "bars" not in bars4x or not isinstance(bars4x["bars"], list) or len(bars4x["bars"]) != 4:
+        raise RuntimeError("4×3/4 JSON missing aggregate_scale or 'bars' (len != 4).")
+    agg4x = agg_validate_prepare_or_repair(bars4x["aggregate_scale"])
+
+    # Realize each of the four 3/4 bars:
+    # - ALL instruments EXCEPT trumpet: play the generated material, but at ppp (very silent).
+    # - TRUMPET: ignore generated material; instead, 3 long loud notes (Bars 42–44) derived from agg4x.
+    four_offsets = [BAR42_OFF, BAR43_OFF, BAR44_OFF, BAR45_OFF]
+    non_trumpet = [i for i in ORDERED_INSTRS if i != "trumpet"]
+
+    for bi in range(4):
+        bar_payload = bars4x["bars"][bi]
+        rhythmX: Dict[str,dict] = bar_payload.get("rhythm", {}) or {}
+        melodyX: Dict[str,dict] = bar_payload.get("melody", {}) or {}
+
+        # --- Non-trumpet instruments: realize at ppp
+        for instr in non_trumpet:
+            if instr not in rhythmX:
+                raise RuntimeError(f"4×3/4 bar {42+bi}: rhythm missing {instr}")
+            t_local = rhythmX[instr].get("time", [])
+            d_local = rhythmX[instr].get("duration", [])
+
+            # Enforce local constraints (3/4 → 12 ticks)
+            t_local = enforce_monophony_times([int(x) for x in t_local if 0 <= int(x) < 12])
+            t_local, d_local = cap_durations_local(t_local, [int(x) for x in d_local], 12)
+            rhythmX[instr]["time"] = t_local
+            rhythmX[instr]["duration"] = d_local
+
+            # Pitches from degree-steps under the NEW aggregate (same logic as Bar 1)
+            rng = INSTRUMENTS[instr]["tess"];  tess = INSTRUMENTS[instr]["tess"]
+            m = (melodyX.get(instr) or {})
+            steps = m.get("steps", [])
+            start_hint = m.get("start_hint", "mid")
+            if isinstance(steps, list) and len(steps) == max(0, len(t_local) - 1):
+                pitches = pitches_from_steps_aggregate(t_local, steps, agg4x, rng, tess, start_hint)
+            else:
+                pitches = scale_walk_assign_pitches_aggregate(t_local, agg4x, rng, tess)
+
+            # Super quiet: ppp
+            vels = [VEL_PPP for _ in t_local]
+
+            # Append with absolute offsets for Bars 42–45
+            t_abs = absolute_times(t_local, four_offsets[bi])
+            per_instr_events[instr]["time"]     += t_abs
+            per_instr_events[instr]["duration"] += d_local
+            per_instr_events[instr]["pitch"]    += pitches
+            per_instr_events[instr]["velocity"] += vels
+
+    # --- TRUMPET OVERRIDE (Bars 42–44): three long loud notes, LLM-chosen from agg4x ---
+    seedT_A = random.randint(1, 10**9)
+    tpt_pitches = choose_trumpet_long_notes_via_llm(oai, agg4x, seedT_A, "trumpet", avoid_midis=None)
+
+    for t, d, p in zip([BAR42_OFF, BAR43_OFF, BAR44_OFF], [12, 12, 12], tpt_pitches):
+        per_instr_events["trumpet"]["time"].append(t)
+        per_instr_events["trumpet"]["duration"].append(d)
+        per_instr_events["trumpet"]["pitch"].append(int(p))
+        per_instr_events["trumpet"]["velocity"].append(VEL_TRUMPET_LOUD)
+
+    # ---- Bars 46–49: responding 4×3/4 fragment, different harmony; all ppp except trumpet continues long loud notes ----
+    # Reuse the same 4×3/4 prompt helper as for Bars 42–45, but ask for a materially different aggregate.
+    sysY, usrY = prompt_4x3over4_from_bar1_contract()
+    seedY = random.randint(1, 10**9)
+    # Encourage a "response" aggregate: change pc→band mapping vs previous agg4x
+    prev_map_4x = pc_to_band_map(agg4x)
+
+    usrY += (
+        f"\nCreativeSeed: {seedY}"
+        "\nDirective: Treat this as a 'response' to the previous 4×3/4 fragment."
+        "\nHARD: Provide a materially different aggregate vs the previous fragment: "
+        "change the pc→band assignment for at least 6 pitch classes and adjust band ranges."
+        "\nReference pc→band map of previous fragment: " + json.dumps(prev_map_4x) +
+        "\nHARD: RHYTHM VARIATION: For EACH non-trumpet instrument in EACH bar, "
+        "the onset set must differ materially from the first fragment. "
+        "Target Jaccard(onset_set_new, onset_set_old) < 0.5 per bar. "
+        "Use at least one different duration value in every instrument/bar."
+        "\nHARD: MELODIC VARIATION: For EACH non-trumpet instrument, provided 'steps' "
+        "must NOT be an exact copy—alter at least half of the positions."
+        "\nReferenceFirstFragment (to differ from): " + json.dumps(prev_plan_min)
+    )
+
+    bars4x_resp, = (call_llm_json(oai, sysY, usrY, model='gpt-4.1', temperature=0.8),)
+
+    # Realize response fragment (Bars 46–49) from its aggregate
+    agg4x_resp = agg_validate_prepare_or_repair(bars4x_resp["aggregate_scale"])
+    events4x_resp = realize_4x3over4(bars4x_resp, agg4x_resp,
+                                    bar_offsets=[BAR46_OFF, BAR47_OFF, BAR48_OFF, BAR49_OFF],
+                                    ticks_per_bar=12)
+
+    # Append to per-instrument streams (ppp), EXCEPT trumpet (overridden below)
+    for instr in ORDERED_INSTRS:
+        if instr == "trumpet":
+            continue
+        part = events4x_resp[instr]
+        per_instr_events[instr]["time"]     += part["time"]
+        per_instr_events[instr]["duration"] += part["duration"]
+        per_instr_events[instr]["pitch"]    += part["pitch"]
+        per_instr_events[instr]["velocity"] += [VEL_BAR3_PP] * len(part["time"])  # ppp
+
+
+    # --- Trumpet (Bars 46–48): three long, loud notes again, but LLM-chosen AND different from Bars 42–44 ---
+    seedT_B = random.randint(1, 10**9)
+    tpt_pitches_R = choose_trumpet_long_notes_via_llm(oai, agg4x_resp, seedT_B, "trumpet", avoid_midis=tpt_pitches)
+
+    for t, d, p in zip([BAR46_OFF, BAR47_OFF, BAR48_OFF], [12, 12, 12], tpt_pitches_R):
+        per_instr_events["trumpet"]["time"].append(t)
+        per_instr_events["trumpet"]["duration"].append(d)
+        per_instr_events["trumpet"]["pitch"].append(int(p))
+        per_instr_events["trumpet"]["velocity"].append(VEL_TRUMPET_LOUD)
+
     # Non-chosen instruments in bar 3: stay silent unless we add padding later.
 
     # ---- Final monophony safety per instrument (absolute) & truncate to boundary ----
@@ -2769,7 +3125,15 @@ def main():
             {"meter":[3,4],"start":508},  # 38 (variation of 4)
             {"meter":[4,4],"start":520},  # 39 (variation of 5)
             {"meter":[4,4],"start":536},  # 40 (variation of 6)
-
+            {"meter":[1,4],"start":552},  # 41 short break
+            {"meter":[3,4],"start":556},  # 42
+            {"meter":[3,4],"start":568},  # 43
+            {"meter":[3,4],"start":580},  # 44
+            {"meter":[3,4],"start":592},  # 45
+            {"meter":[3,4],"start": 604},
+            {"meter":[3,4],"start": 616},
+            {"meter":[3,4],"start": 628},
+            {"meter":[3,4],"start": 640},
         ],
         "N_global": N_global,
         "top_feature": top_name,
