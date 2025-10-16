@@ -509,10 +509,15 @@ BAR48_TICKS = 12
 BAR48_OFF   = 628
 BAR49_TICKS = 12
 BAR49_OFF   = 640
+BAR50_TICKS = 16
+BAR50_OFF   = 652
 
 # Move the global end to the end of bar 49
-GLOBAL_END  = 652
+GLOBAL_END  = 668
 
+VEL_BAR2_FIRST = 124
+VEL_BAR2_SECOND = 114
+VEL_BAR3_PP = 30
 VEL_LOOP_BG = 48       # background loop dynamic
 VEL_FORE_STAB = 92     # foreground staccato hits dynamic
 VEL_BAR19_RECAP = 104     # mf–f recap hit
@@ -520,7 +525,8 @@ VEL_DRONE = 64
 VEL_DRONE_HARM = 76  # chordal additions during bars 21–34 (a touch brighter than VEL_DRONE)
 VEL_PPP = 22           # very, very soft for Bars 42–45 (all except trumpet)
 VEL_TRUMPET_LOUD = 110 # loud trumpet line for Bars 42–44
-
+VEL_RIPPLE = 88
+VEL_TUTTI_END = 112  # loud dynamic for the two concluding tutti chords at the end of Part 1
 
 # Ranges (sounding MIDI)
 INSTRUMENTS = {
@@ -547,10 +553,6 @@ INSTRUMENT_META = {
 def vel_bar1_p_cresc(local_t: int) -> int:
     # 50 → 80 over ticks 0..11
     return max(0, min(127, round(50 + (80-50) * (local_t / 11.0))))
-
-VEL_BAR2_FIRST = 124
-VEL_BAR2_SECOND = 114
-VEL_BAR3_PP = 30
 
 # ---------------- Utility funcs ----------------
 def request_fresh_aggregate(make_prompts_fn, key_in_json: str,
@@ -664,6 +666,34 @@ def deltas_from_series(vals: List[int]) -> List[dict]:
         ops = [{"name":"add","args":[0]}]
     return ops
 
+def compute_next_bar_offset(per_instr_events: Dict[str, Dict[str, List[int]]], bar_size: int = 16) -> int:
+    """Return the absolute tick of the next bar boundary after all currently scheduled events."""
+    max_end = 0                                               # track the furthest end position among all events
+    for instr in ORDERED_INSTRS:                              # iterate through all instruments in a fixed order
+        T = per_instr_events[instr]["time"]                   # absolute onset times for this instrument
+        D = per_instr_events[instr]["duration"]               # durations (in ticks) for this instrument
+        for i in range(len(T)):                               # scan each event for this instrument
+            max_end = max(max_end, int(T[i]) + int(D[i]))     # update furthest end (onset + duration)
+    # snap up to the next multiple of bar_size, so we start on a clean bar boundary
+    return ((max_end + bar_size - 1) // bar_size) * bar_size  # ceiling division * bar_size
+
+def collect_recent_pcs(per_instr_events: Dict[str, Dict[str, List[int]]], lookback_bars: int = 8, bar_size: int = 16) -> List[int]:
+    """Return a sorted list of unique pitch-classes (0..11) sounding in the last `lookback_bars` bars."""
+    end_tick = compute_next_bar_offset(per_instr_events, bar_size=bar_size)  # end of the current music (rounded to bar)
+    start_tick = max(0, end_tick - lookback_bars * bar_size)                 # look back a fixed number of bars
+    pcs = set()                                                              # accumulate unique pitch-classes here
+    for instr in ORDERED_INSTRS:                                             # scan all instruments
+        T = per_instr_events[instr]["time"]                                  # their onsets (absolute ticks)
+        D = per_instr_events[instr]["duration"]                               # their durations (ticks)
+        P = per_instr_events[instr]["pitch"]                                  # their pitches (MIDI)
+        for i in range(len(T)):                                              # visit each event
+            t0 = int(T[i])                                                   # event start
+            t1 = t0 + int(D[i])                                              # event end
+            if not (t1 <= start_tick or t0 >= end_tick):                     # keep if event overlaps the window
+                pcs.add(int(P[i]) % 12)                                      # store pitch-class modulo 12
+    return sorted(pcs)                                                       # return sorted unique pcs for readability
+
+
 def _meter_at_time(t: int) -> Tuple[int, int]:
     if t < 12:      return 3, 4   # bar 1
     elif t < 20:    return 2, 4   # bar 2
@@ -714,6 +744,7 @@ def _meter_at_time(t: int) -> Tuple[int, int]:
     elif t < 628: return 3, 4   # bar 47
     elif t < 640: return 3, 4   # bar 48
     elif t < 652: return 3, 4   # bar 49 / global end
+    elif t < 668:  return 4, 4
     else:           return 4, 4
 
 def make_meter_arrays(N: int, abs_times: List[int]) -> Tuple[List[int], List[int]]:
@@ -870,6 +901,50 @@ def choose_trumpet_long_notes_via_llm(oai, agg, seed, instr="trumpet", avoid_mid
     for approx, pc in zip(approx_seq, pcs):
         out.append(nearest_pitch_for_pc_aggregate(pc, clamp(approx, rng[0], rng[1]), rng, agg))
     return [int(x) for x in out]
+
+def request_part1_finalbar_twochords_jazz(client, recent_pcs: List[int], temp: float = 0.9) -> dict:
+    """
+    Ask the LLM for two complex, suspended-sounding jazz chords (as pitch-classes) to end Part 1.
+    The LLM is told to avoid simple dominant→tonic cadences and to keep things harmonically rich.
+    """
+    # Build a concise system prompt describing the task role
+    system_msg = (
+        "You are a jazz harmony assistant for concert music. "
+        "Given recent pitch-classes (0=C,1=C#/Db,...,11=B), propose TWO final chords for a tutti hit bar. "
+        "Avoid plain dominant→tonic cadences; prefer suspended colors (e.g., lydian dominant, altered, upper-structure stacks). "
+        "Return only valid JSON."
+    )
+    # Compose a user message that provides context + strict output schema
+    user_msg = {
+        "instruction": "Design two final jazz chords for a single 4/4 bar with two hits (beat 1 and beat 3).",
+        "recent_pitch_classes": recent_pcs,  # give the harmonic context to keep continuity
+        "requirements": {
+            "no_plain_cadence": True,       # explicitly avoid V→I or any obvious resolution
+            "chord1_and_chord2": "arrays of unique integers in [0..11], length between 5 and 8",
+            "flavor": "suspended/altered/lydian dominant/upper-structure; leave the form open-ended",
+            "voice_leading": "let chord2 be related but not resolving; small shared subset acceptable"
+        },
+        "output_schema": {
+            "type": "object",
+            "properties": {
+                "chord1": {"type": "array", "items": {"type": "integer", "minimum": 0, "maximum": 11}},
+                "chord2": {"type": "array", "items": {"type": "integer", "minimum": 0, "maximum": 11}},
+                "labels": {"type": "object"}  # optional names/comments; ignored by validator if absent
+            },
+            "required": ["chord1", "chord2"]
+        }
+    }
+    # Call your existing JSON LLM helper (same as elsewhere in your file)
+    js = call_llm_json(
+        client=client,                     # OpenAI client that you already use
+        system_msg=system_msg,             # system role
+        user_msg=json.dumps(user_msg),     # pass user content as a JSON string for clarity
+        model="gpt-4.1",                   # keep consistent with your other sections
+        temperature=temp,                  # a bit adventurous to get colorful voicings
+        top_p=0.9                          # mild nucleus sampling as in your other calls
+    )
+    return js                              # hand raw JSON back to a validator
+
 
 # ---------------- LLM Contracts ----------------
 def prompt_bar1_contract() -> Tuple[str, str]:
@@ -1332,6 +1407,42 @@ def validate_bars1014_plan_or_raise(plan: dict) -> dict:
     # return validated aggregate (prepared)
     return agg_validate_prepare_or_repair(agg_raw)
 
+def validate_twochords_jazz_payload(js: dict) -> Tuple[List[int], List[int]]:
+    """
+    Validate and sanitize the LLM output for the two-chord ending.
+    Ensures: arrays exist, ints 0..11, unique, length in 5..8. Fallback uses colorful, non-cadential pcs.
+    """
+    def norm(arr) -> List[int]:
+        """Normalize a candidate array: ints 0..11, unique, clipped size."""
+        if not isinstance(arr, list):                       # require list
+            return []                                       # else reject
+        out = []                                            # build a sanitized list
+        seen = set()                                        # track uniqueness
+        for x in arr:                                       # scan each element
+            try:
+                v = int(x) % 12                             # coerce to int & modulo 12
+            except Exception:
+                continue                                    # skip anything non-integer
+            if v not in seen:                               # enforce uniqueness
+                seen.add(v)                                 # mark as seen
+                out.append(v)                               # append to output
+        # clamp length between 5 and 8 to ensure rich voicings without bloat
+        if len(out) < 5:                                    # too few → reject
+            return []
+        if len(out) > 8:                                    # too many → trim
+            out = out[:8]
+        return out
+
+    c1 = norm(js.get("chord1", []))                         # sanitize first chord pcs
+    c2 = norm(js.get("chord2", []))                         # sanitize second chord pcs
+    if c1 and c2:                                           # if both look valid
+        return c1, c2                                       # accept them
+    # Fallback: handcraft two suspended/altered pc-sets with overlap but no clear cadence
+    # (Example flavors: lydian dominant on tritone apart + altered with #11/13 color)
+    fallback_c1 = [0, 2, 4, 6, 9, 10]                       # {C,D,E,F#,A,A#} → C13(#11no3) flavor
+    fallback_c2 = [1, 3, 6, 8, 10]                          # {C#,D#,F#,G#,A#} → Db7(#11no5) / tritone-ish
+    return fallback_c1, fallback_c2                          # guaranteed suspended, non-cadential
+
 def request_bars1014_strict(client: OpenAI, b1_agg: dict, bar3: dict, pc456: dict, cloud789: dict,
                             attempts: int = 4, temp: float = 1.1) -> Tuple[dict, dict]:
     """
@@ -1467,6 +1578,63 @@ def realize_bars1014(plan: dict, validated_agg: dict = None) -> Dict[str, Dict[s
                 prev_pitches[instr] = int(pitch)
 
     return out
+
+def realize_part1_finalbar_tutti(
+    per_instr_events: Dict[str, Dict[str, List[int]]],   # global accumulator (mutated)
+    chord1_pcs: List[int],                               # first chord as pitch-classes 0..11
+    chord2_pcs: List[int],                               # second chord as pitch-classes 0..11
+    bar_off: int,                                        # absolute start tick for this final bar
+    bar_size: int = 16,                                  # assume 4/4 mapped to 16 ticks
+    hit_positions: Tuple[int, int] = (0, 8),             # two hits at beat 1 and beat 3 (0 and 8)
+    hit_duration: int = 6                                # ring each hit for 6 ticks (leaves 2-tick air)
+) -> None:
+    """Write two tutti chord hits across all instruments at the given bar offset."""
+    # Local helper: nearest in-range pitch for a given pitch-class (try to stay near tessitura center)
+    def nearest_pitch_for_pc(pc: int, instr: str, approx: int) -> int:
+        lo, hi = INSTRUMENTS[instr]["range"]             # absolute playable range for instrument
+        best, bestd = approx, 10**9                      # track nearest MIDI note and distance
+        for k in range(-24, 25):                         # search ± 2 octaves around the approx
+            cand = clamp(approx + k, lo, hi)             # clamp into instrument range
+            if cand % 12 == pc:                          # check pitch-class match
+                d = abs(cand - approx)                   # compute distance from approx
+                if d < bestd:                            # keep nearest solution
+                    best, bestd = cand, d                # update best candidate
+        return best                                      # return the nearest pitch with the given pc
+
+    # Precompute tessitura centers for stable voicing placement per instrument
+    tess_center = {instr: (INSTRUMENTS[instr]["tess"][0] + INSTRUMENTS[instr]["tess"][1]) // 2
+                   for instr in ORDERED_INSTRS}          # mid of tessitura to guide voicing heights
+
+    # First hit: assign each instrument a chord1 tone near its tessitura center
+    chord1_pcs_cycle = list(chord1_pcs)                  # copy list to rotate through pcs
+    # choose a deterministic rotation so neighboring instruments don’t always get same pcs
+    for idx, instr in enumerate(ORDERED_INSTRS):         # visit instruments in the fixed orchestral order
+        if not chord1_pcs_cycle:                         # safety: if empty (shouldn’t happen), skip writing
+            continue                                     # nothing to voice
+        pc = chord1_pcs_cycle[idx % len(chord1_pcs_cycle)]  # round-robin select a pc from chord1
+        approx = tess_center[instr]                      # aim around the tessitura center
+        pitch = nearest_pitch_for_pc(pc, instr, approx)  # snap to the nearest in-range note with that pc
+        per_instr_events[instr]["time"].append(bar_off + hit_positions[0])    # onset at the first hit
+        per_instr_events[instr]["duration"].append(hit_duration)              # sustain for chosen duration
+        per_instr_events[instr]["pitch"].append(int(pitch))                   # write realized MIDI pitch
+        per_instr_events[instr]["velocity"].append(VEL_TUTTI_END)             # loud tutti dynamic
+
+    # Second hit: related but not resolving — use chord2 pcs and try small voice-leading motion
+    chord2_pcs_cycle = list(chord2_pcs)                  # copy to rotate independently
+    for idx, instr in enumerate(ORDERED_INSTRS):         # iterate same order for coherence
+        if not chord2_pcs_cycle:                         # safety: if empty, skip
+            continue                                     # nothing to voice
+        pc = chord2_pcs_cycle[(idx + 1) % len(chord2_pcs_cycle)]  # offset rotation for variety
+        # try nudging above the previous assigned pitch to avoid static repetition
+        prev_pitch = per_instr_events[instr]["pitch"][-1] if per_instr_events[instr]["time"] and \
+                     per_instr_events[instr]["time"][-1] == bar_off + hit_positions[0] else tess_center[instr]
+        approx = clamp(prev_pitch + 2, INSTRUMENTS[instr]["range"][0], INSTRUMENTS[instr]["range"][1])  # slight lift
+        pitch = nearest_pitch_for_pc(pc, instr, approx)  # snap to nearest in-range note with chosen pc
+        per_instr_events[instr]["time"].append(bar_off + hit_positions[1])    # onset at the second hit
+        per_instr_events[instr]["duration"].append(hit_duration)              # sustain similar ring
+        per_instr_events[instr]["pitch"].append(int(pitch))                   # realized MIDI pitch
+        per_instr_events[instr]["velocity"].append(VEL_TUTTI_END)             # loud tutti dynamic
+
 
 def prompt_bars1618_loop_stabs_contract(b1_agg: dict, bar3: dict, pc456: dict, cloud789: dict, plan1014: dict) -> Tuple[str, str]:
     """
@@ -2751,6 +2919,208 @@ def main():
                     if added_this_bar >= max_extra_per_bar:
                         break
     
+    def overlay_bars2134_ripples(
+        per_instr_events: Dict[str, Dict[str, List[int]]],  # global per-instrument accumulator (mutated)
+        seed: int = None,                                   # random seed for determinism (set to an int to freeze)
+        prob_per_bar: float = 1.0,                          # chance to activate *this bar* for ripples
+        max_ripples_per_bar: int = 3,                       # NEW: place up to N separate ripples per bar
+        concurrency_cap: int = 6,                           # NEW: allow more simultaneous voices (<= cap)
+        min_notes: int = 3,                                 # ripple length lower bound (notes)
+        max_notes: int = 6,                                 # ripple length upper bound (notes)
+        note_len_choices: Tuple[int, ...] = (1, 2),         # per-note duration choices (ticks)
+        gap_choices: Tuple[int, ...] = (1, 2),              # gap between notes (ticks)
+        avoid_instruments_with_onsets_in_bar: bool = False  # NEW: if True, skip instruments that *start* in this bar
+    ) -> None:
+        """
+        Bars 21–34: sprinkle short, bright, monophonic “ripple” runs.
+        Upgrades:
+        - Multiple ripples per bar (max_ripples_per_bar).
+        - Adjustable concurrency limit (concurrency_cap).
+        - Optional relaxation of 'present onset in bar' exclusion.
+        Never places a ripple onset on a tick whose occupancy already reaches concurrency_cap.
+        """
+
+        rng = random.Random(seed)                           # deterministic RNG if seed is given
+        allowed_pc_steps = (3, 4, 5, 7, 8, 9)               # tertian/quartal distances in semitones
+
+        def bar_bounds(bi: int) -> Tuple[int, int]:
+            """Absolute [start,end) tick window for Bar (21+bi)."""
+            start = BAR21_OFF + 16 * bi                     # fixed 16-tick bars here
+            return start, start + 16
+
+        def active_at(t_abs: int) -> List[Tuple[str, int]]:
+            """Return list of (instrument, pitch) sounding at absolute tick t_abs."""
+            out = []                                        # accumulator
+            for instr in ORDERED_INSTRS:                    # scan all instruments
+                T = per_instr_events[instr]["time"]         # onsets (abs)
+                D = per_instr_events[instr]["duration"]     # durations (ticks)
+                P = per_instr_events[instr]["pitch"]        # pitches (MIDI)
+                for i in range(len(T)):                     # check each event
+                    if T[i] <= t_abs < T[i] + D[i]:         # half-open interval test
+                        out.append((instr, int(P[i])))      # add currently sounding event
+            return out                                      # snapshot at t_abs
+
+        def build_bar_snapshot(bi: int):
+            """Compute per-bar occupancy (local 0..15), map of onsets at local ticks, and set of instruments with onsets."""
+            start, end = bar_bounds(bi)                     # bar window
+            onsets = {}                                     # local tick -> (instr, pitch, dur)
+            present_instrs = set()                          # instruments that *start* something in this bar
+            occ = [0] * 16                                  # occupancy per local tick
+            for instr in ORDERED_INSTRS:                    # across all instruments
+                T = per_instr_events[instr]["time"]         # their onsets
+                D = per_instr_events[instr]["duration"]     # their durations
+                P = per_instr_events[instr]["pitch"]        # their pitches
+                for i in range(len(T)):                     # scan events
+                    t, d, p = int(T[i]), int(D[i]), int(P[i])  # normalize ints
+                    if start <= t < end:                    # event starts inside this bar
+                        lt = t - start                      # convert to local tick
+                        onsets.setdefault(lt, (instr, p, d))# remember a representative starter
+                        present_instrs.add(instr)           # mark instrument as 'present' (onset in this bar)
+                    s0 = max(t, start)                      # overlap start with this bar
+                    s1 = min(t + d, end)                    # overlap end
+                    if s0 < s1:                             # if some overlap exists
+                        for k in range(s0 - start, s1 - start):
+                            occ[k] += 1                     # increment occupancy on covered ticks
+            return onsets, present_instrs, occ              # return snapshot structures
+
+        def _nearest_pitch_for_pcset(target_pc: int, approx: int, rng_midi: Tuple[int,int]) -> int:
+            """Nearest in-range pitch with pitch-class target_pc, centered around approx."""
+            lo, hi = rng_midi                               # sounding range for the instrument
+            best, bestd = approx, 10**9                     # track nearest candidate
+            for k in range(-24, 25):                        # search ±2 octaves
+                cand = clamp(approx + k, lo, hi)            # clamp within range
+                if cand % 12 == target_pc:                  # pc match?
+                    d = abs(cand - approx)                  # distance to approx
+                    if d < bestd:                           # keep nearest
+                        best, bestd = cand, d
+            return best                                     # snapped pitch
+
+        def choose_pitch_relative(base_pitch: int, instr: str) -> int:
+            """Pick starting pitch for instr on a tertian/quartal pc from base_pitch."""
+            lo, hi = INSTRUMENTS[instr]["range"]            # absolute range
+            tess = INSTRUMENTS[instr]["tess"]               # tessitura preference
+            approx_center = (tess[0] + tess[1]) // 2        # mid tessitura
+            base_pc = base_pitch % 12                       # base pitch-class
+            pcs = []                                        # candidate pcs (± allowed steps)
+            for d in allowed_pc_steps:                      # iterate allowed distances
+                pcs.append((base_pc + d) % 12)              # upward
+                pcs.append((base_pc - d) % 12)              # downward
+            rng.shuffle(pcs)                                # small shuffle for variety
+            return _nearest_pitch_for_pcset(pcs[0], approx_center, (lo, hi))  # snap to closest
+
+        def next_ripple_pitch(prev_pitch: int, instr: str) -> int:
+            """Continue ripple by a small tertian/quartal pc hop around previous pitch."""
+            step = rng.choice(allowed_pc_steps)             # choose interval size
+            direction = rng.choice((+1, -1))                # direction
+            target_pc = (prev_pitch + direction * step) % 12# next pitch-class
+            lo, hi = INSTRUMENTS[instr]["range"]            # instrument range
+            approx = clamp(prev_pitch + direction * 2, lo, hi)  # bias toward movement direction
+            return _nearest_pitch_for_pcset(target_pc, approx, (lo, hi))       # snap
+
+        # ---- iterate bars 21..34 (bi=0..13) ----
+        for bi in range(14):                                # 14 bars to process
+            if rng.random() > prob_per_bar:                 # probabilistic gate for this bar
+                continue                                    # skip bar → no ripples at all
+
+            placed = 0                                      # number of ripples placed in this bar
+            attempts = 0                                    # safety to avoid infinite loops
+            # keep trying until we place enough ripples or run out of room
+            while placed < max_ripples_per_bar and attempts < 12:
+                attempts += 1                               # count this placement attempt
+
+                start, end = bar_bounds(bi)                 # absolute bar window
+                onsets, present_instrs, occ = build_bar_snapshot(bi)  # recompute snapshot after prior placements
+                if sum(occ) == 0:                           # empty bar (unlikely) → nothing to do
+                    break                                   # exit attempts for this bar
+
+                # --- choose a start tick with spare capacity (< concurrency_cap) ---
+                candidates = list(range(0, 16))             # allow 0..15 now for more chances
+                rng.shuffle(candidates)                      # randomize scanning
+                lt0 = None                                   # chosen local start tick
+                for tloc in candidates:                      # scan local ticks
+                    # check onset capacity at the tick
+                    if occ[tloc] >= concurrency_cap:        # already at cap → not usable
+                        continue                             # try next tick
+                    lt0 = tloc                               # accept this start tick
+                    break                                    # stop search once found
+                if lt0 is None:                              # nowhere to start a ripple
+                    break                                    # give up on this bar
+
+                abs_t0 = start + lt0                         # absolute start time
+                sounding_now = active_at(abs_t0)             # who is sounding at start?
+                conc_now = len(sounding_now)                 # current occupancy
+                if conc_now >= concurrency_cap:              # double-check (absolute snapshot)
+                    continue                                 # try again with another start
+
+                busy_now = {i for i, _ in sounding_now}      # instruments currently sounding
+                # decide pool of eligible instruments
+                if avoid_instruments_with_onsets_in_bar:     # optional stricter mode
+                    eligible = [i for i in ORDERED_INSTRS if i not in busy_now and i not in present_instrs]
+                else:                                        # relaxed: only require silence *at the onset*
+                    eligible = [i for i in ORDERED_INSTRS if i not in busy_now]
+
+                if not eligible:                             # nobody free at this tick
+                    continue                                 # try a different start
+
+                instr = eligible[0]                          # deterministic pick for stability
+
+                # --- synthesize a short ripple gesture (respecting concurrency_cap per covered tick) ---
+                notes_n = clamp(rng.randint(min_notes, max_notes), 1, 8)  # how many notes in gesture
+                times_local: List[int] = []                  # local onset times we’ll place
+                durs_local: List[int]  = []                  # durations for each onset
+                cursor = lt0                                 # start cursor at chosen tick
+                for _ in range(notes_n):                     # place up to notes_n short notes
+                    if cursor >= 16:                         # ran out of bar
+                        break                                # stop building
+                    dur = rng.choice(note_len_choices)       # choose a short dur (1–2)
+                    dur = min(dur, 16 - cursor)              # clamp within bar
+                    # ensure every covered tick stays below cap
+                    ok = all(occ[cursor + k] < concurrency_cap for k in range(dur))
+                    if not ok:                               # if too full…
+                        # try shrinking to 1-tick atom
+                        dur = 1
+                        ok = occ[cursor] < concurrency_cap
+                    if not ok:                               # still no space at cursor
+                        cursor += 1                          # nudge right and retry next cycle
+                        continue
+                    times_local.append(cursor)               # accept onset
+                    durs_local.append(dur)                   # accept duration
+                    for k in range(dur):                     # update occupancy model
+                        occ[cursor + k] += 1                 # reserve capacity for these ticks
+                    gap = rng.choice(gap_choices)            # choose small gap
+                    cursor += max(1, gap)                    # advance cursor
+
+                if not times_local:                          # nothing actually placed
+                    continue                                 # try another start or bar
+
+                # --- pick a reference pitch for harmonic flavor near this start ---
+                base_instr, base_pitch, _ = onsets.get(lt0, (None, None, None))  # onset-aligned ref if present
+                if base_pitch is None:                       # else: use current lowest pitch at abs_t0, fallback to tess center
+                    cur = active_at(abs_t0)                  # snapshot
+                    if cur:
+                        base_pitch = min(p for _, p in cur)  # lowest sounding pitch now
+                    else:
+                        tlo, thi = INSTRUMENTS[instr]["tess"]# tessitura band
+                        base_pitch = (tlo + thi) // 2        # center pitch
+
+                # --- generate ripple pitches via small tertian/quartal hops ---
+                first_pitch = choose_pitch_relative(base_pitch, instr)           # opening pitch near base
+                pitches = [int(first_pitch)]                                     # seed
+                for _ in range(1, len(times_local)):                             # continue gesture
+                    pitches.append(int(next_ripple_pitch(pitches[-1], instr)))   # hop
+
+                # --- append ripple to chosen instrument (absolute placement) ---
+                abs_times = [start + t for t in times_local]                     # local → absolute
+                for t_abs, dur, pitch in zip(abs_times, durs_local, pitches):    # write each note
+                    per_instr_events[instr]["time"].append(t_abs)                # onset
+                    per_instr_events[instr]["duration"].append(dur)              # duration
+                    per_instr_events[instr]["pitch"].append(int(pitch))          # pitch
+                    per_instr_events[instr]["velocity"].append(VEL_RIPPLE)       # bright dynamic
+
+                placed += 1                                                      # count this ripple
+            # end while
+            # end for bars
+
     # ---- Short break (Bar 20: 1/4 silence), then Bars 21–34 long-drone phrase ----
     # (Break requires no events added; the meter map carries the bar.)
     plan2134 = request_bars2134_drones_strict(oai, attempts=8, temp=0.6)
@@ -2764,7 +3134,7 @@ def main():
         per_instr_events[instr]["pitch"]   += part["pitch"]
         per_instr_events[instr]["velocity"]+= part["velocity"]
 
-    # NEW: Add chordal movement in bars 21–34 by waking silent instruments on select onsets
+    # Add chordal movement in bars 21–34 by waking silent instruments on select onsets
     seedG_enrich = random.randint(1, 10**9)
     enrich_bars2134_chords(
         per_instr_events,
@@ -2774,7 +3144,22 @@ def main():
         max_new_per_onset=1    # how many instruments join per onset
     )
 
-        # ---- Bars 35–37: LITERAL repeat of Bars 4–6 (absolute shift) ----
+    # Add brief “Textural Ripples” over bars 21–34 (fast monophonic runs in silent voices)
+    # DENser ripples over bars 21–34
+    seedG_ripples = random.randint(1, 10**9)  # set to a constant for reproducible runs
+    overlay_bars2134_ripples(
+        per_instr_events,
+        seed=seedG_ripples,
+        prob_per_bar=0.5,            # try every bar
+        max_ripples_per_bar=1,       # up to 1 gesture per bar
+        concurrency_cap=6,           # allow one or two extra simultaneous voices
+        min_notes=3, max_notes=6,    # short gestures
+        note_len_choices=(1, 2),     # fast notes
+        gap_choices=(1, 2),          # tight spacing
+        avoid_instruments_with_onsets_in_bar=False  # relaxed eligibility for more options
+    )
+
+    # ---- Bars 35–37: LITERAL repeat of Bars 4–6 (absolute shift) ----
     # bars456 already realized earlier with absolute times at BAR4_OFF/BAR5_OFF/BAR6_OFF.
     SHIFT_456_TO_35 = BAR35_OFF - BAR4_OFF   # 464 - 36 = 428
     for instr in ORDERED_INSTRS:
@@ -2915,7 +3300,6 @@ def main():
         per_instr_events[instr]["pitch"]    += part["pitch"]
         per_instr_events[instr]["velocity"] += [VEL_BAR3_PP] * len(part["time"])  # ppp
 
-
     # --- Trumpet (Bars 46–48): three long, loud notes again, but LLM-chosen AND different from Bars 42–44 ---
     seedT_B = random.randint(1, 10**9)
     tpt_pitches_R = choose_trumpet_long_notes_via_llm(oai, agg4x_resp, seedT_B, "trumpet", avoid_midis=tpt_pitches)
@@ -2926,7 +3310,32 @@ def main():
         per_instr_events["trumpet"]["pitch"].append(int(p))
         per_instr_events["trumpet"]["velocity"].append(VEL_TRUMPET_LOUD)
 
-    # Non-chosen instruments in bar 3: stay silent unless we add padding later.
+    # === Part 1 → Final bar: two tutti jazz chords chosen by the LLM ===
+    # 1) Look at the recent harmony (last 8 bars) to give the LLM context
+    recent_pcs = collect_recent_pcs(per_instr_events, lookback_bars=8, bar_size=16)  # e.g., PCs used in Bars 27–34
+
+    # 2) Ask the LLM for two complex jazz chords that avoid simple V→I and keep things suspended
+    js_two = request_part1_finalbar_twochords_jazz(client, recent_pcs, temp=0.95)    # a touch more exploratory
+
+    # 3) Validate/sanitize the chords (or fall back to safe suspended sets)
+    chord1_pcs, chord2_pcs = validate_twochords_jazz_payload(js_two)                 # returns two pc arrays (5..8 pcs)
+
+    # 4) Place the final bar at the next clean bar boundary and realize the two tutti hits
+    final_bar_off = BAR50_OFF
+    realize_part1_finalbar_tutti(                                                     
+        per_instr_events=per_instr_events,                                           # global accumulator
+        chord1_pcs=chord1_pcs,                                                       # first suspended chord
+        chord2_pcs=chord2_pcs,                                                       # second suspended chord (related, unresolved)
+        bar_off=final_bar_off,                                                       # final bar start
+        bar_size=16,                                                                 # 4/4 → 16 ticks
+        hit_positions=(0, 8),                                                        # hits on beats 1 and 3
+        hit_duration=6                                                               # each rings for 6 ticks (2 ticks of air)
+    )
+
+    # (Optional) If you maintain a separate meter map structure for your visualiser,
+    # append a 4/4 entry for this bar here, e.g.:
+    # meter_map.append({"abs_off": final_bar_off, "numerator": 4, "denominator": 4})
+
 
     # ---- Final monophony safety per instrument (absolute) & truncate to boundary ----
     for instr in ORDERED_INSTRS:
