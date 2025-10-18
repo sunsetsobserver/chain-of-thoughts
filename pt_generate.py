@@ -159,12 +159,21 @@ def generate_unit_from_template(
 
     # --- Prompts ---------------------------------------------------------------
     system_text = load_system_prompt(fallback="")
+
+    sidecar_vars_path = template_path.with_suffix(template_path.suffix + ".vars.json")
+    extra_vars = None
+    if sidecar_vars_path.exists():
+        try:
+            extra_vars = json.loads(sidecar_vars_path.read_text(encoding="utf-8"))
+        except Exception as e:
+            raise RuntimeError(f"Failed to read sidecar vars: {sidecar_vars_path}: {e}")
+        
     user_text   = render_user_prompt_from_file(
         template_path,
         bar_ticks=bar_ticks,
         num=NUM, den=DEN,
         instruments=INSTRUMENTS,
-        extra_vars=None,   # you can pass {"NUM_BARS": 10} if your template uses it
+        extra_vars=extra_vars,
     )
 
     _save_text(run_dir / "01_system_prompt.txt", system_text)
