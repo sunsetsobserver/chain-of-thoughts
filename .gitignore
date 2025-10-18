@@ -1,6 +1,8 @@
 working_files/
 generator_working_files/
 composition_working_files/
+depreciated/
+runs/
 
 # Python caches & compiled files
 __pycache__/
