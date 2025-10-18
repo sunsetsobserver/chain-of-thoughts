@@ -143,17 +143,20 @@ def generate_unit_from_template(
     default_bar_ticks: int = 12,
     fetch: bool = False,
     acct: Optional[Account] = None,
-    suite_context: Optional[str] = None,   # NEW: rolling context string
+    suite_context: Optional[str] = None,   # rolling context string
+    session_dir: Optional[pathlib.Path] = None,  # NEW: shared suite folder; this function writes nothing
 ) -> Dict[str, Any]:
     """
     Generate ONE UNIT (one prompt file). The unit can contain many bars.
 
+    IMPORTANT: This function no longer writes ANY files. It returns everything
+    the caller (compose_suite.py) needs to persist once, inside a single suite folder.
+
     Returns dict with:
-      unit_label, run_dir, total_ticks, schedule, per_instr, payload,
-      rendered_user_text (for context chaining), unit_summary_text (for context chaining)
+      unit_label, total_ticks, schedule, per_instr, payload,
+      rendered_user_text, unit_summary_text, pt_journal
     """
     label = label or template_path.stem
-    run_dir = _make_run_dir(label=label)
 
     # --- DCN auth/account -----------------------------------------------------
     if acct is None:
@@ -171,15 +174,14 @@ def generate_unit_from_template(
 
     from pt_prompts import parse_prompt_directives
 
-    # --- Meter/ticks for this unit (can be overridden by prompt directives) ---
+    # --- Meter/ticks for this unit (prompt overrides allowed) -----------------
     overrides = parse_prompt_directives(template_path)
     if "bar_ticks" in overrides:
         bar_ticks = int(overrides["bar_ticks"])
         NUM, DEN = meter_from_ticks(bar_ticks)
     elif "num" in overrides and "den" in overrides:
         NUM = int(overrides["num"]); DEN = int(overrides["den"])
-        # 1 tick = 1/16 note → ticks_per_bar = 16 * (NUM / DEN)
-        bar_ticks = int((16 * NUM) // DEN)
+        bar_ticks = int((16 * NUM) // DEN)  # 1 tick = 1/16 note
     else:
         bar_ticks = int(default_bar_ticks)
         NUM, DEN  = meter_from_ticks(bar_ticks)
@@ -193,14 +195,11 @@ def generate_unit_from_template(
         instruments=INSTRUMENTS,
     )
 
-    _save_text(run_dir / "01_system_prompt.txt", system_text)
-    _save_text(run_dir / "02_user_prompt.rendered.txt", user_text)  # now .txt
-
     # --- OpenAI call (Responses + GPT-5) --------------------------------------
     OPENAI_API_KEY = _load_openai_key()
     oai = OpenAI(api_key=OPENAI_API_KEY)
 
-    # Build message list with optional rolling context as an extra system message
+    # Messages (with optional rolling context as extra system message)
     messages = [
         {"role": "system", "content": [{"type": "input_text", "text": system_text}]}
     ]
@@ -222,15 +221,10 @@ def generate_unit_from_template(
     )
 
     raw_text = (resp.output_text or "").strip()
-    _save_text(run_dir / "03_llm_output_raw.json", raw_text)
     obj = json.loads(raw_text)
-    _save_json(run_dir / "04_llm_output_parsed.json", obj)
 
     # Determine if SINGLE bar or SECTION
-    if "bars" in obj and isinstance(obj["bars"], list):
-        bar_bundles = obj["bars"]
-    else:
-        bar_bundles = [obj]
+    bar_bundles = obj["bars"] if isinstance(obj, dict) and "bars" in obj and isinstance(obj["bars"], list) else [obj]
 
     # Unit accumulators
     per_instr_unit = {i: {"pitch": [], "time": [], "duration": [], "velocity": [], "numerator": [], "denominator": []}
@@ -276,26 +270,19 @@ def generate_unit_from_template(
                 if fn in ("numerator", "denominator"):
                     d["transformations"] = [{"name":"add","args":[0]}]
 
-        # Save per-bar artifacts
-        _save_json(run_dir / f"05_{bar_label}_name_map.json", name_map)
-        _save_json(run_dir / f"06_{bar_label}_bundle_final_to_post.json", bundle)
-        _save_json(run_dir / f"07_{bar_label}_run_plan.json", bundle.get("run_plan", []))
-
-        # Register PTs + receipts
-        receipts: List[Dict[str, Any]] = []
+        # Register PTs
         for feat in bundle.get("features", []):
             pt_name = feat["pt"]["name"]
             instr = (feat.get("meta") or {}).get("instrument", "")
             res = dcn.post_feature(feat["pt"])
-            receipts.append({"pt_name": pt_name, "response": res})
 
-            # Journal entry (compact, no heavy payloads)
+            # Journal entry (compact)
             pt_journal.append({
                 "action": "post_feature",
+                "unit": label,
                 "bar_index": local_idx,
                 "instrument": instr,
                 "pt_name": pt_name,
-                # keep the response tiny: try common identifiers if present
                 "response_summary": {
                     "id": (res.get("id") if isinstance(res, dict) else None),
                     "name": (res.get("name") if isinstance(res, dict) else None),
@@ -317,17 +304,16 @@ def generate_unit_from_template(
             streams = _normalize_exec(samples)
             exec_by_feature[fname] = streams
 
-            # Journal entry for execution (counts only; no arrays)
+            # Journal entry for execution (counts only)
             pt_journal.append({
                 "action": "execute_pt",
+                "unit": label,
                 "bar_index": local_idx,
                 "pt_name": fname,
                 "N": N,
                 "seeds": seeds,
                 "sample_counts": {k: len(v) for k, v in streams.items()}
             })
-
-        _save_json(run_dir / f"09_{bar_label}_exec_by_feature.json", exec_by_feature)
 
         # Build per-bar instrument map (to compute actual_end, then offset)
         per_instr_bar = {i: {"pitch": [], "time": [], "duration": [], "velocity": []} for i in ORDERED_INSTRS}
@@ -371,53 +357,23 @@ def generate_unit_from_template(
 
         cumulative += slot_length
 
-    # Build unit-level visualiser payload
+    # Build unit-level visualiser payload (returned to caller)
     tracks = {instr: _instrument_pack(instr, per_instr_unit[instr]) for instr in ORDERED_INSTRS}
     payload = {"instrument_meta": INSTRUMENT_META, "tracks": tracks}
 
-    # Persist unit-level payload + schedule + manifest
-    _save_json(run_dir / "10_unit_visualiser_payload.json", payload)
-    _save_json(run_dir / "11_unit_schedule.json", schedule)
-    _save_json(run_dir / "09_pt_journal.json", pt_journal)
-
-    # Human-readable summary for context chaining
+    # Human-readable summary for context chaining (returned; not written here)
     unit_summary_text = _summarize_unit(per_instr_unit, bars_count=len(schedule), total_ticks=cumulative,
                                         num=NUM, den=DEN, label=label)
-    _save_text(run_dir / "12_unit_summary.txt", unit_summary_text)
-
-    manifest = {
-        "unit_label": label,
-        "template": str(template_path),
-        "total_ticks": cumulative,
-        "bars_count": len(schedule),
-        "files": {
-            # the following may or may not exist depending on artifact level
-            "system_prompt": "01_system_prompt.txt",
-            "user_prompt_rendered": "02_user_prompt.rendered.txt",
-            "llm_raw": "03_llm_output_raw.json",
-            "llm_parsed": "04_llm_output_parsed.json",
-            "per_bar_bundles": "06_*_bundle_final_to_post.json",
-            "per_bar_exec": "09_*_exec_by_feature.json",
-
-            # always present (essential)
-            "pt_journal": "09_pt_journal.json",
-            "unit_payload": "10_unit_visualiser_payload.json",
-            "unit_schedule": "11_unit_schedule.json",
-            "unit_summary": "12_unit_summary.txt"
-        }
-    }
-    _save_json(run_dir / "manifest.json", manifest)
 
     print(f"[{label}] Unit total ticks: {cumulative}")
-    print(f"[{label}] Run dir: {run_dir}")
 
     return {
         "unit_label": label,
-        "run_dir": run_dir,
         "total_ticks": cumulative,
         "schedule": schedule,
         "per_instr": per_instr_unit,
         "payload": payload,
         "rendered_user_text": user_text,
         "unit_summary_text": unit_summary_text,
+        "pt_journal": pt_journal,
     }
