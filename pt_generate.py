@@ -238,6 +238,9 @@ def generate_unit_from_template(
     schedule: List[Dict[str, Any]] = []
     cumulative = 0
 
+    # Minimal per-unit journal of created/posted/executed PTs
+    pt_journal: List[Dict[str, Any]] = []
+
     # Process each returned bar bundle
     for local_idx, bundle in enumerate(bar_bundles, start=1):
         bar_label = f"bar{local_idx:02d}"
@@ -281,21 +284,48 @@ def generate_unit_from_template(
         # Register PTs + receipts
         receipts: List[Dict[str, Any]] = []
         for feat in bundle.get("features", []):
+            pt_name = feat["pt"]["name"]
+            instr = (feat.get("meta") or {}).get("instrument", "")
             res = dcn.post_feature(feat["pt"])
-            receipts.append({"pt_name": feat["pt"]["name"], "response": res})
-        _save_json(run_dir / f"08_{bar_label}_post_feature_receipts.json", receipts)
+            receipts.append({"pt_name": pt_name, "response": res})
+
+            # Journal entry (compact, no heavy payloads)
+            pt_journal.append({
+                "action": "post_feature",
+                "bar_index": local_idx,
+                "instrument": instr,
+                "pt_name": pt_name,
+                # keep the response tiny: try common identifiers if present
+                "response_summary": {
+                    "id": (res.get("id") if isinstance(res, dict) else None),
+                    "name": (res.get("name") if isinstance(res, dict) else None),
+                    "status": (res.get("status") if isinstance(res, dict) else "ok")
+                }
+            })
 
         # Execute and collect
         dims_by_name = {feat["pt"]["name"]: feat["pt"]["dimensions"] for feat in bundle.get("features", [])}
         exec_by_feature: Dict[str, Dict[str, List[int]]] = {}
 
         for rp in bundle.get("run_plan", []):
-            fname = rp["feature_name"]; dims = dims_by_name.get(fname, [])
+            fname = rp["feature_name"]
+            dims = dims_by_name.get(fname, [])
             seeds = {k:int(v) for (k,v) in (rp.get("seeds") or {}).items()}
-            N     = int(rp.get("N", 4))
+            N = int(rp.get("N", 4))
+
             samples = dcn.execute_pt(acct, fname, N, seeds, dims)
             streams = _normalize_exec(samples)
             exec_by_feature[fname] = streams
+
+            # Journal entry for execution (counts only; no arrays)
+            pt_journal.append({
+                "action": "execute_pt",
+                "bar_index": local_idx,
+                "pt_name": fname,
+                "N": N,
+                "seeds": seeds,
+                "sample_counts": {k: len(v) for k, v in streams.items()}
+            })
 
         _save_json(run_dir / f"09_{bar_label}_exec_by_feature.json", exec_by_feature)
 
@@ -348,6 +378,7 @@ def generate_unit_from_template(
     # Persist unit-level payload + schedule + manifest
     _save_json(run_dir / "10_unit_visualiser_payload.json", payload)
     _save_json(run_dir / "11_unit_schedule.json", schedule)
+    _save_json(run_dir / "09_pt_journal.json", pt_journal)
 
     # Human-readable summary for context chaining
     unit_summary_text = _summarize_unit(per_instr_unit, bars_count=len(schedule), total_ticks=cumulative,
@@ -360,27 +391,25 @@ def generate_unit_from_template(
         "total_ticks": cumulative,
         "bars_count": len(schedule),
         "files": {
+            # the following may or may not exist depending on artifact level
             "system_prompt": "01_system_prompt.txt",
             "user_prompt_rendered": "02_user_prompt.rendered.txt",
             "llm_raw": "03_llm_output_raw.json",
             "llm_parsed": "04_llm_output_parsed.json",
             "per_bar_bundles": "06_*_bundle_final_to_post.json",
             "per_bar_exec": "09_*_exec_by_feature.json",
+
+            # always present (essential)
+            "pt_journal": "09_pt_journal.json",
             "unit_payload": "10_unit_visualiser_payload.json",
             "unit_schedule": "11_unit_schedule.json",
-            "unit_summary": "12_unit_summary.txt",
+            "unit_summary": "12_unit_summary.txt"
         }
     }
     _save_json(run_dir / "manifest.json", manifest)
 
-    # Convenience copy at project root
-    root_payload = pathlib.Path(__file__).resolve().parent / f"{label}_unit.json"
-    with open(root_payload, "w", encoding="utf-8") as f:
-        json.dump(payload, f, ensure_ascii=False, indent=2)
-
     print(f"[{label}] Unit total ticks: {cumulative}")
     print(f"[{label}] Run dir: {run_dir}")
-    print(f"[{label}] Wrote {root_payload.name}")
 
     return {
         "unit_label": label,
@@ -389,6 +418,6 @@ def generate_unit_from_template(
         "schedule": schedule,
         "per_instr": per_instr_unit,
         "payload": payload,
-        "rendered_user_text": user_text,        # expose rendered prompt for context chaining
-        "unit_summary_text": unit_summary_text, # expose computed summary for context chaining
+        "rendered_user_text": user_text,
+        "unit_summary_text": unit_summary_text,
     }
