@@ -1,11 +1,16 @@
 """
-dcn_client.py — Thin client for your DCN HTTP API + `dcn` SDK execution.
+dcn_client.py — Thin client for your DCN HTTP API + `dcn` SDK execution,
+with resilient token handling:
+- ensure_auth(acct) to log in once
+- try_refresh_or_reauth(acct) on 401 refresh failures
+- post_feature(..., acct=acct) retries after refresh/reauth
 """
 
 from __future__ import annotations
 from typing import Dict, List, Optional
 import requests
 from eth_account import Account
+from eth_account.messages import encode_defunct
 
 class DCNClient:
     def __init__(self, base_url: str, timeout: float = 10.0):
@@ -38,14 +43,6 @@ class DCNClient:
             h["X-Refresh-Token"] = self.refresh_token
         return h
 
-    def _authorized_post_json(self, path: str, payload: Dict) -> Dict:
-        url = f"{self.base_url}/{path}"
-        r = self.session.post(url, json=payload, headers=self._authz_headers(), timeout=self.timeout)
-        if r.status_code == 401 and self.refresh_token:
-            self.refresh_tokens()
-            r = self.session.post(url, json=payload, headers=self._authz_headers(), timeout=self.timeout)
-        return self._handle_response(r)
-
     # ---------- public HTTP ----------
     def get_nonce(self, address: str) -> str:
         url = f"{self.base_url}/nonce/{address}"
@@ -68,15 +65,51 @@ class DCNClient:
         url = f"{self.base_url}/refresh"
         r = self.session.post(url, json={}, headers=self._authz_headers(), timeout=self.timeout)
         data = self._handle_response(r)
+        # server may rotate tokens on refresh
         self.access_token = data.get("access_token", self.access_token)
         self.refresh_token = data.get("refresh_token", self.refresh_token)
         return data
 
-    def post_feature(self, payload: Dict) -> Dict:
-        return self._authorized_post_json("feature", payload)
+    # ---------- robust auth helpers ----------
+    def ensure_auth(self, acct: Account):
+        """Login if we don't yet have tokens."""
+        if self.access_token and self.refresh_token:
+            return
+        nonce = self.get_nonce(acct.address)
+        msg   = f"Login nonce: {nonce}"
+        sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
+        self.post_auth(acct.address, msg, sig)
+        if not (self.access_token and self.refresh_token):
+            raise RuntimeError("Auth failed — missing tokens")
+
+    def try_refresh_or_reauth(self, acct: Account):
+        """Attempt refresh; if that fails, do a fresh /auth with the SAME account."""
+        try:
+            self.refresh_tokens()
+        except requests.HTTPError:
+            # fall back to a full re-auth
+            nonce = self.get_nonce(acct.address)
+            msg   = f"Login nonce: {nonce}"
+            sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
+            self.post_auth(acct.address, msg, sig)
+
+    # ---------- feature calls with resilient retry ----------
+    def post_feature(self, payload: Dict, *, acct: Account) -> Dict:
+        """
+        POST /feature with retry:
+         1) ensure_auth
+         2) POST
+         3) if 401, refresh or re-auth then POST again
+        """
+        self.ensure_auth(acct)
+        url = f"{self.base_url}/feature"
+        r = self.session.post(url, json=payload, headers=self._authz_headers(), timeout=self.timeout)
+        if r.status_code == 401:
+            self.try_refresh_or_reauth(acct)
+            r = self.session.post(url, json=payload, headers=self._authz_headers(), timeout=self.timeout)
+        return self._handle_response(r)
 
     def get_feature(self, name: str) -> Dict:
-        """Optional: GET a feature by name if your API supports it."""
         url = f"{self.base_url}/feature/{name}"
         r = self.session.get(url, headers=self._authz_headers(), timeout=self.timeout)
         return self._handle_response(r)
@@ -84,7 +117,7 @@ class DCNClient:
     # ---------- `dcn` SDK execute ----------
     def execute_pt(self, acct: Account, pt_name: str, N: int,
                    seeds: Dict[str, int], dims: List[dict]) -> List[dict]:
-        import dcn  # imported here so the module is optional unless used
+        import dcn  # optional until used
 
         running = [(0, 0)] * (1 + len(dims))
         running[0] = (0, 0)

@@ -192,13 +192,9 @@ def generate_unit_from_template(
         acct = Account.from_key(priv) if priv else Account.create("TEMPKEY for demo")
     print(f"[{label}] Using account: {acct.address}")
 
-    dcn = DCNClient(API_BASE)
-    nonce = dcn.get_nonce(acct.address)
-    msg   = f"Login nonce: {nonce}"
-    sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
-    dcn.post_auth(acct.address, msg, sig)
-    if not (dcn.access_token and dcn.refresh_token):
-        raise RuntimeError("Auth failed — missing tokens")
+    # Reuse DCN client if provided; otherwise create and auth once here
+    dcn = dcn or DCNClient(API_BASE)
+    dcn.ensure_auth(acct)
 
     from pt_prompts import parse_prompt_directives
 
@@ -302,7 +298,7 @@ def generate_unit_from_template(
         for feat in bundle.get("features", []):
             pt_name = feat["pt"]["name"]
             instr = (feat.get("meta") or {}).get("instrument", "")
-            res = dcn.post_feature(feat["pt"])
+            res = dcn.post_feature(feat["pt"], acct=acct)
 
             # Journal entry (compact)
             pt_journal.append({
