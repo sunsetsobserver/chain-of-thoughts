@@ -1,0 +1,28 @@
+METER: 4/4
+
+TITLE
+Bar 5 — Bars-4–6 aggregate continued; new bar-pcset; two half-bar pillars (pp→p).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+
+AGGREGATE REUSE
+Reuse the SAME Bars-4–6 aggregate you internally created in Bar 4 (do not print it).
+
+BAR-SPECIFIC PCSET + VOICING (INTERNAL GUIDE)
+Pick a DIFFERENT bar-pcset than Bar 4 (size 5–10), voicing hint = “cluster-leaning in mids”:
+- double_bass: LOW anchor (avoid unison with cello),
+- cello + bass_clarinet: LOW↔MID,
+- violin + alto_flute + trumpet: MID (tight cluster tendency, but no exact unisons).
+
+PT REALIZATION
+Articulate two half-bar pillars as quarter-ties (to obey duration≤4):
+• TIME: onsets [0,4,8,12] using `add{4}`, N=4.
+• DURATION: all 4 (interpret as tied quarters → two sustaining halves).
+• PITCH: each instrument holds ONE constant pitch across the bar, belonging to the new bar-pcset and legal for its band at that register. Use add/sub only with net delta 0 across the four quarters.
+• VELOCITY: gentle swell pp→p (e.g., 44, 46, 48, 50; deltas ≤ 2).
+• METER: numerator=4, denominator=4 via seeds; meter transforms are `add 0`.
+
+VALIDATION
+• Ranges respected; pcs legal per band; no adjacent-instrument unisons inside each pillar; octave doublings okay but limited.
+• Exactly four onsets per instrument; last note ends at or before tick 16.

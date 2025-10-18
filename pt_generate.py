@@ -14,8 +14,6 @@ from datetime import datetime
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from openai import OpenAI
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 
 from pt_config import (
     API_BASE, ORDERED_INSTRS, INSTRUMENTS, INSTRUMENT_META,
@@ -173,8 +171,8 @@ def generate_unit_from_template(
     default_bar_ticks: int = 12,
     fetch: bool = False,
     acct: Optional[Account] = None,
-    suite_context: Optional[str] = None,  
-    dcn: Optional["DCNClient"] = None, 
+    suite_context: Optional[str] = None,   # rolling context string
+    session_dir: Optional[pathlib.Path] = None,  # NEW: shared suite folder; this function writes nothing
 ) -> Dict[str, Any]:
     """
     Generate ONE UNIT (one prompt file). The unit can contain many bars.
@@ -194,16 +192,13 @@ def generate_unit_from_template(
         acct = Account.from_key(priv) if priv else Account.create("TEMPKEY for demo")
     print(f"[{label}] Using account: {acct.address}")
 
-    # Reuse DCN client if provided; otherwise create and auth once here
-    local_dcn = dcn or DCNClient(API_BASE)
-    if not (local_dcn.access_token and local_dcn.refresh_token):
-        nonce = local_dcn.get_nonce(acct.address)
-        msg   = f"Login nonce: {nonce}"
-        sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
-        local_dcn.post_auth(acct.address, msg, sig)
-        if not (local_dcn.access_token and local_dcn.refresh_token):
-            raise RuntimeError("Auth failed — missing tokens")
-    dcn = local_dcn
+    dcn = DCNClient(API_BASE)
+    nonce = dcn.get_nonce(acct.address)
+    msg   = f"Login nonce: {nonce}"
+    sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
+    dcn.post_auth(acct.address, msg, sig)
+    if not (dcn.access_token and dcn.refresh_token):
+        raise RuntimeError("Auth failed — missing tokens")
 
     from pt_prompts import parse_prompt_directives
 
@@ -249,8 +244,8 @@ def generate_unit_from_template(
     resp = oai.responses.create(
         model="gpt-5",
         input=messages,
-        temperature=1,
-        text={"format": {"type": "json_object"}},
+        text={"verbosity": "low", "format": {"type": "json_object"}},
+        reasoning={ "effort": "low" },
     )
 
     raw_text = (resp.output_text or "").strip()
@@ -303,59 +298,50 @@ def generate_unit_from_template(
                 if fn in ("numerator", "denominator"):
                     d["transformations"] = [{"name":"add","args":[0]}]
 
-        # Register PTs (parallel)
-        def _post_one(feat: dict):
+        # Register PTs
+        for feat in bundle.get("features", []):
             pt_name = feat["pt"]["name"]
             instr = (feat.get("meta") or {}).get("instrument", "")
             res = dcn.post_feature(feat["pt"])
-            return pt_name, instr, res
 
-        with ThreadPoolExecutor(max_workers=min(8, len(bundle.get("features", [])))) as ex:
-            futures = [ex.submit(_post_one, feat) for feat in bundle.get("features", [])]
-            for fut in as_completed(futures):
-                pt_name, instr, res = fut.result()
-                pt_journal.append({
-                    "action": "post_feature",
-                    "unit": label,
-                    "bar_index": local_idx,
-                    "instrument": instr,
-                    "pt_name": pt_name,
-                    "response_summary": {
-                        "id": (res.get("id") if isinstance(res, dict) else None),
-                        "name": (res.get("name") if isinstance(res, dict) else None),
-                        "status": (res.get("status") if isinstance(res, dict) else "ok")
-                    }
-                })
+            # Journal entry (compact)
+            pt_journal.append({
+                "action": "post_feature",
+                "unit": label,
+                "bar_index": local_idx,
+                "instrument": instr,
+                "pt_name": pt_name,
+                "response_summary": {
+                    "id": (res.get("id") if isinstance(res, dict) else None),
+                    "name": (res.get("name") if isinstance(res, dict) else None),
+                    "status": (res.get("status") if isinstance(res, dict) else "ok")
+                }
+            })
 
-        # Execute and collect (parallel)
+        # Execute and collect
         dims_by_name = {feat["pt"]["name"]: feat["pt"]["dimensions"] for feat in bundle.get("features", [])}
         exec_by_feature: Dict[str, Dict[str, List[int]]] = {}
 
-        def _exec_one(rp: dict):
+        for rp in bundle.get("run_plan", []):
             fname = rp["feature_name"]
-            dims  = dims_by_name.get(fname, [])
+            dims = dims_by_name.get(fname, [])
             seeds = {k:int(v) for (k,v) in (rp.get("seeds") or {}).items()}
-            N     = int(rp.get("N", 4))
+            N = int(rp.get("N", 4))
+
             samples = dcn.execute_pt(acct, fname, N, seeds, dims)
             streams = _normalize_exec(samples)
-            return fname, streams, N, seeds
+            exec_by_feature[fname] = streams
 
-        with ThreadPoolExecutor(max_workers=min(8, len(bundle.get("run_plan", [])))) as ex:
-            futures = [ex.submit(_exec_one, rp) for rp in bundle.get("run_plan", [])]
-            for fut in as_completed(futures):
-                fname, streams, N, seeds = fut.result()
-                exec_by_feature[fname] = streams
-                pt_journal.append({
-                    "action": "execute_pt",
-                    "unit": label,
-                    "bar_index": local_idx,
-                    "pt_name": fname,
-                    "N": N,
-                    "seeds": seeds,
-                    "sample_counts": {k: len(v) for k, v in streams.items()}
-                })
-
-
+            # Journal entry for execution (counts only)
+            pt_journal.append({
+                "action": "execute_pt",
+                "unit": label,
+                "bar_index": local_idx,
+                "pt_name": fname,
+                "N": N,
+                "seeds": seeds,
+                "sample_counts": {k: len(v) for k, v in streams.items()}
+            })
 
         # Build per-bar instrument map (to compute actual_end, then offset)
         per_instr_bar = {i: {"pitch": [], "time": [], "duration": [], "velocity": []} for i in ORDERED_INSTRS}

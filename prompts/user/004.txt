@@ -1,0 +1,38 @@
+METER: 3/4
+
+TITLE
+Bar 4 — First presentation of the Bars-4–6 aggregate (pp/ppp, center-weighted voicing).
+
+INSTRUMENTS (EXACT)
+Use these six instruments and no others:
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+Everyone plays; monophony per instrument (no chords).
+
+AGGREGATE (INTERNAL, DO NOT PRINT)
+Before writing PTs, internally construct a NEW aggregate for Bars 4–6 (NOT reused from Bars 1 or 3):
+• Split each instrument’s playable MIDI range into LOW/MID/HIGH bands.
+• Assign disjoint pitch-class sets (pcs) to bands; each band has 3–4 pcs; union across the three bands is EXACTLY the 12 pcs (0..11).
+• ORDER inside each band matters (neighborhood ≈ thirdal/quartal; avoid equal-step cycles like 0–3–6–9).
+• Make this Bars-4–6 aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
+
+BAR-SPECIFIC PCSET + VOICING TARGETS (INTERNAL GUIDE)
+For Bar 4 select ONE bar-pcset (size 5–10) drawn from the union of band pcs; 
+voicing hint = “spread”; register targets by instrument:
+- double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
+- violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
+Avoid unisons between adjacent neighbors; octave doublings okay but sparse.
+
+PT REALIZATION (WHAT TO OUTPUT VIA THE BUNDLE)
+Goal: one sustained tutti chord articulated as three quarter-notes to fit duration constraints.
+
+Per instrument:
+• TIME: seed so first onset is at tick 0; strictly increasing with only `add{4}` and N=3 ⇒ onsets [0,4,8].
+• DURATION: constant 4 so the chord sustains across all three quarters.
+• PITCH: choose a MIDI near the instrument’s tessitura center that belongs to the bar-pcset AND to the band-legal pcs at that register. Use add/sub only; keep the three quarter-notes on the SAME pitch (delta 0 per step).
+• VELOCITY: very soft (pp–ppp): choose a seed ≈ 40–48 and keep constant (small deltas ≤2 allowed).
+• METER: numerator=3, denominator=4 via seeds; transforms for meter are `add 0`.
+
+VALIDATION
+• All MIDI inside hard instrument ranges; all chosen pcs legal for the band at each onset.
+• Exactly three notes per instrument (no extra onsets).
+• No overlaps; time strictly increases; durations ≤ 4; end ≤ tick 12.

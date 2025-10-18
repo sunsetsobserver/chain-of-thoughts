@@ -39,7 +39,6 @@ def _instruments_payload(instruments: Dict[str, Dict[str, tuple]]) -> List[Dict]
         for k, v in instruments.items()
     ]
 
-
 def _render_text_core(
     template_path: pathlib.Path,
     *,
@@ -52,6 +51,9 @@ def _render_text_core(
     Render ANY prompts/user/* file. If it contains $-placeholders, we substitute:
       $BAR_TICKS, $NUM, $DEN, $INSTRUMENTS_JSON
     If not, the text passes through unchanged.
+
+    We also append a strict "HARD RANGES" and "METER" block so the model
+    has exact numeric constraints on every call.
     """
     text = _read_text(template_path)
     ctx = {
@@ -60,8 +62,26 @@ def _render_text_core(
         "DEN": den,
         "INSTRUMENTS_JSON": json.dumps(_instruments_payload(instruments), ensure_ascii=False),
     }
-    # Always safe_substitute: if no placeholders, text is returned unchanged.
-    return Template(text).safe_substitute(ctx)
+    base = Template(text).safe_substitute(ctx)
+
+    # Append explicit numeric ranges so the model can't miss them
+    lines = []
+    lines.append("\nHARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)")
+    for name, meta in instruments.items():
+        lo, hi = meta["range"]
+        lines.append(f"- {name}: [{lo}..{hi}]")
+
+    # Also re-assert meter/ticks so the JSON uses correct seeds
+    lines.append(f"\nMETER & GRID FOR THIS UNIT")
+    lines.append(f"- Ticks per bar: {bar_ticks}")
+    lines.append(f"- Seeds must set numerator={num}, denominator={den} (transforms add 0)")
+
+    # Strong reminder: no clamping; design stays in-range
+    lines.append("\nRANGE REMINDER")
+    lines.append("Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;")
+    lines.append("if a step would leave the range, reflect direction immediately to remain inside. No external clamping.")
+
+    return base + "\n\n" + "\n".join(lines) + "\n"
 
 
 def render_user_prompt_file(

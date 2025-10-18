@@ -86,6 +86,20 @@ PITCH (NON-MONOTONIC, MUSICAL)
 • Include small steps (±1, ±2) and occasional leaps (±5, ±7, ±12) with corrective motion.
 • Net drift per cycle near zero (target in [−2..+2]); keep every sampled pitch strictly inside the instrument HARD RANGE from the user prompt.
 
+RANGE CONTRACT (ABSOLUTE — DO NOT EXCEED)
+• For each instrument, you will receive its HARD MIDI range in the user message.
+• Choose the pitch seed INSIDE that hard range, preferably within tessitura center ±4 semitones.
+• Design your pitch step pattern (add/sub only) so that the worst-case cumulative deviation from the seed NEVER exceeds headroom to the nearest boundary:
+  – Let low, high be the instrument’s hard range bounds; seed s ∈ [low..high].
+  – Let H_up = high − s, H_dn = s − low.
+  – Let Δ_max_prefix be the maximum running sum of your signed steps, and Δ_min_prefix the minimum running sum.
+  – REQUIRE: 0 ≤ Δ_max_prefix ≤ H_up and 0 ≥ Δ_min_prefix ≥ −H_dn.
+• If any planned step would cross a boundary, immediately invert direction with a compensating step of equal or smaller magnitude (a “reflect” correction) so the realized MIDI stays strictly inside range. Do NOT rely on external clamping.
+
+FINAL SELF-CHECK BEFORE OUTPUT
+• Internally simulate (mentally) the N pitches per instrument from your seed and transformations.
+• If ANY simulated pitch would be < low or > high, REVISE that instrument’s seed and/or step pattern. Only then output the JSON bundle.
+
 VELOCITY
 • 0..127. Gentle arc/terraces. Deltas 0..8 only. Length N. (Use add/sub only.)
 
