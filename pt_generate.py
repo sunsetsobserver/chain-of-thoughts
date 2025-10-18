@@ -1,15 +1,15 @@
 """
 pt_generate.py — generate ONE UNIT (one prompt file) using GPT-5 + DCN.
-The prompt may yield a SINGLE bar (legacy) or a SECTION with many bars:
-- If the model returns {"features":..., "run_plan":...}: treat as one bar.
-- If it returns {"bars":[ {...}, {...}, ... ]}: treat as multi-bar section.
+The prompt may yield a SINGLE bar bundle or a SECTION with many bars:
+- If the model returns {"features":..., "run_plan":...}: one bar.
+- If it returns {"bars":[ {...}, {...}, ... ]}: multi-bar section.
 
-We register+execute each bar separately, measure its length, then concatenate
-bars back-to-back inside the unit and return a combined per-instrument payload.
+We also support "context chaining": pass `suite_context` (text summary of prior units)
+as an extra system message so the model composes with awareness of what came before.
 """
 
-import os, json, time, pathlib, importlib.util
-from typing import Dict, List, Any, Optional, Tuple
+import os, json, time, pathlib, importlib.util, statistics
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 from eth_account import Account
 from eth_account.messages import encode_defunct
@@ -19,7 +19,7 @@ from pt_config import (
     API_BASE, ORDERED_INSTRS, INSTRUMENTS, INSTRUMENT_META,
     BAR_TICKS_BY_BAR, meter_from_ticks
 )
-from pt_prompts import load_system_prompt, render_user_prompt_from_file, PROMPTS_DIR
+from pt_prompts import load_system_prompt, render_user_prompt_file, PROMPTS_DIR
 from dcn_client import DCNClient
 
 # ---------- local helpers ----------
@@ -114,27 +114,43 @@ def _validate_bundle(bundle: Dict[str, Any], bar_label: str):
                         if a in (0, 1):
                             raise RuntimeError(f"[{bar_label}] duration mul/div args must be 2..4. Offender in '{pt.get('name')}'.")
 
+# ---------- context summary ----------
+def _summarize_unit(per_instr_unit: Dict[str, Dict[str, List[int]]],
+                    bars_count: int, total_ticks: int, num: int, den: int,
+                    label: str) -> str:
+    lines = [f"UNIT {label}: bars={bars_count}, total_ticks={total_ticks}, meter={num}/{den}"]
+    for instr in ORDERED_INSTRS:
+        s = per_instr_unit[instr]
+        notes = len(s["time"])
+        if notes == 0:
+            lines.append(f"- {instr}: notes=0")
+            continue
+        ps = s["pitch"]; vs = s["velocity"]; ts = s["time"]; ds = s["duration"]
+        pitch_min, pitch_max = min(ps), max(ps)
+        avg_vel = round(sum(vs) / len(vs), 1) if vs else 0
+        last_pitch = ps[-1]; last_on = ts[-1]; last_end = ts[-1] + ds[-1]
+        lines.append(
+            f"- {instr}: notes={notes}, pitch[{pitch_min}..{pitch_max}], "
+            f"avg_vel={avg_vel}, last_pitch={last_pitch}, last_on={last_on}, last_end={last_end}"
+        )
+    return "\n".join(lines)
+
 # ---------- main API ----------
 def generate_unit_from_template(
     template_path: pathlib.Path,
     *,
     label: Optional[str] = None,
-    default_bar_ticks: int = 12,      # default grid if your template doesn't specify
+    default_bar_ticks: int = 12,
     fetch: bool = False,
     acct: Optional[Account] = None,
+    suite_context: Optional[str] = None,   # NEW: rolling context string
 ) -> Dict[str, Any]:
     """
     Generate ONE UNIT (one prompt file). The unit can contain many bars.
 
-    Returns a dict:
-      {
-        "unit_label": <str>,
-        "run_dir": <Path>,
-        "total_ticks": <int>,
-        "schedule": [ {bar_index, start_tick, actual_end_tick, slot_length_tick, ...}, ... ],
-        "per_instr": { instrument: { "time":[...], "pitch":[...], ... } },
-        "payload": <visualiser_payload>
-      }
+    Returns dict with:
+      unit_label, run_dir, total_ticks, schedule, per_instr, payload,
+      rendered_user_text (for context chaining), unit_summary_text (for context chaining)
     """
     label = label or template_path.stem
     run_dir = _make_run_dir(label=label)
@@ -153,42 +169,43 @@ def generate_unit_from_template(
     if not (dcn.access_token and dcn.refresh_token):
         raise RuntimeError("Auth failed — missing tokens")
 
-    # --- Meter/ticks for this unit (uniform per unit; can be extended to per-bar) ---
+    # --- Meter/ticks for this unit (uniform per unit; simple default) ---------
     bar_ticks = int(default_bar_ticks)
     NUM, DEN  = meter_from_ticks(bar_ticks)
 
     # --- Prompts ---------------------------------------------------------------
     system_text = load_system_prompt(fallback="")
-
-    sidecar_vars_path = template_path.with_suffix(template_path.suffix + ".vars.json")
-    extra_vars = None
-    if sidecar_vars_path.exists():
-        try:
-            extra_vars = json.loads(sidecar_vars_path.read_text(encoding="utf-8"))
-        except Exception as e:
-            raise RuntimeError(f"Failed to read sidecar vars: {sidecar_vars_path}: {e}")
-        
-    user_text   = render_user_prompt_from_file(
+    user_text   = render_user_prompt_file(
         template_path,
         bar_ticks=bar_ticks,
         num=NUM, den=DEN,
         instruments=INSTRUMENTS,
-        extra_vars=extra_vars,
     )
 
     _save_text(run_dir / "01_system_prompt.txt", system_text)
-    _save_text(run_dir / "02_user_prompt.rendered.json", user_text)
+    _save_text(run_dir / "02_user_prompt.rendered.txt", user_text)  # now .txt
 
     # --- OpenAI call (Responses + GPT-5) --------------------------------------
     OPENAI_API_KEY = _load_openai_key()
     oai = OpenAI(api_key=OPENAI_API_KEY)
 
+    # Build message list with optional rolling context as an extra system message
+    messages = [
+        {"role": "system", "content": [{"type": "input_text", "text": system_text}]}
+    ]
+    if suite_context:
+        messages.append({
+            "role": "system",
+            "content": [{"type": "input_text", "text": f"CONTEXT OF THE PIECE SO FAR:\n{suite_context}"}]
+        })
+    messages.append({
+        "role": "user",
+        "content": [{"type": "input_text", "text": user_text}]
+    })
+
     resp = oai.responses.create(
         model="gpt-5",
-        input=[
-            {"role": "system", "content": [{"type": "input_text", "text": system_text}]},
-            {"role": "user",   "content": [{"type": "input_text", "text": user_text}]}
-        ],
+        input=messages,
         temperature=1,
         text={"format": {"type": "json_object"}},
     )
@@ -198,13 +215,13 @@ def generate_unit_from_template(
     obj = json.loads(raw_text)
     _save_json(run_dir / "04_llm_output_parsed.json", obj)
 
-    # Determine if SINGLE bar bundle or SECTION with many bars
+    # Determine if SINGLE bar or SECTION
     if "bars" in obj and isinstance(obj["bars"], list):
         bar_bundles = obj["bars"]
     else:
-        bar_bundles = [obj]  # legacy single-bar
+        bar_bundles = [obj]
 
-    # Unit-level accumulators
+    # Unit accumulators
     per_instr_unit = {i: {"pitch": [], "time": [], "duration": [], "velocity": [], "numerator": [], "denominator": []}
                       for i in ORDERED_INSTRS}
     schedule: List[Dict[str, Any]] = []
@@ -217,7 +234,7 @@ def generate_unit_from_template(
         # Validate
         _validate_bundle(bundle, bar_label)
 
-        # Unique renaming + run_plan consistency
+        # Rename features uniquely + fix run_plan refs
         name_map: Dict[str, str] = {}; seen = set()
         for feat in bundle.get("features", []):
             meta = feat.get("meta", {})
@@ -228,12 +245,10 @@ def generate_unit_from_template(
             new   = _make_unique_name(instr, bar, role, seen)
             name_map[old] = new
             feat["pt"]["name"] = new
-
         for rp in bundle.get("run_plan", []):
             old = rp.get("feature_name","")
             if old in name_map:
                 rp["feature_name"] = name_map[old]
-
         bundle["created_feature_names"] = [f["pt"]["name"] for f in bundle.get("features", [])]
 
         # Enforce meter seeds + constant transforms
@@ -247,7 +262,7 @@ def generate_unit_from_template(
                 if fn in ("numerator", "denominator"):
                     d["transformations"] = [{"name":"add","args":[0]}]
 
-        # Save per-bar bundle artifacts
+        # Save per-bar artifacts
         _save_json(run_dir / f"05_{bar_label}_name_map.json", name_map)
         _save_json(run_dir / f"06_{bar_label}_bundle_final_to_post.json", bundle)
         _save_json(run_dir / f"07_{bar_label}_run_plan.json", bundle.get("run_plan", []))
@@ -271,16 +286,9 @@ def generate_unit_from_template(
             streams = _normalize_exec(samples)
             exec_by_feature[fname] = streams
 
-            # route to instrument
-            instr = next((f["meta"].get("instrument") for f in bundle.get("features", []) if f["pt"]["name"] == fname), None)
-            if not instr: 
-                continue
-            # NOTE: do not offset yet; first measure actual_end
-            pass
-
         _save_json(run_dir / f"09_{bar_label}_exec_by_feature.json", exec_by_feature)
 
-        # Build a per-bar instrument map for measuring length and later offsetting
+        # Build per-bar instrument map (to compute actual_end, then offset)
         per_instr_bar = {i: {"pitch": [], "time": [], "duration": [], "velocity": []} for i in ORDERED_INSTRS}
         for fname, streams in exec_by_feature.items():
             instr = next((f["meta"].get("instrument") for f in bundle.get("features", []) if f["pt"]["name"] == fname), None)
@@ -300,7 +308,6 @@ def generate_unit_from_template(
                 if seg_end > actual_end:
                     actual_end = seg_end
 
-        # Slot length is at least one bar grid
         slot_length = max(actual_end, bar_ticks)
         schedule.append({
             "bar_local_index": local_idx,
@@ -314,12 +321,9 @@ def generate_unit_from_template(
         # Append into UNIT with offset
         for instr in ORDERED_INSTRS:
             src = per_instr_bar[instr]
-            # offset times
             per_instr_unit[instr]["time"].extend([t + cumulative for t in src["time"]])
-            # copy other streams
             for key in ("pitch","duration","velocity"):
                 per_instr_unit[instr][key].extend(list(src[key]))
-            # meter arrays same length as *new* time
             L = len(src["time"])
             per_instr_unit[instr]["numerator"].extend([NUM] * L)
             per_instr_unit[instr]["denominator"].extend([DEN] * L)
@@ -333,6 +337,12 @@ def generate_unit_from_template(
     # Persist unit-level payload + schedule + manifest
     _save_json(run_dir / "10_unit_visualiser_payload.json", payload)
     _save_json(run_dir / "11_unit_schedule.json", schedule)
+
+    # Human-readable summary for context chaining
+    unit_summary_text = _summarize_unit(per_instr_unit, bars_count=len(schedule), total_ticks=cumulative,
+                                        num=NUM, den=DEN, label=label)
+    _save_text(run_dir / "12_unit_summary.txt", unit_summary_text)
+
     manifest = {
         "unit_label": label,
         "template": str(template_path),
@@ -340,18 +350,19 @@ def generate_unit_from_template(
         "bars_count": len(schedule),
         "files": {
             "system_prompt": "01_system_prompt.txt",
-            "user_prompt_rendered": "02_user_prompt.rendered.json",
+            "user_prompt_rendered": "02_user_prompt.rendered.txt",
             "llm_raw": "03_llm_output_raw.json",
             "llm_parsed": "04_llm_output_parsed.json",
             "per_bar_bundles": "06_*_bundle_final_to_post.json",
             "per_bar_exec": "09_*_exec_by_feature.json",
             "unit_payload": "10_unit_visualiser_payload.json",
             "unit_schedule": "11_unit_schedule.json",
+            "unit_summary": "12_unit_summary.txt",
         }
     }
     _save_json(run_dir / "manifest.json", manifest)
 
-    # Convenience copy at project root (optional)
+    # Convenience copy at project root
     root_payload = pathlib.Path(__file__).resolve().parent / f"{label}_unit.json"
     with open(root_payload, "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False, indent=2)
@@ -367,4 +378,6 @@ def generate_unit_from_template(
         "schedule": schedule,
         "per_instr": per_instr_unit,
         "payload": payload,
+        "rendered_user_text": user_text,        # expose rendered prompt for context chaining
+        "unit_summary_text": unit_summary_text, # expose computed summary for context chaining
     }
