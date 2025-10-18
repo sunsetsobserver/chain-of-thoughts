@@ -12,18 +12,20 @@ Reuse the SAME Bars-4–6 aggregate from Bars 4–5 (do not print it).
 BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)
 Define two distinct bar-pcsets, A (for 6a) and B (for 6b). Both are subsets of the aggregate’s band pcs; A ≠ B; each size 4–10.
 Register targets:
-- double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
-- violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
+
+double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
+
+violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
 Avoid unisons between neighboring instruments; octave doublings okay but sparse.
 
-PT REALIZATION (APPLIES TO BOTH 2/4 BARS)
-Each bar is **exactly two quarter-notes tutti** at ticks 0 and 4, duration 4 each.
+PT REALIZATION (APPLIES TO BOTH 2/4 BARS) — two quarter-note hits per bar
+Each bar is exactly two notes at ticks 0 and 4, each lasting 4 ticks.
 Per instrument and per bar:
-• TIME: seed so first onset is 0; `add{4}`, N=2 ⇒ [0,4].
-• DURATION: [4,4].
-• PITCH: choose legal MIDIs for A (Bar 6a) and B (Bar 6b) per the instrument’s targeted band; in each bar keep the two quarters on the SAME pitch (pitch delta 0 inside a bar), but **change pitch between 6a and 6b** for contrast (different pc across the two bars).
+• TIME: seed so first onset is 0; use a time step that yields onsets [0, 4] (N=2).
+• DURATION: [4, 4] so each note fills its quarter completely.
+• PITCH: choose legal MIDIs for A (Bar 6a) and B (Bar 6b) per the instrument’s targeted band; within each bar keep the two quarters on the same pitch (no intra-bar pitch change), but change pitch between 6a and 6b for contrast (different pc across the two bars).
 • VELOCITY: Bar 6a = forte (≈ 108–116), Bar 6b = mf (≈ 88–96).
-• METER: numerator=2, denominator=4 via seeds; meter transforms are `add 0`.
+• METER: numerator=2, denominator=4 via seeds; meter transforms are add 0.
 
 STRUCTURE OF THE RETURN
-Return one JSON object with **"bars":[ … ]** containing **two bars**, each realized as the full six-instrument bundle for 2/4. All constraints in the system prompt apply.
+Return one JSON object with "bars":[ … ] containing two bars, each realized as the full six-instrument bundle for 2/4. All constraints in the system prompt apply.

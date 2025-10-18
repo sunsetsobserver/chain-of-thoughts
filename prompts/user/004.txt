@@ -12,27 +12,28 @@ AGGREGATE (INTERNAL, DO NOT PRINT)
 Before writing PTs, internally construct a NEW aggregate for Bars 4–6 (NOT reused from Bars 1 or 3):
 • Split each instrument’s playable MIDI range into LOW/MID/HIGH bands.
 • Assign disjoint pitch-class sets (pcs) to bands; each band has 3–4 pcs; union across the three bands is EXACTLY the 12 pcs (0..11).
-• ORDER inside each band matters (neighborhood ≈ thirdal/quartal; avoid equal-step cycles like 0–3–6–9).
+• ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step cycles like 0–3–6–9).
 • Make this Bars-4–6 aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
 
 BAR-SPECIFIC PCSET + VOICING TARGETS (INTERNAL GUIDE)
-For Bar 4 select ONE bar-pcset (size 5–10) drawn from the union of band pcs; 
+For Bar 4 select ONE bar-pcset (size 5–10) drawn from the union of band pcs;
 voicing hint = “spread”; register targets by instrument:
-- double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
-- violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
+
+double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
+
+violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
 Avoid unisons between adjacent neighbors; octave doublings okay but sparse.
 
-PT REALIZATION (WHAT TO OUTPUT VIA THE BUNDLE)
-Goal: one sustained tutti chord articulated as three quarter-notes to fit duration constraints.
-
+PT REALIZATION (WHAT TO OUTPUT VIA THE BUNDLE) — ONE sustained bar-long note per instrument
 Per instrument:
-• TIME: seed so first onset is at tick 0; strictly increasing with only `add{4}` and N=3 ⇒ onsets [0,4,8].
-• DURATION: constant 4 so the chord sustains across all three quarters.
-• PITCH: choose a MIDI near the instrument’s tessitura center that belongs to the bar-pcset AND to the band-legal pcs at that register. Use add/sub only; keep the three quarter-notes on the SAME pitch (delta 0 per step).
-• VELOCITY: very soft (pp–ppp): choose a seed ≈ 40–48 and keep constant (small deltas ≤2 allowed).
-• METER: numerator=3, denominator=4 via seeds; transforms for meter are `add 0`.
+• TIME: exactly one onset at tick 0 (N=1). Do not create any additional onsets in this bar.
+• DURATION: the single note lasts the full bar → 12 ticks. It must end exactly at tick 12.
+• PITCH: choose one MIDI near tessitura center that belongs to the bar-pcset and is legal for the instrument’s band at that register. Keep this pitch constant for the entire bar (no pitch changes inside the bar).
+• VELOCITY: very soft (pp–ppp): use a seed ≈ 40–48 and keep it constant (tiny deltas ≤2 allowed).
+• METER: numerator=3, denominator=4 via seeds; meter transforms are add 0.
 
 VALIDATION
-• All MIDI inside hard instrument ranges; all chosen pcs legal for the band at each onset.
-• Exactly three notes per instrument (no extra onsets).
-• No overlaps; time strictly increases; durations ≤ 4; end ≤ tick 12.
+• Exactly one note per instrument in this bar (one onset, one bar-long sustain).
+• All MIDI inside hard instrument ranges; chosen pcs legal for the band at that register.
+• No overlaps (monophony per instrument holds trivially with N=1).
+• The bar-long note ends at or before tick 12 (target = exactly 12).

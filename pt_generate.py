@@ -12,7 +12,6 @@ import os, json, time, pathlib, importlib.util, statistics
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from eth_account import Account
-from eth_account.messages import encode_defunct
 from openai import OpenAI
 
 from pt_config import (
@@ -173,6 +172,7 @@ def generate_unit_from_template(
     acct: Optional[Account] = None,
     suite_context: Optional[str] = None,   # rolling context string
     session_dir: Optional[pathlib.Path] = None,  # NEW: shared suite folder; this function writes nothing
+    dcn: Optional[DCNClient] = None,       # <<< ADD THIS
 ) -> Dict[str, Any]:
     """
     Generate ONE UNIT (one prompt file). The unit can contain many bars.
