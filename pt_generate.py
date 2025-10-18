@@ -14,6 +14,7 @@ from datetime import datetime
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from openai import OpenAI
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 from pt_config import (
@@ -302,50 +303,59 @@ def generate_unit_from_template(
                 if fn in ("numerator", "denominator"):
                     d["transformations"] = [{"name":"add","args":[0]}]
 
-        # Register PTs
-        for feat in bundle.get("features", []):
+        # Register PTs (parallel)
+        def _post_one(feat: dict):
             pt_name = feat["pt"]["name"]
             instr = (feat.get("meta") or {}).get("instrument", "")
             res = dcn.post_feature(feat["pt"])
+            return pt_name, instr, res
 
-            # Journal entry (compact)
-            pt_journal.append({
-                "action": "post_feature",
-                "unit": label,
-                "bar_index": local_idx,
-                "instrument": instr,
-                "pt_name": pt_name,
-                "response_summary": {
-                    "id": (res.get("id") if isinstance(res, dict) else None),
-                    "name": (res.get("name") if isinstance(res, dict) else None),
-                    "status": (res.get("status") if isinstance(res, dict) else "ok")
-                }
-            })
+        with ThreadPoolExecutor(max_workers=min(8, len(bundle.get("features", [])))) as ex:
+            futures = [ex.submit(_post_one, feat) for feat in bundle.get("features", [])]
+            for fut in as_completed(futures):
+                pt_name, instr, res = fut.result()
+                pt_journal.append({
+                    "action": "post_feature",
+                    "unit": label,
+                    "bar_index": local_idx,
+                    "instrument": instr,
+                    "pt_name": pt_name,
+                    "response_summary": {
+                        "id": (res.get("id") if isinstance(res, dict) else None),
+                        "name": (res.get("name") if isinstance(res, dict) else None),
+                        "status": (res.get("status") if isinstance(res, dict) else "ok")
+                    }
+                })
 
-        # Execute and collect
+        # Execute and collect (parallel)
         dims_by_name = {feat["pt"]["name"]: feat["pt"]["dimensions"] for feat in bundle.get("features", [])}
         exec_by_feature: Dict[str, Dict[str, List[int]]] = {}
 
-        for rp in bundle.get("run_plan", []):
+        def _exec_one(rp: dict):
             fname = rp["feature_name"]
-            dims = dims_by_name.get(fname, [])
+            dims  = dims_by_name.get(fname, [])
             seeds = {k:int(v) for (k,v) in (rp.get("seeds") or {}).items()}
-            N = int(rp.get("N", 4))
-
+            N     = int(rp.get("N", 4))
             samples = dcn.execute_pt(acct, fname, N, seeds, dims)
             streams = _normalize_exec(samples)
-            exec_by_feature[fname] = streams
+            return fname, streams, N, seeds
 
-            # Journal entry for execution (counts only)
-            pt_journal.append({
-                "action": "execute_pt",
-                "unit": label,
-                "bar_index": local_idx,
-                "pt_name": fname,
-                "N": N,
-                "seeds": seeds,
-                "sample_counts": {k: len(v) for k, v in streams.items()}
-            })
+        with ThreadPoolExecutor(max_workers=min(8, len(bundle.get("run_plan", [])))) as ex:
+            futures = [ex.submit(_exec_one, rp) for rp in bundle.get("run_plan", [])]
+            for fut in as_completed(futures):
+                fname, streams, N, seeds = fut.result()
+                exec_by_feature[fname] = streams
+                pt_journal.append({
+                    "action": "execute_pt",
+                    "unit": label,
+                    "bar_index": local_idx,
+                    "pt_name": fname,
+                    "N": N,
+                    "seeds": seeds,
+                    "sample_counts": {k: len(v) for k, v in streams.items()}
+                })
+
+
 
         # Build per-bar instrument map (to compute actual_end, then offset)
         per_instr_bar = {i: {"pitch": [], "time": [], "duration": [], "velocity": []} for i in ORDERED_INSTRS}
