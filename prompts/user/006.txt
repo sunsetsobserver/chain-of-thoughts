@@ -8,6 +8,7 @@ INSTRUMENTS (EXACT)
 
 AGGREGATE REUSE
 Reuse the SAME Bars-4–6 aggregate from Bars 4–5 (do not print it).
+Reuse the exact aggregate_signature from Bar 4 (identical id, bounds, pcs). Do not redefine or modify it.
 
 BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)
 Define two distinct bar-pcsets, A (for 6a) and B (for 6b). Both are subsets of the aggregate’s band pcs; A ≠ B; each size 4–10.

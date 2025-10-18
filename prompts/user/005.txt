@@ -8,6 +8,7 @@ INSTRUMENTS (EXACT)
 
 AGGREGATE REUSE
 Reuse the SAME Bars-4–6 aggregate you internally created in Bar 4 (do not print it).
+Reuse the exact aggregate_signature you output in Bar 4. Copy the same object (same id, same band bounds, same pcs). Do not alter it.
 
 BAR-SPECIFIC PCSET + VOICING (INTERNAL GUIDE)
 Pick a DIFFERENT bar-pcset than Bar 4 (size 5–10), voicing hint = “cluster-leaning in mids”:

@@ -240,8 +240,8 @@ def generate_unit_from_template(
     resp = oai.responses.create(
         model="gpt-5",
         input=messages,
-        text={"verbosity": "low", "format": {"type": "json_object"}},
-        reasoning={ "effort": "low" },
+        text={"format": {"type": "json_object"}},
+        reasoning={ "effort": "high" },
     )
 
     raw_text = (resp.output_text or "").strip()
