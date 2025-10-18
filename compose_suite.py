@@ -21,6 +21,7 @@ from dcn_client import DCNClient
 from pt_config import API_BASE
 import os
 
+from tqdm import tqdm
 
 def _discover_templates() -> List[pathlib.Path]:
     user_dir = PROMPTS_DIR / "user"
@@ -89,7 +90,8 @@ def main():
     suite_pt_journal: List[Dict[str, Any]] = []  # merged journal across units
     prompts_log_lines: List[str] = []            # optional: keep what we asked
 
-    for path in templates:
+    print("\nGenerating units...\n")
+    for path in tqdm(templates, desc="Generating", unit="unit", ncols=80):
         unit = generate_unit_from_template(
             path,
             label=path.stem,
@@ -108,8 +110,8 @@ def main():
         prompts_log_lines.append(f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n")
         prompts_log_lines.append(f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n")
         suite_context = (suite_context + "\n\n" +
-                         f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n\n" +
-                         f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n").strip()
+                        f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n\n" +
+                        f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n").strip()
 
     # Concatenate units
     suite = _concat_units(units)
