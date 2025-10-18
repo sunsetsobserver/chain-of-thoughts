@@ -12,6 +12,7 @@ from string import Template
 from typing import Dict, List
 import json
 import pathlib
+import re
 
 # Anchors to file locations relative to this file's folder.
 BASE_DIR = pathlib.Path(__file__).resolve().parent
@@ -98,3 +99,21 @@ def render_user_prompt_from_file(
         den=den,
         instruments=instruments,
     )
+
+def parse_prompt_directives(path: pathlib.Path) -> dict:
+    """
+    Optional inline directives in the prompt text:
+      METER: <NUM>/<DEN>        (e.g., "METER: 5/8")
+      BAR_TICKS: <int>          (e.g., "BAR_TICKS: 10")
+    Returns a dict like {"num": 5, "den": 8, "bar_ticks": 10} for whatever was found.
+    """
+    text = _read_text(path)
+    out = {}
+    m = re.search(r"(?im)^\s*meter\s*:\s*(\d+)\s*/\s*(\d+)\s*$", text)
+    if m:
+        out["num"] = int(m.group(1))
+        out["den"] = int(m.group(2))
+    t = re.search(r"(?im)^\s*bar_ticks\s*:\s*(\d+)\s*$", text)
+    if t:
+        out["bar_ticks"] = int(t.group(1))
+    return out

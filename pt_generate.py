@@ -169,9 +169,20 @@ def generate_unit_from_template(
     if not (dcn.access_token and dcn.refresh_token):
         raise RuntimeError("Auth failed — missing tokens")
 
-    # --- Meter/ticks for this unit (uniform per unit; simple default) ---------
-    bar_ticks = int(default_bar_ticks)
-    NUM, DEN  = meter_from_ticks(bar_ticks)
+    from pt_prompts import parse_prompt_directives
+
+    # --- Meter/ticks for this unit (can be overridden by prompt directives) ---
+    overrides = parse_prompt_directives(template_path)
+    if "bar_ticks" in overrides:
+        bar_ticks = int(overrides["bar_ticks"])
+        NUM, DEN = meter_from_ticks(bar_ticks)
+    elif "num" in overrides and "den" in overrides:
+        NUM = int(overrides["num"]); DEN = int(overrides["den"])
+        # 1 tick = 1/16 note → ticks_per_bar = 16 * (NUM / DEN)
+        bar_ticks = int((16 * NUM) // DEN)
+    else:
+        bar_ticks = int(default_bar_ticks)
+        NUM, DEN  = meter_from_ticks(bar_ticks)
 
     # --- Prompts ---------------------------------------------------------------
     system_text = load_system_prompt(fallback="")

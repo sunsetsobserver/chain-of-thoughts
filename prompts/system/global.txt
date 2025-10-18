@@ -90,8 +90,7 @@ VELOCITY
 • 0..127. Gentle arc/terraces. Deltas 0..8 only. Length N. (Use add/sub only.)
 
 METER (CONSTANT 3/4)
-• "numerator" and "denominator" each have exactly [{"name":"add","args":[0]}].
-• run_plan seeds will set numerator=3 and denominator=4.
+• "numerator" and "denominator" start values provided in seeds and each have exactly [{"name":"add","args":[0]}].
 
 -------------------------
 BUNDLE SCHEMA (OUTPUT THIS)
@@ -124,8 +123,8 @@ BUNDLE SCHEMA (OUTPUT THIS)
         "duration":<1 or 2>,
         "pitch":<seed inside instrument hard range>,
         "velocity":<mid>,
-        "numerator":3,
-        "denominator":4
+        "numerator":<from seeds for the unit’s meter>,
+        "denominator":<from seeds for the unit’s meter>
       }
     }
     // total 6
@@ -138,5 +137,5 @@ VALIDATION (YOU MUST SATISFY)
 • time strictly increases with adds in {1,2,3,4}; no zeros.
 • duration values stay in {1,2,3,4}; for i<N−1, duration[i] ≤ time[i+1] − time[i]; and time[N−1]+duration[N−1] ≤ 12.
 • Pitches in hard range; non-monotonic; both add & subtract present; ≤3 same-direction steps; no mul/div on pitch.
-• All streams length N; meter constant via seeds (3/4).
+• All streams length N; meter constant per bar via seeds (numerator/denominator as constants with add 0).
 • No extra fields; no prose.
