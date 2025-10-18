@@ -15,6 +15,12 @@ from pt_config import ORDERED_INSTRS, INSTRUMENT_META
 from pt_prompts import PROMPTS_DIR
 from pt_generate import generate_unit_from_template
 
+import os
+from eth_account import Account
+from eth_account.messages import encode_defunct
+from dcn_client import DCNClient
+from pt_config import API_BASE
+
 def _discover_templates() -> List[pathlib.Path]:
     user_dir = PROMPTS_DIR / "user"
     if not user_dir.exists():
@@ -63,6 +69,18 @@ def main():
     for p in templates:
         print("  •", p.name)
 
+    # --- Shared account + DCN session (reuse across all units) ---
+    priv = os.getenv("PRIVATE_KEY")
+    acct = Account.from_key(priv) if priv else Account.create("TEMPKEY for demo")
+
+    client = DCNClient(API_BASE)
+    nonce = client.get_nonce(acct.address)
+    msg   = f"Login nonce: {nonce}"
+    sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
+    client.post_auth(acct.address, msg, sig)
+    if not (client.access_token and client.refresh_token):
+        raise SystemExit("Auth failed — missing tokens")
+
     # Create ONE suite folder upfront
     runs_root = pathlib.Path(__file__).resolve().parent / "runs"
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -80,8 +98,10 @@ def main():
             label=path.stem,
             fetch=False,
             suite_context=suite_context,
-            session_dir=suite_dir,   # shared folder (function does not write; just for clarity)
+            acct=acct,
+            dcn=client,
         )
+
         units.append(unit)
 
         # Merge PT journal

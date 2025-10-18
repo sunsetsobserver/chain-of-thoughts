@@ -15,6 +15,7 @@ from eth_account import Account
 from eth_account.messages import encode_defunct
 from openai import OpenAI
 
+
 from pt_config import (
     API_BASE, ORDERED_INSTRS, INSTRUMENTS, INSTRUMENT_META,
     BAR_TICKS_BY_BAR, meter_from_ticks
@@ -47,6 +48,34 @@ def _normalize_exec(samples_list: List[dict]) -> Dict[str, List[int]]:
         st.setdefault(tail, [])
         st[tail] = list(s["data"])
     return st
+
+def _cap_to_next_onset_and_bar(times: List[int], durations: List[int], bar_ticks: int) -> tuple[list[int], list[int]]:
+    """
+    Make durations safe:
+      - For each note i, cap to next onset (or bar end for the last note)
+      - Cap to bar end (<= bar_ticks)
+      - Drop zero/negative-length notes after capping
+    Assumes times are strictly increasing (DCN/PT ensures this after validation).
+    """
+    if not times:
+        return [], []
+    T = list(times)
+    D = list(durations)
+    n = len(T)
+    for i in range(n):
+        t = T[i]
+        nxt = T[i + 1] if i + 1 < n else bar_ticks
+        # duration cannot exceed the remaining space until the next onset / bar end
+        max_ok = max(0, nxt - t)
+        if D[i] > max_ok:
+            D[i] = max_ok
+        # also ensure nothing crosses the bar boundary
+        if t + D[i] > bar_ticks:
+            D[i] = max(0, bar_ticks - t)
+    # prune zero or negative durations and any notes starting at/after bar end
+    keep_idx = [i for i in range(n) if D[i] > 0 and T[i] < bar_ticks]
+    return [T[i] for i in keep_idx], [D[i] for i in keep_idx]
+
 
 def _instrument_pack(instrument: str, streams: Dict[str, List[int]]) -> List[dict]:
     packed: List[dict] = []
@@ -143,8 +172,8 @@ def generate_unit_from_template(
     default_bar_ticks: int = 12,
     fetch: bool = False,
     acct: Optional[Account] = None,
-    suite_context: Optional[str] = None,   # rolling context string
-    session_dir: Optional[pathlib.Path] = None,  # NEW: shared suite folder; this function writes nothing
+    suite_context: Optional[str] = None,  
+    dcn: Optional["DCNClient"] = None, 
 ) -> Dict[str, Any]:
     """
     Generate ONE UNIT (one prompt file). The unit can contain many bars.
@@ -164,13 +193,16 @@ def generate_unit_from_template(
         acct = Account.from_key(priv) if priv else Account.create("TEMPKEY for demo")
     print(f"[{label}] Using account: {acct.address}")
 
-    dcn = DCNClient(API_BASE)
-    nonce = dcn.get_nonce(acct.address)
-    msg   = f"Login nonce: {nonce}"
-    sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
-    dcn.post_auth(acct.address, msg, sig)
-    if not (dcn.access_token and dcn.refresh_token):
-        raise RuntimeError("Auth failed — missing tokens")
+    # Reuse DCN client if provided; otherwise create and auth once here
+    local_dcn = dcn or DCNClient(API_BASE)
+    if not (local_dcn.access_token and local_dcn.refresh_token):
+        nonce = local_dcn.get_nonce(acct.address)
+        msg   = f"Login nonce: {nonce}"
+        sig   = acct.sign_message(encode_defunct(text=msg)).signature.hex()
+        local_dcn.post_auth(acct.address, msg, sig)
+        if not (local_dcn.access_token and local_dcn.refresh_token):
+            raise RuntimeError("Auth failed — missing tokens")
+    dcn = local_dcn
 
     from pt_prompts import parse_prompt_directives
 
@@ -324,18 +356,31 @@ def generate_unit_from_template(
             for key in ("pitch","time","duration","velocity"):
                 if key in streams:
                     per_instr_bar[instr][key].extend(list(streams[key]))
+        
+        # --- NEW: cap durations to next onset and to the bar boundary ---
+        for instr in ORDERED_INSTRS:
+            t = per_instr_bar[instr]["time"]
+            d = per_instr_bar[instr]["duration"]
+            if t and d:
+                # times should already be strictly increasing; if uncertain, you can sort by time:
+                # pairs = sorted(zip(t, d), key=lambda x: x[0]); t = [p[0] for p in pairs]; d = [p[1] for p in pairs]
+                t_cap, d_cap = _cap_to_next_onset_and_bar(t, d, bar_ticks)
+                per_instr_bar[instr]["time"] = t_cap
+                per_instr_bar[instr]["duration"] = d_cap
 
-        # Measure bar's actual end
+        # Measure actual end AFTER capping
         actual_end = 0
         for instr in ORDERED_INSTRS:
             times = per_instr_bar[instr]["time"]
             durs  = per_instr_bar[instr]["duration"]
-            if times:
+            if times and durs:
                 seg_end = max(t + d for t, d in zip(times, durs))
                 if seg_end > actual_end:
                     actual_end = seg_end
 
-        slot_length = max(actual_end, bar_ticks)
+        # Force fixed bar slot; material is guaranteed to fit now
+        slot_length = bar_ticks
+
         schedule.append({
             "bar_local_index": local_idx,
             "start_tick": cumulative,

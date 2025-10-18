@@ -1,0 +1,46 @@
+METER: 3/4
+
+TITLE
+Bar 1 — Register-partitioned, non-isomorphic scale; airy monophony with internal crescendo.
+
+INSTRUMENTS (EXACT)
+Use these six instruments and no others:
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+Every instrument must appear in this bar (one monophonic line each; no chords).
+
+GOAL (MUSICAL TECHNIQUE TO APPLY)
+Compose the bar by first **designing a register-partitioned, non-isomorphic scale** and then realizing it *through the PTs* (pitch/time/duration/velocity). Do **not** output the scale as data; instead, embed its effect in your pitch transformations + seeds.
+
+1) REGISTER PARTITION (per instrument)
+   • Split each instrument’s hard MIDI range into three contiguous bands: LOW / MID / HIGH (bottom/middle/top third of its range).
+   • For the *piece as a whole*, assign **three disjoint pitch-class sets** (pcs) — one set per band — so that:
+       – LOW_pcs, MID_pcs, HIGH_pcs are pairwise disjoint,
+       – their union is **all 12 pcs** (0..11),
+       – each band has **exactly 4 pcs**,
+       – internal adjacency within each band suggests **thirdal/quartal neighborhoods** (prefer step relations ≈ ±3 or ±4 semitones); avoid trivial uniform cycles.
+   • **Non-isomorphism:** the playable pcs change when a note crosses a band boundary. (The same pitch letter in a higher register is *not* guaranteed the same pc availability as below.)
+
+2) MELODIC REALIZATION (how to use PTs to stay inside the band pcs)
+   • PITCH dimension: use only add/sub integers to construct a short **degree-step pattern** relative to the **ordered pcs of the current band** at each onset.
+       – Choose a repeating pattern using small steps (±1, ±2 degrees within the band’s ordered pcs) with occasional leaps (±5, ±7, ±12 semitones) immediately followed by corrective stepwise motion that lands back on a **band-legal pc**.
+       – If a planned semitone add/sub would land off the band set, apply a one-time ±1 adjustment at that step so the resulting MIDI pitch **snaps to the nearest legal pc** for the band before continuing the planned pattern.
+       – Avoid >3 same-direction moves in a row; net drift per line per bar in [−2..+2].
+       – Choose the **pitch seed** near each instrument’s tessitura center so that the opening note is already a **band-legal pc**.
+   • TIME dimension: strictly increasing onsets using only add {1,2,3,4}; no zeros; no mul/div; no chords.
+   • DURATION dimension: values in {1,2,3,4} and **MAX(duration) ≤ s_min** where s_min is that instrument’s smallest time step, ensuring monophony and no overlaps.
+   • VELOCITY dimension: smooth crescendo across the bar **≈ 50 → 80**, with per-step deltas ≤ 8. (Shape may be slightly asymmetrical but must rise overall.)
+
+3) TEXTURE, DENSITY, ROLES (match the original Bar-1 character)
+   • Airy, interleaved entries; avoid vertical stacking: ≤ ~1/3 of onsets may coincide across instruments.
+   • Target onsets per instrument (soft bounds; stay close):
+       – alto_flute:      6–10 (MID↔HIGH bands)
+       – violin:          5–9  (MID↔HIGH)
+       – bass_clarinet:   3–6  (LOW↔MID)
+       – trumpet:         2–5  (MID↔HIGH), sparser color
+       – cello:           2–5  (LOW↔MID)
+       – double_bass:     2–4  (LOW), foundational, the sparsest
+   • Keep every realized MIDI pitch **inside the instrument’s hard range** and inside the **band-legal pcs** at its onset register.
+   • Vertical color at chance alignments favors interval-classes {1,2,5,6}; avoid triadic pull and consecutive perfect-fifth alignments; no functional cadences.
+
+FORM FOR THIS PROMPT
+Compose **exactly one bar** (12 ticks at 1/16 grid). All notes must end ≤ tick 12. Realize the above purely through your PT design (transformations + seeds). Return a single bundle with exactly six features (one per listed instrument) and a run_plan that produces the lines as specified.
