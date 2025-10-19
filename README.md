@@ -2,47 +2,46 @@
 
 _write text → get music_
 
-This repo lets you **compose multi-instrument music (as MIDI) by writing a chain of natural-language prompts describing the music as plain `.txt` files**.
-You drop prompt files into `prompts/user/`. The system:
+This repo lets you **compose multi-instrument music (as MIDI) by writing a chain of plain-text prompts**.
+Drop `.txt` prompts into `prompts/user/`. The system:
 
 1. asks **GPT-5** (OpenAI **Responses API**) to emit a strict, machine-readable music bundle,
 2. registers those instructions on the **Decentralised Creative Network (DCN)** as **Performative Transactions (PTs)**,
 3. **executes** the PTs to get note arrays,
-4. measures how long the generated material is,
-5. **schedules & stitches** everything into one final piece: `composition_suite.json`.
+4. **stitches** all units into one piece (`composition_suite.json`), and
+5. (optionally) **exports a .mid** using a small Node tool.
 
-> You compose by writing text; the pipeline handles schema, DCN execution, measurement, scheduling, and stitching.
+> You compose in text; the pipeline handles schema, DCN execution, validation, scheduling, and stitching.
 
 ---
 
 ## What are DCN and PTs? (plain English)
 
-- **DCN (Decentralised Creative Network)** is an execution network for creative **procedures** — e.g., “generate a note stream,” “transform a parameter timeline,” “schedule events.”
-- A **Performative Transaction (PT)** is one such small, typed procedure with dimensions like `time`, `duration`, `pitch`, `velocity`. Each dimension carries a list of integer ops (`add`, `subtract`, `mul`, `div`).
-- When you **execute** a PT with seeds and a length `N`, DCN returns concrete arrays (onsets, durations, pitches, velocities).
-- Here, GPT-5 **writes PT bundles** (one per instrument per bar). We register them on DCN and **execute** to obtain the actual data that we stitch into music.
+- **DCN (Decentralised Creative Network)** executes creative **procedures** (PTs) like “generate a note stream.”
+- A **Performative Transaction (PT)** has dimensions (`time`, `duration`, `pitch`, `velocity`, `numerator`, `denominator`), each a list of integer ops (`add`, `subtract`, `mul`, `div`).
+- When you **execute** a PT with seeds and length `N`, DCN returns concrete arrays.
+- Here, GPT-5 **writes PT bundles** (one per instrument per bar). We post them to DCN and execute to obtain the actual notes.
 
-**TL;DR:** You describe the music; GPT-5 writes the **recipe**; DCN **cooks** it. You get the MIDI file back.
+**TL;DR:** You describe the music → GPT-5 writes the **recipe** → DCN **cooks** it → you get JSON (and optionally MIDI).
 
 ---
 
 ## Requirements
 
-- Python 3.10+
-- Install deps:
+- **Python 3.10+**
+- Python deps:
 
   ```bash
   pip install -r requirements.txt
   ```
 
-- **OpenAI access** to GPT-5.
-- **DCN SDK** importable as `dcn` (the pipeline executes PTs via the SDK; install it per DCN docs).
+- **OpenAI** access to GPT-5
+- **DCN SDK** importable as `dcn` (install per DCN docs)
+- _(Optional, for MIDI export)_ **Node 18+** with `jzz` and `jzz-midi-smf` (installed via `npm install` in this repo)
 
 ---
 
 ## Configure your keys
-
-### OpenAI key via `secrets.py`
 
 Create **`secrets.py`** in the project root:
 
@@ -53,98 +52,139 @@ OPENAI_API_KEY = "sk-..."   # your OpenAI key
 
 (Alternatively, set `OPENAI_API_KEY` in your environment.)
 
+For DCN auth, the pipeline will use `PRIVATE_KEY` from the environment if present; otherwise it creates a temporary account for the session.
+
 ---
 
 ## Project layout
 
 ```
 compose_suite.py      # discovers prompts, builds each unit, stitches final piece
-pt_generate.py        # generates ONE unit (one prompt → 1..N bars) and saves artifacts
-pt_prompts.py         # loads system prompt and reads .txt prompt files
-pt_config.py          # instruments, display meta, default bar grid/meter helpers
+pt_generate.py        # generates ONE unit (one prompt → 1..N bars), returns data to compose_suite
+pt_prompts.py         # loads system prompt and reads .txt prompt files; parses METER from text
+pt_config.py          # instruments meta & helpers (ranges, display info)
 dcn_client.py         # DCN HTTP + SDK wrapper: auth, post_feature, execute_pt
+tools/pt2midi.js      # (Node) PT-JSON → .mid writer using jzz + jzz-midi-smf
 
 prompts/
-  system/global.txt   # global system prompt (rules/specs)
-  user/*.txt          # your prompts live here (filename order = suite order)
+  system/global.txt   # global system prompt (composer persona + hard rules)
+  user/*.txt          # your prompts (filename order = suite order)
 
-runs/                 # auto-created with rich per-run artifacts
-composition_suite.json  # convenience copy of the latest stitched piece (if enabled)
+runs/                 # auto-created per full suite run with all artifacts
+```
+
+---
+
+## Writing prompts (how to control meter)
+
+**Meter is specified in your prompt text** via a simple directive at the top:
+
+```
+METER: 3/4
+```
+
+Supported mappings on a 1/16 grid (ticks per bar):
+
+- `3/4` → **12** ticks
+- `4/4` → **16** ticks
+- `2/4` → **8** ticks
+- `1/4` → **4** ticks
+
+If you omit `METER:`, the unit defaults to **3/4 (12 ticks)**.
+Advanced: you can also force `BAR_TICKS: <int>`. The system appends exact hard MIDI ranges and a meter reminder to each user prompt automatically.
+
+**Ordering:** files in `prompts/user/` are processed lexicographically; use numeric prefixes (e.g., `001_intro.txt`, `010_clouds.txt`, …).
+
+**Example prompt**
+
+```text
+METER: 3/4
+
+TITLE
+Airy chorale — six parts, soft dynamics.
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+
+CONSTRAINTS
+Monophony per instrument; time uses only add {1,2,3,4}; durations fit gaps; pitch add/sub only; no overlaps.
+
+GOAL
+A luminous, stepwise texture with occasional small leaps and corrective motion. Close but non-triadic vertical colors.
 ```
 
 ---
 
 ## Quick start
 
-1. **Write prompts** (plain text) in `prompts/user/`.
-   Name files to control order, e.g., `001_intro.txt`, `010_chorale.txt`, `020_bridge.txt`.
+1. **Write prompts** in `prompts/user/` (include `METER: ...` in the text when you need a meter change).
+2. **Generate the suite:**
 
-   Example `prompts/user/010_chorale.txt`:
+```bash
+python compose_suite.py
+```
 
-   ```
-   Compose a luminous, airy chorale for six instruments that spans about ten bars.
-   Keep gentle dynamics, occasional stepwise motion
-   with rare leaps and corrective motion. Maintain 3/4 flow and avoid overlaps.
-   Conclude with a soft cadence that feels open rather than final.
-   ```
+**Outputs (per run) in `runs/<timestamp>_suite/`:**
 
-   > You can ask for “one bar” or “ten bars” or “a short section”; the system will handle the length of the generated fragment automatically.
+- `composition_suite.json` — the stitched, multi-track PT output (for visualisers/MIDI export)
+- `schedule.json` — unit start offsets & meters
+- `pt_journal.json` — compact log of posted/executed PTs
+- `prompts_and_summaries.txt` — the rendered prompts and computed summaries
+- `manifest.json` — filenames & totals
 
-2. **Generate**:
+_(Optionally mirrored elsewhere by your own scripts.)_
 
-   ```bash
-   python compose_suite.py
-   ```
+---
 
-3. **Outputs**
+## MIDI export (optional Node step)
 
-   - Final stitched piece (tracks for your visualiser/renderer):
+This repo includes a tiny Node tool that converts the stitched PT JSON to a Standard MIDI File.
 
-     - `runs/<timestamp>_suite/composition_suite.json`
-     - (optionally also mirrored at project root if enabled in config)
+Install once:
 
-   - Suite schedule (start offsets for each unit):
+```bash
+npm install
+```
 
-     - `runs/<timestamp>_suite/schedule.json`
+After you run `python compose_suite.py`, export MIDI:
 
-   - Per-unit folders in `runs/` with the prompts used, raw model JSON, posted bundles, DCN receipts, executed streams, unit payload, unit schedule, and a compact **unit summary**.
+```bash
+node tools/pt2midi.js runs/<ts>_suite/composition_suite.json runs/<ts>_suite/composition_suite.mid
+```
 
-### Optional: MIDI export (Node)
+- Uses the per-instrument **GM programs** and **bank** info from `instrument_meta` when present; otherwise falls back to sensible defaults.
+- Embeds **time signatures** from the per-note `numerator`/`denominator` arrays.
+- One MIDI track per instrument; non-drum channels (skips ch.10).
 
-To emit a `.mid` automatically after generation:
-
-1. `npm install` (installs `jzz` and `jzz-midi-smf`)
-2. Run the suite: `python compose_suite.py`
-
-If Node or these deps are missing, the pipeline still completes; only the MIDI step is skipped.
-You can export MIDI any time later via:
-`node tools/pt2midi.js runs/<ts>_suite/composition_suite.json runs/<ts>_suite/composition_suite.mid`
+> If Node or those deps aren’t installed, the Python pipeline still runs—only the MIDI step is skipped.
 
 ---
 
 ## How continuity across prompts works
 
-The system maintains a rolling **suite context**:
-
-- After each unit is generated, we save a short **summary** (per-instrument note count, pitch range, last pitch/onset, average velocity, etc.) and the **prompt text** used.
-- For the **next** unit, we pass that accumulated context as an extra **system** message (“CONTEXT OF THE PIECE SO FAR”), so GPT-5 composes with awareness of what has already happened.
-
-This keeps long pieces coherent without you copy-pasting previous prompts.
+After each unit, the system produces a concise **summary** (note counts, pitch ranges, last pitch/onset, etc.). That rolling summary plus the text of earlier prompts is passed to the next call as a **system context**, so later sections compose with awareness of what has happened.
 
 ---
 
-## Bar grid & meter (defaults)
+## Validation & guardrails (what the generator enforces)
 
-- By default, the grid is **12 ticks** per bar (i.e., 3/4) and the pipeline seeds meter accordingly for execution.
-- If you need a different meter/grid, change the defaults in code (`pt_generate.py` and/or `pt_config.py`). Per-bar meters can be added later if you want that flexibility.
+- **Allowed ops:** `add`, `subtract`, `mul`, `div` (exact spelling).
+- **Time:** strictly increasing, `add {1,2,3,4}` only (no zeros, no chords).
+- **Duration:** live values must be in `{1,2,3,4}`; automatically **capped to next onset and bar end** for safety.
+- **Pitch:** `add`/`subtract` only; kept inside **hard MIDI ranges** (per instrument).
+- **Meter:** seeds set from your `METER:` directive; meter dims use constant `add 0`.
+- **Monophony:** enforced via time/duration rules and capping.
+
+If a bundle violates constraints, the run raises with a clear error pointing to the offending feature/dimension.
 
 ---
 
 ## Troubleshooting
 
-- **`ModuleNotFoundError: dcn`** → Install the DCN SDK so `import dcn` works.
-- **Model output isn’t JSON** → The system prompt enforces JSON, but if a prompt ever drifts, tighten your text (e.g., “return the bundle(s) only”).
-- **Unexpected length/overlap** → The validator enforces allowed ops, strictly increasing onsets, and safe durations. If the model violates constraints, the run will raise with a helpful error near the offending feature/dimension.
+- `ModuleNotFoundError: dcn` → Install the DCN SDK so `import dcn` works.
+- Model output isn’t valid JSON → Tighten the prompt (“return the bundle(s) only; one JSON object; no prose”).
+- Notes overlap or spill → The runner caps durations to the next onset/bar end, but keep your durations ≤ smallest time step to remain musical.
+- MIDI export fails → Ensure Node 18+ and `npm install` were executed; check the input path to `composition_suite.json`.
 
 ---
 
