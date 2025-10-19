@@ -1,34 +1,33 @@
 METER: 4/4
 
 TITLE
-Bar 5 — Bars-4–6 aggregate continued; new bar-pcset; two half-bar pillars (pp→p).
+Bar 5 — Bars-4–6 aggregate continued; one whole-bar chord (no re-articulation).
 
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
 
 AGGREGATE REUSE
-Reuse the SAME Bars-4–6 aggregate you internally created in Bar 4 (do not print it).
-Reuse the exact aggregate_signature you output in Bar 4. Copy the same object (same id, same band bounds, same pcs). Do not alter it.
+Reuse the SAME Bars-4–6 aggregate from Bar 4. Reuse the exact aggregate_signature (same id, bounds, pcs).
 
-BAR-SPECIFIC PCSET + VOICING (INTERNAL GUIDE)
-Pick a DIFFERENT bar-pcset than Bar 4 (size 5–10), voicing hint = “cluster-leaning in mids”:
+BAR-PCSET & VOICING (INTERNAL GUIDE)
+Choose a bar-pcset (size 5–10) that contrasts with Bar 4; center-weighted voicing:
+- double_bass: LOW anchor (avoid unison with cello)
+- cello + bass_clarinet: LOW↔MID
+- violin + alto_flute + trumpet: MID (avoid exact unisons)
 
-double_bass: LOW anchor (avoid unison with cello),
+PT REALIZATION — **exactly one sustained whole-bar note per instrument**
+Hard constraints per instrument:
+• TIME: **one onset at tick 0** with **N=1**. No other onsets in this bar.  
+• DURATION: **16** — the note lasts the full 4/4 bar (ticks 0..16). Ends exactly at 16.  
+• PITCH: choose one legal MIDI inside the instrument’s band and inside the bar-pcset; **keep it constant** for the entire bar (no intra-bar pitch change).  
+• VELOCITY: choose a fixed soft dynamic (e.g., pp–p ≈ 44–52). Velocity is constant within the bar.  
+• METER: numerator=4, denominator=4 via seeds; meter transforms are `add 0`.
 
-cello + bass_clarinet: LOW↔MID,
-
-violin + alto_flute + trumpet: MID (tight cluster tendency, but no exact unisons).
-
-PT REALIZATION — exactly two sustained half-bar notes per instrument
-Per instrument:
-• TIME: exactly two onsets at ticks 0 and 8 (N=2).
-– Override note: for this bar only, you may use a single time step of add 8 to place the second onset at tick 8 (we want [0, 8], not quarter-grid stepping).
-• DURATION: each note lasts 8 ticks (half of the 16-tick bar). The first note spans 0..8; the second spans 8..16.
-• PITCH: choose one pitch for the bar (constant across both halves) that belongs to the bar-pcset and is legal for the instrument’s band at that register. Net pitch change across the bar must be zero.
-• VELOCITY: gentle swell pp→p across the two halves (e.g., ~44 → ~50; per-step delta ≤ 6; stay subtle).
-• METER: numerator=4, denominator=4 via seeds; meter transforms are add 0.
+ABSOLUTE PROHIBITIONS
+• No quarter or sub-quarter re-articulation.  
+• No onsets other than the single onset at 0.  
+• No intra-bar pitch changes.
 
 VALIDATION
-• Exactly two notes per instrument with onsets [0, 8] and durations [8, 8].
-• Ranges respected; pcs legal per band; avoid adjacent-instrument unisons inside each pillar; occasional octave doublings okay but limited.
-• Last sustain ends at tick 16.
+• Per instrument: exactly **one note** with onset `[0]` and duration `[16]`.  
+• Ranges respected; pcs legal per band; avoid adjacent-instrument unisons; octave doublings sparse.

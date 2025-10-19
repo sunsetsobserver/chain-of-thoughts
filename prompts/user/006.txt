@@ -1,32 +1,38 @@
 METER: 2/4
 
 TITLE
-Bars 6a–6b — Two 2/4 tutti hits from the Bars-4–6 aggregate (A then B), contrast in pcset and dynamics.
+Bars 6a–6b — One whole-bar chord per bar (A then B), no re-articulation.
 
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays in BOTH bars; monophony per instrument.
 
 AGGREGATE REUSE
-Reuse the SAME Bars-4–6 aggregate from Bars 4–5 (do not print it).
-Reuse the exact aggregate_signature from Bar 4 (identical id, bounds, pcs). Do not redefine or modify it.
+Reuse the SAME Bars-4–6 aggregate from Bars 4–5. Reuse the exact aggregate_signature from Bar 4 (identical id, bounds, pcs).
 
 BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)
-Define two distinct bar-pcsets, A (for 6a) and B (for 6b). Both are subsets of the aggregate’s band pcs; A ≠ B; each size 4–10.
+Define two distinct bar-pcsets, **A** (for 6a) and **B** (for 6b). Both subsets of the aggregate’s band pcs; A ≠ B; each size 4–10.  
 Register targets:
+- double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
+- violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
+Avoid adjacent-instrument unisons; octave doublings OK but sparse.
 
-double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
+PT REALIZATION — **one sustained whole-bar note per instrument, per bar**
+Hard constraints per instrument **in each bar**:
+• TIME: **one onset at tick 0** with **N=1**. No other onsets in that bar.  
+• DURATION: **8** — the note lasts the full 2/4 bar (ticks 0..8). Ends exactly at 8.  
+• PITCH: choose one legal MIDI inside the targeted band that belongs to that bar’s pcset; **keep it constant** within the bar.  
+  Change pitch **between bars 6a and 6b** to reflect pcset A vs B.  
+• VELOCITY: Bar 6a fixed forte (≈108–116). Bar 6b fixed mf (≈88–96). Constant within each bar.  
+• METER: numerator=2, denominator=4 via seeds; meter transforms are `add 0`.
 
-violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
-Avoid unisons between neighboring instruments; octave doublings okay but sparse.
-
-PT REALIZATION (APPLIES TO BOTH 2/4 BARS) — two quarter-note hits per bar
-Each bar is exactly two notes at ticks 0 and 4, each lasting 4 ticks.
-Per instrument and per bar:
-• TIME: seed so first onset is 0; use a time step that yields onsets [0, 4] (N=2).
-• DURATION: [4, 4] so each note fills its quarter completely.
-• PITCH: choose legal MIDIs for A (Bar 6a) and B (Bar 6b) per the instrument’s targeted band; within each bar keep the two quarters on the same pitch (no intra-bar pitch change), but change pitch between 6a and 6b for contrast (different pc across the two bars).
-• VELOCITY: Bar 6a = forte (≈ 108–116), Bar 6b = mf (≈ 88–96).
-• METER: numerator=2, denominator=4 via seeds; meter transforms are add 0.
+ABSOLUTE PROHIBITIONS
+• No quarter re-articulation within a bar.  
+• No onsets other than the single onset at 0.  
+• No intra-bar pitch changes.
 
 STRUCTURE OF THE RETURN
-Return one JSON object with "bars":[ … ] containing two bars, each realized as the full six-instrument bundle for 2/4. All constraints in the system prompt apply.
+Return one JSON object with `"bars":[ … ]` containing **two bars** (6a, 6b), each a full six-instrument bundle as above.
+
+VALIDATION
+• Per bar & per instrument: exactly **one note** with onset `[0]` and duration `[8]`.  
+• Ranges respected; pcs legal per band; octave doublings sparse; avoid adjacent-instrument unisons.

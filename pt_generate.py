@@ -241,7 +241,7 @@ def generate_unit_from_template(
         model="gpt-5",
         input=messages,
         text={"format": {"type": "json_object"}},
-        reasoning={ "effort": "high" },
+        reasoning={ "effort": "medium" },
     )
 
     raw_text = (resp.output_text or "").strip()
