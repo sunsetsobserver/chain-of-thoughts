@@ -4,9 +4,15 @@ composition_working_files/
 depreciated/
 runs/
 
+# Node
+node_modules/
+npm-debug.log*
+
 # Python caches & compiled files
 __pycache__/
 *.pyc
+
+*.mid
 
 # Local env/config
 .env
