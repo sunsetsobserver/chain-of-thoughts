@@ -1,0 +1,24 @@
+METER: 3/4
+
+TITLE
+Bar 38 — Variation of Bar 4 (pp/ppp center-weighted chord; tiny registral/pitch-class shift).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+
+AGGREGATE — NEW for Bars 38–40
+Define a modified aggregate for Bars 38–40 (not used elsewhere). Include:
+"aggregate_signature" with id "bars38_40_v1" and full bands (bounds + pcs_ordered).
+Keep band coverage continuous; 3–4 pcs per band; disjoint; union = 12 pcs.
+It should be clearly related to Bars-4–6 but not identical (subtle pcs changes and/or band bounds).
+
+PT REALIZATION — one sustained note per instrument
+• TIME: one onset at tick 0 (N=1).
+• DURATION: 12 (ends exactly at 12).
+• PITCH: choose a legal MIDI near the Bar-4 role/region but reflecting the new aggregate’s band pcs; constant.
+• VELOCITY: pp–ppp ≈ 40–48, constant.
+• METER: seeds numerator=3, denominator=4; transforms add 0.
+
+VALIDATION
+Exactly one note per instrument; ends at tick 12; legal ranges; band-legal pcs; no overlaps.
+(Include new "aggregate_signature" id = "bars38_40_v1".)

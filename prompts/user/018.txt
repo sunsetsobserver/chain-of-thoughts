@@ -1,0 +1,21 @@
+METER: 4/4
+
+TITLE
+Bar 37 — Literal repeat of Bar 6 (two half-note tutti chords A then B).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
+
+AGGREGATE REUSE
+Reuse Bars-4–6 aggregate. Include "aggregate_signature" (id "bars4_6_v1").
+
+PT REALIZATION — two half-note chords per instrument
+• TIME: onsets [0, 8] (N=2). No other onsets.
+• DURATION: [8, 8].
+• PITCH: chord A at tick 0 and chord B at tick 8 matching Bar 6 roles/spacing (or nearest legal); constant within each half.
+• VELOCITY: A ≈ 108–116; B ≈ 88–96; constant within halves.
+• METER: numerator=4, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+Exactly two notes per instrument; ends exactly at tick 16; ranges and band pcs legal; avoid adjacent-instrument unisons; sparse octaves OK.
+(Include "aggregate_signature" unchanged.)

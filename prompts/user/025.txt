@@ -1,0 +1,31 @@
+METER: 4/4
+
+TITLE
+Bar 50 — Final two half-bar tutti chords (strong cadence), 4/4.
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+Monophony per instrument (no chords inside a single part).
+
+GOAL
+Conclude Part 1 with two bold tutti sonorities: one at tick 0 and one at tick 8 (half-notes on a 1/16 grid). These should sound like a decisive cadence in the piece’s language (non-triadic OK; crunchy interval-classes welcome). Keep center-weighted voicing (db LOW anchor; vc/bcl LOW↔MID; vn MID; af/tpt MID↔HIGH). Avoid adjacent-instrument unisons; sparse octave doublings are fine.
+
+PT REALIZATION (exact)
+• TIME: exactly two onsets per instrument at ticks 0 and 8 (N = 2). Use only add {1,2,3,4} and strictly increasing onsets (e.g., seed time=0 with a single add 8 to reach [0,8]).
+• DURATION: [8, 8] — each note sustains for a half-bar (0..8, 8..16). All last samples end at or before tick 16.
+• PITCH: add/sub only. For Hit 1 pick a legal MIDI per instrument matching its band-target; for Hit 2 pick a different legal pc (not equal to Hit 1 for that instrument), preferably a nearby register. Stay strictly within instrument hard ranges and band-legal pcs if you reference an aggregate.
+• VELOCITY: strong tutti ≈ 112 (constant per note).
+• METER: seeds numerator=4, denominator=4; transformations on numerator/denominator are constant add 0.
+
+STRUCTURE OF THE RETURN
+Return a single-bar bundle (4/4) with exactly six features (one per listed instrument) and a run_plan that produces:
+– time onsets [0,8],
+– duration [8,8],
+– pitch: two targets per instrument (different pcs),
+– velocity ~112.
+
+VALIDATION
+• Exactly two notes per instrument at [0,8] with durations [8,8].
+• Time strictly increasing; durations ≤ next onset; last note ends ≤ 16.
+• All MIDI values within each instrument’s hard range; adjacent-instrument unisons avoided; sparse octaves OK.
+• Meter fixed via seeds (add 0 on numerator/denominator).

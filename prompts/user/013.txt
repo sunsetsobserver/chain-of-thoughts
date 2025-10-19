@@ -1,0 +1,24 @@
+METER: 3/4
+
+TITLE
+Bar 35 — LITERAL reprise of Bar 4 (pp/ppp, center-weighted voicing), no re-composition.
+
+AGGREGATE REUSE (REQUIRED)
+Reuse the exact Bars-4–6 aggregate and its signature:
+- aggregate_signature.id must be "bars4_6_v1"
+- Do not redefine or modify bands or pcs. Use the original signature from Bar 4.
+
+REALIZATION — IDENTICAL FORM (one sustained note per instrument)
+Everyone plays one bar-long sustain; monophonic per instrument.
+
+Hard constraints (copy from Bar 4):
+• TIME: exactly one onset at tick 0; N=1. No other onsets.
+• DURATION: 12 (spans 0..12, ends exactly at 12).
+• PITCH: identical MIDI values to Bar 4 if available in context. If exact values are unknown, choose the nearest legal MIDI for the same instrument, band, and bar-pcset used in Bar 4, preserving center-weighted voicing and avoiding adjacent-instrument unisons (octaves sparse).
+• VELOCITY: very soft, identical to Bar 4 if available; otherwise constant pp–ppp ≈ 40–48 (tiny deltas ≤2).
+• METER: numerator=3, denominator=4 via seeds; transforms for meter are add 0.
+
+VALIDATION
+• Exactly one note per instrument (onset [0], duration [12]).
+• All MIDI inside hard ranges; pcs legal for the original band at that register.
+• No re-articulation; no extra events.

@@ -1,0 +1,22 @@
+METER: 4/4
+
+TITLE
+Bar 39 — Variation of Bar 5 (soft whole-bar chord; keep center-weighted voicing).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+
+AGGREGATE REUSE
+Reuse the SAME Bars 38–40 aggregate from Bar 38. Include the identical
+"aggregate_signature" (id "bars38_40_v1"; unchanged).
+
+PT REALIZATION
+• TIME: onset [0] (N=1).
+• DURATION: [16].
+• PITCH: legal per band under the new aggregate; close to Bar 5 roles but not identical.
+• VELOCITY: pp–p ≈ 44–52, constant.
+• METER: numerator=4, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+One note per instrument; ends at 16; legal ranges; band pcs legal; no overlaps.
+(Include "aggregate_signature" unchanged.)

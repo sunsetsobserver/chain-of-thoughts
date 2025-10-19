@@ -1,0 +1,19 @@
+METER: 2/4
+
+TITLE
+Bar 41 — Half note long breath (full ensemble silence).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. All silent.
+
+PT REALIZATION — encode silence explicitly
+For each instrument:
+• RUN PLAN: N = 1
+• SEEDS: time = 4 (i.e., onset at/after bar boundary), duration = any {1,2,3,4}, velocity arbitrary.
+Result: no realized notes inside this 2/4 bar.
+
+METER
+Seeds numerator=2, denominator=4; transforms add 0.
+
+VALIDATION
+No notes realized for any instrument within ticks 0..7.

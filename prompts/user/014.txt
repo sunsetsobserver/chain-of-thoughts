@@ -1,0 +1,21 @@
+METER: 4/4
+
+TITLE
+Bar 36 — LITERAL reprise of Bar 5 (single whole-bar chord, soft), no re-composition.
+
+AGGREGATE REUSE (REQUIRED)
+Reuse the same Bars-4–6 aggregate_signature with id "bars4_6_v1". Do not change it.
+
+REALIZATION — IDENTICAL FORM (one sustained note per instrument)
+Everyone plays one whole-bar sustain; monophonic per instrument.
+
+Hard constraints (copy from Bar 5):
+• TIME: exactly one onset at tick 0; N=1. No other onsets.
+• DURATION: 16 (spans 0..16, ends exactly at 16).
+• PITCH: identical MIDI values to Bar 5 if available; otherwise select the nearest legal MIDI for the same instrument, band, and Bar-5 bar-pcset, preserving center-weighted voicing and avoiding adjacent-instrument unisons (octaves sparse).
+• VELOCITY: identical to Bar 5 if available; otherwise constant soft ≈ 44–52.
+• METER: seeds set numerator=4, denominator=4; meter transforms add 0.
+
+VALIDATION
+• Per instrument: time [0], duration [16] only; no extra events.
+• All pitches in hard ranges and legal for the aggregate band pcs.

@@ -1,0 +1,21 @@
+METER: 4/4
+
+TITLE
+Bar 40 — Variation of Bar 6 (two half-note chords A→B with gentle color shift).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
+
+AGGREGATE REUSE
+Reuse Bars 38–40 aggregate. Include "aggregate_signature" (id "bars38_40_v1").
+
+PT REALIZATION — two half-note chords
+• TIME: onsets [0, 8] (N=2).
+• DURATION: [8, 8].
+• PITCH: pick chord A (0..8) and chord B (8..16) from the new aggregate’s band pcs; related to the Bar-37 voicing but with small re-spacing/pc substitutions; constant within halves.
+• VELOCITY: A ≈ 104–112; B ≈ 84–92 (slightly gentler than Bar 37).
+• METER: numerator=4, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+Exactly two notes per instrument; ends at 16; legal ranges; band pcs legal; avoid adjacent-instrument unisons; sparse octaves OK.
+(Include "aggregate_signature" unchanged.)
