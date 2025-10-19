@@ -1,0 +1,16 @@
+{
+  "name": "chain-of-thoughts",
+  "version": "1.0.0",
+  "description": "_write text → get music_",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jzz": "^1.9.6",
+    "jzz-midi-smf": "^1.9.9"
+  }
+}

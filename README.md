@@ -109,6 +109,17 @@ composition_suite.json  # convenience copy of the latest stitched piece (if enab
 
    - Per-unit folders in `runs/` with the prompts used, raw model JSON, posted bundles, DCN receipts, executed streams, unit payload, unit schedule, and a compact **unit summary**.
 
+### Optional: MIDI export (Node)
+
+To emit a `.mid` automatically after generation:
+
+1. `npm install` (installs `jzz` and `jzz-midi-smf`)
+2. Run the suite: `python compose_suite.py`
+
+If Node or these deps are missing, the pipeline still completes; only the MIDI step is skipped.
+You can export MIDI any time later via:
+`node tools/pt2midi.js runs/<ts>_suite/composition_suite.json runs/<ts>_suite/composition_suite.mid`
+
 ---
 
 ## How continuity across prompts works
