@@ -136,29 +136,57 @@ _(Optionally mirrored elsewhere by your own scripts.)_
 
 ---
 
-## MIDI export (optional Node step)
+## MIDI export
 
-This repo includes a tiny Node tool that converts the stitched PT JSON to a Standard MIDI File.
+This repo ships with a small Node tool that converts the stitched PT JSON to a Standard MIDI File.
 
-Install once:
+### One-time setup
 
 ```bash
 npm install
 ```
 
-After you run `python compose_suite.py`, export MIDI:
+### New runs (automatic)
+
+When you run:
+
+```bash
+python compose_suite.py
+```
+
+the pipeline writes:
+
+- `runs/<ts>_suite/composition_suite.json`
+- `runs/<ts>_suite/composition_suite.mid` ← **MIDI (auto)**
+- plus the usual logs and summaries
+
+> If Node isn’t installed or dependencies are missing, the run still completes; only the MIDI step is skipped with a warning.
+
+### Past runs (retroactive)
+
+You can create a `.mid` for any earlier suite folder:
 
 ```bash
 node tools/pt2midi.js runs/<ts>_suite/composition_suite.json runs/<ts>_suite/composition_suite.mid
 ```
 
-- Uses the per-instrument **GM programs** and **bank** info from `instrument_meta` when present; otherwise falls back to sensible defaults.
-- Embeds **time signatures** from the per-note `numerator`/`denominator` arrays.
-- One MIDI track per instrument; non-drum channels (skips ch.10).
+**Latest run quick command (bash):**
 
-> If Node or those deps aren’t installed, the Python pipeline still runs—only the MIDI step is skipped.
+```bash
+latest="$(ls -dt runs/*_suite | head -1)"
+node tools/pt2midi.js "$latest/composition_suite.json" "$latest/composition_suite.mid"
+```
 
----
+**Batch all runs (bash):**
+
+```bash
+for d in runs/*_suite; do
+  [ -f "$d/composition_suite.json" ] && \
+  node tools/pt2midi.js "$d/composition_suite.json" "$d/composition_suite.mid"
+done
+```
+
+> The converter uses the per-instrument GM programs/banks from `instrument_meta` (if present). It also embeds time-signature marks from the `numerator`/`denominator` streams.
 
 ## How continuity across prompts works
 

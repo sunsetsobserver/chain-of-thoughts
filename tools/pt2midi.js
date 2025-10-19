@@ -221,8 +221,20 @@ function writeSMF(payload, outPath) {
   conductor.add(maxTick + 1, JZZ.MIDI.smfEndOfTrack());
 
   // Save to disk
-  const buf = Buffer.from(JZZ.lib.toBytes(smf.dump()));
+  const dumped = smf.dump(); // may be Uint8Array, Array<number>, or a binary string
+  let buf;
+  if (dumped instanceof Uint8Array) {
+    buf = Buffer.from(dumped);
+  } else if (Array.isArray(dumped)) {
+    buf = Buffer.from(Uint8Array.from(dumped));
+  } else if (typeof dumped === 'string') {
+    // Older builds can return a binary string
+    buf = Buffer.from(dumped, 'binary');
+  } else {
+    throw new Error('Unsupported SMF dump type: ' + typeof dumped);
+  }
   fs.writeFileSync(outPath, buf);
+
 }
 
 // ---- CLI ----

@@ -20,6 +20,8 @@ from eth_account.messages import encode_defunct
 from dcn_client import DCNClient
 from pt_config import API_BASE
 import os
+import subprocess
+
 
 from tqdm import tqdm
 
@@ -64,6 +66,46 @@ def _concat_units(units: List[Dict[str, Any]]) -> Dict[str, Any]:
     tracks = {instr: _pack(instr, combined[instr]) for instr in ORDERED_INSTRS}
     payload = {"instrument_meta": INSTRUMENT_META, "tracks": tracks}
     return {"payload": payload, "schedule": suite_schedule, "total_ticks": cumulative}
+
+def _maybe_export_midi(suite_dir: pathlib.Path):
+    """
+    Try to export a MIDI file using Node tools/pt2midi.js.
+    Non-fatal on any failure. Set NO_MIDI=1 to skip.
+    """
+    if os.getenv("NO_MIDI", "0") == "1":
+        print("MIDI export skipped (NO_MIDI=1).")
+        return
+
+    tools_js = pathlib.Path(__file__).resolve().parent / "tools" / "pt2midi.js"
+    if not tools_js.exists():
+        print("MIDI export skipped (tools/pt2midi.js not found).")
+        return
+
+    in_json = suite_dir / "composition_suite.json"
+    out_mid = suite_dir / "composition_suite.mid"
+
+    try:
+        result = subprocess.run(
+            ["node", str(tools_js), str(in_json), str(out_mid)],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+        if result.stdout.strip():
+            print(result.stdout.strip())
+        if out_mid.exists():
+            print("  •", out_mid)
+        else:
+            print("MIDI export completed but output file was not found where expected.")
+    except FileNotFoundError:
+        print("MIDI export skipped (Node not found on PATH).")
+    except subprocess.CalledProcessError as e:
+        print("MIDI export failed (non-fatal). Output:")
+        print(e.stdout or "(no output)")
+    except Exception as e:
+        print("MIDI export failed (non-fatal):", e)
+
 
 def main():
     templates = _discover_templates()
@@ -144,6 +186,9 @@ def main():
     print("  •", suite_dir / "schedule.json")
     print("  •", suite_dir / "pt_journal.json")
     print("  •", suite_dir / "manifest.json")
+
+    # Optional MIDI export via Node (non-fatal if unavailable)
+    _maybe_export_midi(suite_dir)
 
 if __name__ == "__main__":
     main()
