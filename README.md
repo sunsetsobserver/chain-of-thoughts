@@ -1,4 +1,4 @@
-# Chain-of-Thoughts
+# Chain of Thoughts
 
 _write text → get music_
 

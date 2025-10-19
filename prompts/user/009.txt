@@ -1,0 +1,33 @@
+METER: 2/4
+
+TITLE
+Bar 14 — Recall of Bar 2 (two tutti hits, same timing & dynamics)
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
+
+RECALL SPEC
+Recreate the Bar-2 pattern: exactly two simultaneous verticals (tutti chords) at ticks 0 and 4, each lasting 4 ticks. Dynamics match Bar-2 (first hit stronger, second slightly softer).
+If prior Bar-2 pitches are unknown at generation time, preserve the same register logic (band = tessitura-center choice per instrument) and choose nearby legal MIDIs (±3 semitones around tessitura center), avoiding adjacent-instrument unisons; sparse octave doublings are fine.
+
+PT REALIZATION — two hits only
+For each instrument:
+• TIME: N=2 with onsets [0, 4] (strictly increasing; only `add{4}` or an equivalent single step to land on 4).
+• DURATION: [4, 4] (each note fills its quarter completely; both end ≤ tick 8).
+• PITCH: add/sub only. Choose a legal MIDI for Hit 1 from the instrument’s band-legal pcs near tessitura center; Hit 2 must be a different pc for that same instrument, placed nearby (±3 semitones), still legal for the band.
+• VELOCITY: two values [124, 114] (e.g., seed 124 then `add -10`).
+• METER: numerator=2, denominator=4 via seeds; meter transforms are `add 0`.
+
+ADDITIONAL MUSICAL GUARDRAILS
+• No extra onsets, no re-articulations other than the two hits.
+• Avoid unisons among adjacent instruments on each hit (mild constraint); sparse octaves acceptable.
+• Center-weighted voicing: db/cello anchor LOW; bcl LOW↔MID; vn/af/tpt MID↔HIGH.
+
+STRUCTURE OF THE RETURN
+Return one JSON bundle (single bar, 2/4) with exactly six features (one per listed instrument) and a run_plan that produces the hits as specified.
+
+VALIDATION
+• Exactly two notes per instrument at onsets [0, 4] with durations [4, 4].
+• All pitches inside hard instrument ranges and legal for the chosen band pcs.
+• Time strictly increasing; durations ≤ next onset; last note ends ≤ tick 8.
+• Meter constant via seeds (`add 0` on numerator/denominator).

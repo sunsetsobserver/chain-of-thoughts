@@ -15,11 +15,11 @@ Choose a bar-pcset (size 5–10) that contrasts with Bar 4; center-weighted voic
 - cello + bass_clarinet: LOW↔MID
 - violin + alto_flute + trumpet: MID (avoid exact unisons)
 
-PT REALIZATION — **exactly one sustained whole-bar note per instrument**
+PT REALIZATION — exactly one sustained whole-bar note per instrument
 Hard constraints per instrument:
-• TIME: **one onset at tick 0** with **N=1**. No other onsets in this bar.  
-• DURATION: **16** — the note lasts the full 4/4 bar (ticks 0..16). Ends exactly at 16.  
-• PITCH: choose one legal MIDI inside the instrument’s band and inside the bar-pcset; **keep it constant** for the entire bar (no intra-bar pitch change).  
+• TIME: one onset at tick 0 with N=1. No other onsets in this bar.  
+• DURATION: 16 — the note lasts the full 4/4 bar (ticks 0..16). Ends exactly at 16.  
+• PITCH: choose one legal MIDI inside the instrument’s band and inside the bar-pcset; keep it constant for the entire bar (no intra-bar pitch change).  
 • VELOCITY: choose a fixed soft dynamic (e.g., pp–p ≈ 44–52). Velocity is constant within the bar.  
 • METER: numerator=4, denominator=4 via seeds; meter transforms are `add 0`.
 
@@ -29,5 +29,5 @@ ABSOLUTE PROHIBITIONS
 • No intra-bar pitch changes.
 
 VALIDATION
-• Per instrument: exactly **one note** with onset `[0]` and duration `[16]`.  
+• Per instrument: exactly one note with onset `[0]` and duration `[16]`.  
 • Ranges respected; pcs legal per band; avoid adjacent-instrument unisons; octave doublings sparse.

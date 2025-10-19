@@ -1,0 +1,32 @@
+METER: 2/4
+
+TITLE
+Bar 18 — Recap hit compressed: quarter-note tutti chord on beat 1, rest on beat 2.
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
+
+CONTEXT LINK (INTERNAL, DO NOT PRINT)
+This recap chord must be chosen from material in Bars 16–18 (the loop+stabs section). Select a vertical (or near-simultaneous cluster) that actually occurred there and reuse its pitch-class content/registral shape here. Favor center-weighted voicing, avoid adjacent-instrument unisons; sparse octave doublings are fine. (Suite context contains Bars 16–18 summaries.)
+
+PT REALIZATION — one note on beat 1 only; silence on beat 2
+Per instrument:
+• TIME: exactly one onset at tick 0 (N=1). No onset at tick 4.
+• DURATION: 4 ticks (quarter note). The note spans 0..4 only.
+• PITCH: one legal MIDI drawn from the chosen Bar-16–18 vertical, adjusted to each instrument’s targeted register (db LOW; vc/bcl LOW↔MID; vn MID; af/tpt MID↔HIGH). No pitch changes inside the bar.
+• VELOCITY: strong recap hit ≈ 108–116 (constant).
+• METER: numerator=2, denominator=4 via seeds; transforms for meter are `add 0`.
+
+ABSOLUTE PROHIBITIONS
+• No second onset at tick 4.
+• No ties or sustains into beat 2 (silence after tick 4).
+• No intra-bar pitch motion; monophony per instrument.
+
+STRUCTURE OF THE RETURN
+Return one JSON bundle (a single bar of 2/4) with exactly six features (one per listed instrument) and a run_plan that produces the chord as specified.
+
+VALIDATION
+• For each instrument: time = [0], duration = [4] only.
+• All MIDI inside hard instrument ranges; pcs legal per band/targeted register.
+• Avoid adjacent-instrument unisons in the chord; octave doublings sparse.
+• Last sounding sample ends ≤ tick 4; bar ticks are 0..7; no other notes exist in this bar.

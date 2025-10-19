@@ -1,0 +1,59 @@
+METER: 3/4
+
+TITLE
+Bars 7–9 — Three “cloud duo” bars in 3/4, each featuring one unique pair of instruments (pp, airy texture).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+Monophony per instrument (no chords inside a single part).
+
+AGGREGATE (INTERNAL, DO NOT PRINT)
+Before writing PTs, internally construct a NEW aggregate named Aggregate A for Bars 7–9:
+• Split each instrument’s playable MIDI range into LOW / MID / HIGH bands.
+• Assign disjoint pitch-class sets (pcs) to these bands; each band has 3–4 pcs; the union of all bands = 12 pcs (0–11).
+• ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step patterns like 0–3–6–9).
+• This Aggregate A must be different from any aggregate used in earlier bars (1–6).
+
+AGGREGATE MEMORY — REQUIRED OUTPUT KEY
+Alongside your normal bundle, include a top-level JSON key `aggregate_signature` defining Aggregate A:
+
+```
+"aggregate_signature": {
+  "id": "bars7_9_v1",
+  "bands": {
+    "<instrument>": {
+      "low":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..3–4 ints..]},
+      "mid":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..]},
+      "high": {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..]}
+    },
+    "... six instruments total ..."
+  }
+}
+```
+
+SECTION STRUCTURE
+Produce three bars in 3/4, each 12 ticks long (ticks 0–12).
+Each bar activates a different instrument pair, so that across Bars 7–9 all six instruments participate exactly once.
+Example pairing: Bar 7 = [alto_flute, violin]; Bar 8 = [bass_clarinet, cello]; Bar 9 = [trumpet, double_bass].
+All non-active instruments remain silent in that bar.
+
+PT REALIZATION (PER ACTIVE INSTRUMENT)
+• TIME: strictly increasing onsets using only `add {1, 2, 3, 4}` (no 0). Target 4–7 notes per bar.
+• DURATION: values in {1, 2, 3, 4}; each duration ≤ distance to next onset; no overlaps.
+• PITCH: `add` / `subtract` steps inside the ordered pcs of the current band (from Aggregate A); seed near tessitura center; stay within hard MIDI range. Net drift per bar in [−2..+2].
+• VELOCITY: constant pp ≈ 30 (±2).
+• METER: numerator = 3, denominator = 4 via seeds; meter transforms `add 0`.
+• NON-ACTIVE INSTRUMENTS: realize no note (`run_plan.N = 1`, `seeds.time = 12`).
+
+INTERLOCK RULES
+• ≤ 1/3 of onsets may align between the two active instruments per bar.
+• Keep mild rhythmic interlock and register separation (~6–12 semitones apart).
+
+STRUCTURE OF THE RETURN
+Return one JSON object with `"bars":[ … ]` containing three bars (7–9) as described above, each a six-instrument bundle with the proper aggregate signature included once at top level.
+
+VALIDATION
+• Exactly three bars, each 3/4 (12 ticks).
+• Each bar: two active instruments only, others silent.
+• Active instruments follow time/duration/pitch/velocity rules and stay within range.
+• Aggregate signature present and valid.

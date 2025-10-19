@@ -1,0 +1,58 @@
+METER: 3/4
+
+TITLE
+Bars 10–13 — Four bars of 3/4 featuring a background loop and foreground staccato hits (Aggregate B).
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+Monophony per instrument.
+
+AGGREGATE (INTERNAL, DO NOT PRINT)
+Internally construct a new aggregate named Aggregate B for Bars 10–13:
+• Same band structure as before (LOW/MID/HIGH per instrument, 3–4 pcs each).
+• Disjoint pcs across bands → union = 12 pcs (0–11).
+• Different from Aggregate A in pcs content and/or band boundaries.
+
+AGGREGATE MEMORY — REQUIRED OUTPUT KEY
+Include a top-level JSON key "aggregate_signature" for Aggregate B using the same schema as Aggregate A, with id "bars10_13_v1".
+
+SECTION STRUCTURE
+Produce four bars in 3/4 (each bar has ticks 0..11).
+Split instruments into two groups (3 + 3):
+• Background Loop Group: steady loop repeated identically in each of the four bars.
+• Foreground Hit Group: new short staccato events each bar.
+
+PT REALIZATION
+
+Background Loop (3 instruments)
+• TIME: strictly increasing onsets using add {1,2,3,4} (no 0). Aim for 4–8 notes per bar; all onsets < 12.
+• DURATION: positive and ≤ distance to next onset or bar end (so no overlaps).
+• PITCH: add/sub only within Aggregate B band pcs; seed ≈ tessitura center; stay inside hard range.
+• VELOCITY: ≈ 48 (±4), consistent.
+• The same loop (timing, durations, pitches, velocities) repeats exactly in all four bars.
+
+Foreground Hits (3 instruments)
+• Each bar contains 3–8 short events.
+• Events may involve 1–3 of the foreground instruments at once; no unisons between active neighbors in the same event (octaves OK but sparse).
+• TIME: prefer off-beats; ≤ ~1/3 of events may fall on {0,4,8}.
+• DURATION: 1–3 ticks (staccato); no overlaps within any single instrument.
+• PITCH: legal Aggregate B band pcs and instrument ranges; add/sub only.
+• VELOCITY: ≈ 92 (±6), energetic contrast with the loop.
+• Each bar’s foreground material is newly composed (do not copy earlier bars).
+
+GENERAL RULES
+• All time streams strictly increase; durations never exceed the gap to the next onset or bar end.
+• All pitches legal for both Aggregate B and instrument hard ranges.
+• Meter fixed per bar via seeds: numerator=3, denominator=4; transforms are add 0.
+• Monophony enforced for every instrument.
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ … ] containing four bars (10–13), each including all six instruments and a single "aggregate_signature" for Aggregate B.
+
+VALIDATION
+• Exactly four bars in 3/4 (12 ticks per bar).
+• Three loop instruments repeat identical material across all four bars.
+• Three hit instruments generate new staccato patterns in each bar.
+• No overlaps within any instrument.
+• All MIDI pitches within range and legal for band pcs.
+• Aggregate signature present and valid (id = "bars10_13_v1").
