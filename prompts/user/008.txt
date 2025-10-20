@@ -46,7 +46,7 @@ GENERAL RULES
 • Monophony enforced for every instrument.
 
 STRUCTURE OF THE RETURN
-Return one JSON object with "bars":[ … ] containing four bars (10–13), each including all six instruments and a single "aggregate_signature" for Aggregate B.
+Return one JSON object with "bars":[ … ] containing four bars (10–13), each including all six instruments.
 
 VALIDATION
 • Exactly four bars in 3/4 (12 ticks per bar).

@@ -15,26 +15,11 @@ Before writing PTs, internally construct a NEW aggregate for Bars 4–6 (NOT reu
 • ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step cycles like 0–3–6–9).
 • Make this Bars-4–6 aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
 
-Copy verbatim from context: Pull the aggregate_signature with id: "bars4_6_v1" exactly from the reference PT JSON context. Do not regenerate or reorder PCs. Only rename feature names if required; keep seeds/ops as needed for this bar.
-
-Schema:
-"aggregate_signature": {
-  "id": "bars4_6_v1",
-  "bands": {
-    "<instrument>": {
-      "low":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..4 ints 0..11..]},
-      "mid":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..4..]},
-      "high": {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..4..]}
-    },
-    "... six instruments total ..."
-  }
-}
 Rules:
 - pcs_ordered is exactly 4 pcs per band, disjoint across bands; union is all 12 pcs.
 - Bands cover the instrument’s playable MIDI range without gaps.
 - Choose "id" as a short stable string (e.g., "bars4_6_v1").
 - Keep this object compact and valid JSON.
-
 
 BAR-SPECIFIC PCSET + VOICING TARGETS (INTERNAL GUIDE)
 For Bar 4 select ONE bar-pcset (size 5–10) drawn from the union of band pcs;

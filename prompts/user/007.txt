@@ -33,7 +33,7 @@ INTERLOCK RULES
 • Keep mild rhythmic interlock and register separation (~6–12 semitones apart).
 
 STRUCTURE OF THE RETURN
-Return one JSON object with `"bars":[ … ]` containing three bars (7–9) as described above, each a six-instrument bundle with the proper aggregate signature included once at top level.
+Return one JSON object with `"bars":[ … ]` containing three bars (7–9) as described above, each a six-instrument bundle.
 
 VALIDATION
 • Exactly three bars, each 3/4 (12 ticks).

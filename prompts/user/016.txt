@@ -6,10 +6,6 @@ Bar 35 — Literal repeat of Bar 4 (pp/ppp, center-weighted voicing; one bar-lon
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
 
-AGGREGATE REUSE
-Reuse the SAME Bars-4–6 aggregate from Bar 4. Include the identical
-"aggregate_signature" object (id must be "bars4_6_v1"; bounds/pcs unchanged).
-
 PT REALIZATION — one sustained note per instrument
 • TIME: exactly one onset at tick 0 (N=1).
 • DURATION: 12 (full bar; ends exactly at tick 12).
@@ -19,5 +15,3 @@ PT REALIZATION — one sustained note per instrument
 
 VALIDATION
 Exactly one note per instrument; ends at tick 12; legal ranges; band-legal pcs; no overlaps.
-
-(Include "aggregate_signature" at top level, unchanged from Bar 4.)

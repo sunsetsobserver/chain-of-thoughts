@@ -6,9 +6,6 @@ Bar 36 — Literal repeat of Bar 5 (soft, one whole-bar chord; no re-articulatio
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
 
-AGGREGATE REUSE
-Reuse Bars-4–6 aggregate. Include the same "aggregate_signature" (id "bars4_6_v1").
-
 PT REALIZATION — exactly one sustained whole-bar note per instrument
 • TIME: one onset at tick 0 (N=1).
 • DURATION: 16 (full bar; ends exactly at 16).
@@ -18,4 +15,3 @@ PT REALIZATION — exactly one sustained whole-bar note per instrument
 
 VALIDATION
 Per instrument: onset [0], duration [16]; legal ranges; band-legal pcs; no overlaps.
-(Include "aggregate_signature" unchanged.)
