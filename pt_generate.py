@@ -120,32 +120,6 @@ def _must_uint(x, label: str) -> int:
         raise RuntimeError(f"{label} must be unsigned (>= 0)")
     return x
 
-def _validate_bundle(bundle: Dict[str, Any], bar_label: str):
-    ALLOWED = {"add", "subtract", "mul", "div"}
-    for feat in bundle.get("features", []):
-        pt = feat.get("pt", {})
-        for dim in pt.get("dimensions", []):
-            fname = (dim.get("feature_name") or "").strip().lower()
-            for tr in dim.get("transformations", []):
-                op = (tr.get("name") or "").strip().lower()
-                if op not in ALLOWED:
-                    raise RuntimeError(f"[{bar_label}] Forbidden op '{op}' in feature '{pt.get('name')}', dimension '{fname}'.")
-            if fname == "time":
-                for tr in dim.get("transformations", []):
-                    if (tr.get("name") or "").lower() != "add":
-                        raise RuntimeError(f"[{bar_label}] time must use only 'add'. Offender in '{pt.get('name')}'.")
-                    a = int(tr.get("args", [0])[0])
-                    if a <= 0:
-                        raise RuntimeError(f"[{bar_label}] time 'add' args must be >= 1. Offender in '{pt.get('name')}'.")
-            if fname == "duration":
-                for tr in dim.get("transformations", []):
-                    op = (tr.get("name") or "").lower()
-                    if op in {"mul", "div"}:
-                        a = int(tr.get("args", [0])[0])
-                        if a in (0, 1):
-                            raise RuntimeError(f"[{bar_label}] duration mul/div args must be 2..4. Offender in '{pt.get('name')}'.")
-
-
 # ---------- context summary ----------
 def _summarize_unit(per_instr_unit: Dict[str, Dict[str, List[int]]],
                     bars_count: int, total_ticks: int, num: int, den: int,
@@ -320,10 +294,6 @@ def generate_unit_from_template(
     for local_idx, bundle in enumerate(bar_bundles, start=1):
         bar_label = f"bar{local_idx:02d}"
 
-        # Validate
-        print(f"[{label}] Validating {bar_label} ...")
-        _validate_bundle(bundle, bar_label)
-
         # Rename features uniquely + fix run_plan refs
         name_map: Dict[str, str] = {}; seen = set()
         feats = bundle.get("features", [])
@@ -361,21 +331,23 @@ def generate_unit_from_template(
             pt_name = feat["pt"]["name"]
             instr = (feat.get("meta") or {}).get("instrument", "")
             print(f"[{label}] {bar_label}: POST feature {i}/{len(feats)} name={pt_name} instr={instr}")
-            res = dcn.post_feature(feat["pt"], acct=acct)
+            try:
+                res = dcn.post_feature(feat["pt"], acct=acct)
+            except Exception as e:
+                if session_dir:
+                    errdir = session_dir / "errors"
+                    errdir.mkdir(parents=True, exist_ok=True)
+                    _save_json(errdir / f"{label}.{bar_label}.feature_{i}.{instr}.json", feat["pt"])
+                    _save_text(errdir / f"{label}.{bar_label}.feature_{i}.{instr}.error.txt", repr(e))
+                    # If requests.HTTPError, capture server body:
+                    try:
+                        import requests
+                        if isinstance(e, requests.HTTPError) and e.response is not None:
+                            _save_text(errdir / f"{label}.{bar_label}.feature_{i}.{instr}.server.txt", e.response.text)
+                    except Exception:
+                        pass
+                raise
 
-            # Journal entry (compact)
-            pt_journal.append({
-                "action": "post_feature",
-                "unit": label,
-                "bar_index": local_idx,
-                "instrument": instr,
-                "pt_name": pt_name,
-                "response_summary": {
-                    "id": (res.get("id") if isinstance(res, dict) else None),
-                    "name": (res.get("name") if isinstance(res, dict) else None),
-                    "status": (res.get("status") if isinstance(res, dict) else "ok")
-                }
-            })
 
         # Execute and collect
         dims_by_name = {feat["pt"]["name"]: feat["pt"]["dimensions"] for feat in feats}
