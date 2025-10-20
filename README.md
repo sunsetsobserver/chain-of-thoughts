@@ -188,6 +188,62 @@ done
 
 > The converter uses the per-instrument GM programs/banks from `instrument_meta` (if present). It also embeds time-signature marks from the `numerator`/`denominator` streams.
 
+### Run only selected prompts & resume incomplete runs
+
+You don’t have to render the whole suite every time.
+
+#### Run a subset (via `ONLY=`)
+
+Use the `ONLY` env var to filter `prompts/user/*` by filename (glob patterns supported):
+
+```bash
+# single file
+ONLY=001.txt python compose_suite.py
+
+# prefix match
+ONLY=010* python compose_suite.py
+
+# any 00x file
+ONLY=00?.txt python compose_suite.py
+```
+
+Files are still processed in lexicographic order **after** filtering.
+
+#### Resume an unfinished run (`--resume`)
+
+Every run checkpoints into `runs/<timestamp>_suite/`. If a render stops part-way, you can continue from where it left off:
+
+```bash
+python compose_suite.py --resume runs/20251020-195317_suite
+```
+
+What resume does:
+
+- Reuses the saved template order and already-finished units
+- Preserves the rolling PT context so later bars stay musically consistent
+- Keeps writing into the same suite folder
+
+You’ll also see periodic partial outputs for quick inspection:
+
+- `composition_suite.partial.json`
+- `schedule.partial.json`
+
+Tune how often those are emitted with:
+
+```bash
+# write partial stitched outputs every K units (default 5)
+python compose_suite.py --checkpoint-every 3
+# or via env var
+CHECKPOINT_EVERY=3 python compose_suite.py
+```
+
+Tip: to resume the **most recent** suite quickly:
+
+```bash
+latest="$(ls -dt runs/*_suite | head -1)"
+python compose_suite.py --resume "$latest"
+```
+
 ## How continuity across prompts works
 
 After each unit, we capture the model’s **raw PT JSON** (minified) and feed **the entire accumulated history** of those bundles into the next call as a special _reference_ system message.
