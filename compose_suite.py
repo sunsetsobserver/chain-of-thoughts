@@ -22,8 +22,14 @@ from pt_config import API_BASE
 import os
 import subprocess
 
-
 from tqdm import tqdm
+
+def _mk_bundle_context(snippets: List[str]) -> str:
+    """Concatenate ALL prior minified PT bundles with a lightweight separator."""
+    if not snippets:
+        return ""
+    return "\n\n-----\n\n".join(snippets)
+
 
 def _discover_templates() -> List[pathlib.Path]:
     user_dir = PROMPTS_DIR / "user"
@@ -132,6 +138,10 @@ def main():
     suite_pt_journal: List[Dict[str, Any]] = []  # merged journal across units
     prompts_log_lines: List[str] = []            # optional: keep what we asked
 
+    # keep ALL prior PT JSON bundles (minified) for context
+    ctx_bundles: List[str] = []
+    suite_context = _mk_bundle_context(ctx_bundles)
+
     print("\nGenerating units...\n")
     for path in tqdm(templates, desc="Generating", unit="unit", ncols=80):
         unit = generate_unit_from_template(
@@ -148,12 +158,18 @@ def main():
         # Merge PT journal
         suite_pt_journal.extend(unit.get("pt_journal", []))
 
-        # Grow context with the rendered prompt and the computed summary
+        # Keep human-readable logs (unchanged)
         prompts_log_lines.append(f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n")
         prompts_log_lines.append(f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n")
-        suite_context = (suite_context + "\n\n" +
-                        f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n\n" +
-                        f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n").strip()
+
+        # NEW: feed forward the model’s actual PT JSON (minified) — keep ALL of them
+        mj = unit.get("model_bundle_minjson")
+        if isinstance(mj, str) and mj.strip():
+            ctx_bundles.append(mj.strip())
+
+        # Rebuild the suite_context for the NEXT unit from all prior bundles
+        suite_context = _mk_bundle_context(ctx_bundles)
+
 
     # Concatenate units
     suite = _concat_units(units)

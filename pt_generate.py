@@ -230,12 +230,22 @@ def generate_unit_from_template(
     if suite_context:
         messages.append({
             "role": "system",
-            "content": [{"type": "input_text", "text": f"CONTEXT OF THE PIECE SO FAR:\n{suite_context}"}]
+            "content": [{
+                "type": "input_text",
+                "text": (
+                    "REFERENCE PT JSON RESPONSES FROM EARLIER UNITS\n"
+                    "Use these ONLY for continuity or literal reuse of earlier fragments.\n"
+                    "Do NOT quote, summarize, or echo these objects.\n"
+                    "Output exactly ONE JSON object for the CURRENT unit only.\n\n"
+                    + suite_context
+                )
+            }]
         })
     messages.append({
         "role": "user",
         "content": [{"type": "input_text", "text": user_text}]
     })
+
 
     resp = oai.responses.create(
         model="gpt-5",
@@ -246,6 +256,10 @@ def generate_unit_from_template(
 
     raw_text = (resp.output_text or "").strip()
     obj = json.loads(raw_text)
+
+    # Keep a minified version of this unit's bundle(s) for chaining
+    model_bundle_minjson = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+
 
     # Determine if SINGLE bar or SECTION
     bar_bundles = obj["bars"] if isinstance(obj, dict) and "bars" in obj and isinstance(obj["bars"], list) else [obj]
@@ -413,4 +427,5 @@ def generate_unit_from_template(
         "rendered_user_text": user_text,
         "unit_summary_text": unit_summary_text,
         "pt_journal": pt_journal,
+        "model_bundle_minjson": model_bundle_minjson,
     }

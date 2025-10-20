@@ -190,7 +190,12 @@ done
 
 ## How continuity across prompts works
 
-After each unit, the system produces a concise **summary** (note counts, pitch ranges, last pitch/onset, etc.). That rolling summary plus the text of earlier prompts is passed to the next call as a **system context**, so later sections compose with awareness of what has happened.
+After each unit, we capture the model’s **raw PT JSON** (minified) and feed **the entire accumulated history** of those bundles into the next call as a special _reference_ system message.
+
+- The model sees exactly what it previously emitted (bars/sections, features, run_plan, seeds, etc.).
+- We instruct it **not to echo** those prior objects; it must return **only one JSON object** for the current unit.
+- Literal reuse becomes possible: when you ask to “reuse the Background Loop from the reference bundle that has N=… (transpose +2, rename),” the model can copy the prior structure.
+- We no longer pass earlier user prompts or summaries into the model’s context. Those remain in `runs/<ts>_suite/prompts_and_summaries.txt` for human reading.
 
 ---
 
