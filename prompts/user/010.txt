@@ -29,7 +29,7 @@ DYNAMICS
 * Foreground stabs around mf–f ≈ 92 (clearly brighter than the loop).
   Small per-note deviations (±6) allowed for shape; no big swells.
 
-PT REALIZATION — PRECISE TIMING & DURATIONS (applies to each of Bars 16, 17, 18)
+PT REALIZATION — PRECISE TIMING & DURATIONS (applies to each of Bars 15, 16, 17)
 Grid: 1/16 ticks; bar length = 16. You must keep monophony strictly (no overlaps per instrument).
 
 1. TIME
@@ -63,7 +63,7 @@ Grid: 1/16 ticks; bar length = 16. You must keep monophony strictly (no overlaps
    * For `numerator`/`denominator` dimensions, transformations are constant `add 0`.
 
 STRUCTURE OF THE RETURN
-Return one JSON object with `"bars":[ … ]` containing three bars (16, 17, 18), each realized as a full six-instrument bundle for 4/4. All constraints from the global system prompt also apply (allowed ops; strictly increasing time; durations capped to gaps; pitch in hard ranges; monophony, etc.).
+Return one JSON object with `"bars":[ … ]` containing three bars (15, 16, 17), each realized as a full six-instrument bundle for 4/4. All constraints from the global system prompt also apply (allowed ops; strictly increasing time; durations capped to gaps; pitch in hard ranges; monophony, etc.).
 
 VALIDATION
 

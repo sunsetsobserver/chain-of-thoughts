@@ -20,6 +20,8 @@ ABSOLUTE PROHIBITIONS
 • No re-articulation inside each half; no extra onsets beyond [0, 8].
 • No intra-half pitch changes.
 
+Literal reuse from context: Copy the earlier bar’s PT design exactly from the reference PT JSON (same N, seeds, and transformations), changing only feature names. Copy the aggregate_signature (id: "bars4_6_v1") verbatim
+
 VALIDATION
 • Exactly two notes per instrument with durations [8,8], ending at 16.
 • All MIDI inside hard ranges; pcs legal for the aggregate bands.

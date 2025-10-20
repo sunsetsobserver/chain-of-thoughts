@@ -18,6 +18,8 @@ Before writing PTs, internally construct a NEW aggregate for Bars 4–6 (NOT reu
 AGGREGATE MEMORY — REQUIRED OUTPUT KEY
 Alongside your normal bundle, include a top-level JSON key "aggregate_signature" that fully defines the Bars-4–6 aggregate so later bars can reuse it verbatim.
 
+Copy verbatim from context: Pull the aggregate_signature with id: "bars4_6_v1" exactly from the reference PT JSON context. Do not regenerate or reorder PCs. Only rename feature names if required; keep seeds/ops as needed for this bar.
+
 Schema:
 "aggregate_signature": {
   "id": "bars4_6_v1",

@@ -12,6 +12,8 @@ Define a modified aggregate for Bars 38–40 (not used elsewhere). Include:
 Keep band coverage continuous; 3–4 pcs per band; disjoint; union = 12 pcs.
 It should be clearly related to Bars-4–6 but not identical (subtle pcs changes and/or band bounds).
 
+Context rule: For Bars 38–40, include one aggregate_signature at top level with id: "bars38_40_v1". Later bars that reuse it must copy it verbatim from the reference PT JSON context.
+
 PT REALIZATION — one sustained note per instrument
 • TIME: one onset at tick 0 (N=1).
 • DURATION: 12 (ends exactly at 12).

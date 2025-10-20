@@ -12,6 +12,8 @@ Construct Aggregate C for Bars 42–45. Include a single top-level
 "aggregate_signature" (id "bars42_45_v1") with full bands (bounds + pcs_ordered).
 Keep 3–4 pcs per band; disjoint; union = 12 pcs. Favor non-triadic color.
 
+Include the aggregate_signature exactly once at top level (id: "bars42_45_v1"). If any later prompt references it, copy it verbatim from reference context.
+
 SECTION POLICY (applies to EACH of Bars 42, 43, 44, 45)
 • Dynamic: pp ≈ 28–34 per note.
 • Density per instrument per bar:

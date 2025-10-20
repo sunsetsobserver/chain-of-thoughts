@@ -9,7 +9,7 @@ INSTRUMENTS (EXACT)
 PT REALIZATION — encode silence explicitly
 For each instrument:
 • RUN PLAN: N = 1
-• SEEDS: time = 4 (i.e., onset at/after bar boundary), duration = any {1,2,3,4}, velocity arbitrary.
+• SEEDS: time = 8 (i.e., onset at/after bar boundary), duration = any {1,2,3,4}, velocity arbitrary.
 Result: no realized notes inside this 2/4 bar.
 
 METER

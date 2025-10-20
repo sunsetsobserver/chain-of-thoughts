@@ -18,6 +18,8 @@ Hard constraints (copy from Bar 4):
 • VELOCITY: very soft, identical to Bar 4 if available; otherwise constant pp–ppp ≈ 40–48 (tiny deltas ≤2).
 • METER: numerator=3, denominator=4 via seeds; transforms for meter are add 0.
 
+Literal reuse from context: Copy the earlier bar’s PT design exactly from the reference PT JSON (same N, seeds, and transformations), changing only feature names. Copy the aggregate_signature (id: "bars4_6_v1") verbatim
+
 VALIDATION
 • Exactly one note per instrument (onset [0], duration [12]).
 • All MIDI inside hard ranges; pcs legal for the original band at that register.

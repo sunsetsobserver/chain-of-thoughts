@@ -31,6 +31,8 @@ Alongside your normal bundle, include a top-level JSON key `aggregate_signature`
 }
 ```
 
+Include the aggregate_signature once at top level of the multi-bar object. Do not duplicate it per bar. Later prompts may copy it verbatim from reference context.
+
 SECTION STRUCTURE
 Produce three bars in 3/4, each 12 ticks long (ticks 0–12).
 Each bar activates a different instrument pair, so that across Bars 7–9 all six instruments participate exactly once.

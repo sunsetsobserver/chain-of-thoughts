@@ -16,6 +16,8 @@ Hard constraints (copy from Bar 5):
 • VELOCITY: identical to Bar 5 if available; otherwise constant soft ≈ 44–52.
 • METER: seeds set numerator=4, denominator=4; meter transforms add 0.
 
+Literal reuse from context: Copy the earlier bar’s PT design exactly from the reference PT JSON (same N, seeds, and transformations), changing only feature names. Copy the aggregate_signature (id: "bars4_6_v1") verbatim
+
 VALIDATION
 • Per instrument: time [0], duration [16] only; no extra events.
 • All pitches in hard ranges and legal for the aggregate band pcs.

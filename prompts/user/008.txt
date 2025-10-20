@@ -16,6 +16,8 @@ Internally construct a new aggregate named Aggregate B for Bars 10–13:
 AGGREGATE MEMORY — REQUIRED OUTPUT KEY
 Include a top-level JSON key "aggregate_signature" for Aggregate B using the same schema as Aggregate A, with id "bars10_13_v1".
 
+Provide aggregate_signature only once at top level; later sections may reuse it verbatim from reference context.
+
 SECTION STRUCTURE
 Produce four bars in 3/4 (each bar has ticks 0..11).
 Split instruments into two groups (3 + 3):
@@ -30,6 +32,8 @@ Background Loop (3 instruments)
 • PITCH: add/sub only within Aggregate B band pcs; seed ≈ tessitura center; stay inside hard range.
 • VELOCITY: ≈ 48 (±4), consistent.
 • The same loop (timing, durations, pitches, velocities) repeats exactly in all four bars.
+
+Literal repetition across bars: Make the loop identical in all four bars by using the same dimensions and run_plan (seeds, N) per loop instrument so the realized arrays (time, duration, pitch, velocity) are byte-for-byte identical across Bars 10–13.
 
 Foreground Hits (3 instruments)
 • Each bar contains 3–8 short events.

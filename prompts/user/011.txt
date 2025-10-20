@@ -7,7 +7,7 @@ INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
 
 CONTEXT LINK (INTERNAL, DO NOT PRINT)
-This recap chord must be chosen from material in Bars 16–18 (the loop+stabs section). Select a vertical (or near-simultaneous cluster) that actually occurred there and reuse its pitch-class content/registral shape here. Favor center-weighted voicing, avoid adjacent-instrument unisons; sparse octave doublings are fine. (Suite context contains Bars 16–18 summaries.)
+Choose the chord from material in Bars 15–17 (the loop+stabs section). Use the reference PT JSON context to find an actual vertical and copy its pitch-class content/registral shape. (the loop+stabs section). Select a vertical (or near-simultaneous cluster) that actually occurred there and reuse its pitch-class content/registral shape here. Favor center-weighted voicing, avoid adjacent-instrument unisons; sparse octave doublings are fine. (Suite context contains Bars 16–18 summaries.)
 
 PT REALIZATION — one note on beat 1 only; silence on beat 2
 Per instrument:

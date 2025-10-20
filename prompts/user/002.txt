@@ -16,7 +16,7 @@ Aggregate A and B (both must satisfy):
 • Assign to each band a disjoint pitch-class set (pcs) of exactly 4 pcs; LOW_pcs ∪ MID_pcs ∪ HIGH_pcs = all 12 pcs (0..11).
 • The order of pcs within each band matters (defines neighborhood for targeting), and the pcs should suggest thirdal/quartal neighborhoods (avoid trivial equal-step cycles like 0–3–6–9).
 • A and B must be different (at least one band uses a different pcs set and/or different band spans).
-• Contrast with Bar 1 (choose pcs so the sonority palette is perceptibly different; you won’t see Bar 1’s exact sets, so bias away from common diatonic triadic clusters).
+• Contrast with Bar 1 (choose pcs so the sonority palette is perceptibly different). Even though earlier PT JSON is visible in the reference context, do not copy Bar-1 sets—design new A and B.
 
 VOICING RULES (HOW TO REALIZE THE TWO HITS WITH PTs)
 We will create exactly two simultaneous verticals (tutti chords) at relative bar ticks 0 and 4, each with duration 4 ticks (quarter notes on a 1/16 grid). No other notes in this bar.
@@ -32,6 +32,8 @@ DYNAMICS
 Two fixed dynamic levels for clarity of contrast:
 • Hit 1 velocity ≈ 124 (stronger)
 • Hit 2 velocity ≈ 114 (slightly softer)
+
+Context rule: When later prompts ask to recall Bar-2, they will copy from this bar’s PT JSON in the reference context; keep your bundle clean and unambiguous (one feature per instrument, simple single-step time pattern to [0,4]).
 
 PT REALIZATION REQUIREMENTS (so the bundle reproduces the behavior)
 • TIME: strictly increasing using only `add {1,2,3,4}`. For exactly two onsets at 0 and 4, use a single-step pattern that yields `[0,4]` (e.g., seed time=0, transforms `[{"name":"add","args":[4]}]` with `N=2`). No zeros; no mul/div.
