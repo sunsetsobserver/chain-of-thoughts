@@ -58,16 +58,4 @@ METER & GRID
 • This bar is 4/4 on a 1/16 grid → BAR_TICKS = 16.
 • In the bundle, keep `numerator`/`denominator` transforms constant `add 0`, with seeds set to 4 and 4.
 
-BUNDLE REQUIREMENTS (ONE BAR)
-Return one JSON bundle that:
-• Includes features for all six instruments (one feature per instrument).
-• In `meta.instrument`, use one of the six exact ids.
-• In `run_plan`, set seeds so:
-  – the three ACTIVE instruments realize their pp lines fully inside tick 0..15,
-  – the three SILENT instruments have `seeds.time = 16` and `N = 1` (so they realize nothing in this bar).
-• Obey all DCN op constraints:
-  – `time`: only `add` with args in {1,2,3,4}; strictly increasing; no zeros.
-  – `duration`: add/sub/mul/div allowed, mul/div args in {2,3,4}; values realized must stay in {1,2,3,4}; enforce MAX(duration) ≤ s_min.
-  – `pitch`: add/sub only.
-  – `velocity`: near 30.
-• Ensure all realized notes are inside the instrument hard range and inside the band-legal pcs at their register for this new aggregate.
+Return one JSON object with "bars":[ <this single bar bundle> ].

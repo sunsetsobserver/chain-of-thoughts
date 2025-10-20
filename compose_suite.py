@@ -5,8 +5,15 @@ generate each as a UNIT (one prompt → 1..N bars),
 feed a rolling CONTEXT to each subsequent unit,
 concatenate units into a final composition, and
 write EVERYTHING into a single suite folder under runs/.
+
+Additions:
+- Checkpointing after each unit + periodic partial outputs.
+- Resume support: --resume runs/<ts>_suite.
+- Rich logging to console and suite.log.
+- Honors ONLY filter and context budget you already added.
 """
 
+import argparse
 import json, pathlib
 from typing import Dict, List, Any
 from datetime import datetime
@@ -16,19 +23,33 @@ from pt_prompts import PROMPTS_DIR
 from pt_generate import generate_unit_from_template
 
 from eth_account import Account
-from eth_account.messages import encode_defunct
 from dcn_client import DCNClient
 from pt_config import API_BASE
 import os
 import subprocess
+import sys
+import logging
+import time
 
 from tqdm import tqdm
 
-def _mk_bundle_context(snippets: List[str]) -> str:
-    """Concatenate ALL prior minified PT bundles with a lightweight separator."""
+
+def _mk_bundle_context(snippets: List[str], budget_chars: int = 15000) -> str:
     if not snippets:
         return ""
-    return "\n\n-----\n\n".join(snippets)
+    sep = "\n\n-----\n\n"
+    out = []
+    total = 0
+    # keep most-recent-first until budget is hit
+    for s in reversed(snippets):
+        need = len(s) + (len(sep) if out else 0)
+        if total + need > budget_chars:
+            break
+        if out:
+            out.append(sep)
+        out.append(s)
+        total += need
+    return "".join(reversed(out))
 
 
 def _discover_templates() -> List[pathlib.Path]:
@@ -38,7 +59,15 @@ def _discover_templates() -> List[pathlib.Path]:
     paths = list(user_dir.glob("*.template.json")) + list(user_dir.glob("*.txt"))
     if not paths:
         raise SystemExit("No prompt templates found in prompts/user/ (expected *.txt or *.template.json).")
-    return sorted(paths, key=lambda p: p.name)
+    paths = sorted(paths, key=lambda p: p.name)
+    only = os.getenv("ONLY")  # e.g., ONLY=010.txt or ONLY=010*
+    if only:
+        import fnmatch
+        paths = [p for p in paths if fnmatch.fnmatch(p.name, only)]
+        if not paths:
+            raise SystemExit(f"ONLY filter '{only}' matched no files.")
+    return paths
+
 
 def _concat_units(units: List[Dict[str, Any]]) -> Dict[str, Any]:
     combined: Dict[str, Dict[str, List[int]]] = {
@@ -73,18 +102,86 @@ def _concat_units(units: List[Dict[str, Any]]) -> Dict[str, Any]:
     payload = {"instrument_meta": INSTRUMENT_META, "tracks": tracks}
     return {"payload": payload, "schedule": suite_schedule, "total_ticks": cumulative}
 
+
+# ---------- checkpoint helpers ----------
+def _write_json(path: pathlib.Path, obj: Any):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=2)
+
+
+def _append_text(path: pathlib.Path, text: str):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(text)
+
+
+def _load_json(path: pathlib.Path, default=None):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return default
+
+
+def _save_checkpoint(suite_dir: pathlib.Path,
+                     templates: List[pathlib.Path],
+                     units_done: List[Dict[str, Any]],
+                     ctx_bundles: List[str],
+                     checkpoint_every: int,
+                     force_partial: bool = False):
+    """
+    Persist durable state so we can resume later.
+    - checkpoint.json: progress + template order + ctx bundles (minjson)
+    - units/<label>.json: full unit objects
+    - composition_suite.partial.json & schedule.partial.json every K units (or on force)
+    """
+    ckpt = {
+        "templates": [str(p) for p in templates],
+        "done_units": [u["unit_label"] for u in units_done],
+        "ctx_bundles": list(ctx_bundles),
+        "progress": {"completed": len(units_done), "total": len(templates)},
+        "updated_at": datetime.now().isoformat(timespec="seconds"),
+    }
+    _write_json(suite_dir / "checkpoint.json", ckpt)
+
+    # Per-unit files (idempotent)
+    units_dir = suite_dir / "units"
+    for u in units_done:
+        _write_json(units_dir / f"{u['unit_label']}.json", u)
+
+    # Partial stitched outputs
+    if force_partial or (len(units_done) % max(1, checkpoint_every) == 0):
+        stitched = _concat_units(units_done)
+        _write_json(suite_dir / "composition_suite.partial.json", stitched["payload"])
+        _write_json(suite_dir / "schedule.partial.json", stitched["schedule"])
+        logging.info("Wrote partial outputs (%d/%d).",
+                     len(units_done), len(templates))
+
+
+# ---------- logging ----------
+def _setup_logging(suite_dir: pathlib.Path, verbose: bool):
+    log_fmt = "%(asctime)s | %(levelname)-8s | %(message)s"
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(level=level, format=log_fmt, handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler(suite_dir / "suite.log", encoding="utf-8"),
+    ])
+    logging.info("Logging to %s", suite_dir / "suite.log")
+
+
 def _maybe_export_midi(suite_dir: pathlib.Path):
     """
     Try to export a MIDI file using Node tools/pt2midi.js.
     Non-fatal on any failure. Set NO_MIDI=1 to skip.
     """
     if os.getenv("NO_MIDI", "0") == "1":
-        print("MIDI export skipped (NO_MIDI=1).")
+        logging.info("MIDI export skipped (NO_MIDI=1).")
         return
 
     tools_js = pathlib.Path(__file__).resolve().parent / "tools" / "pt2midi.js"
     if not tools_js.exists():
-        print("MIDI export skipped (tools/pt2midi.js not found).")
+        logging.info("MIDI export skipped (tools/pt2midi.js not found).")
         return
 
     in_json = suite_dir / "composition_suite.json"
@@ -99,112 +196,167 @@ def _maybe_export_midi(suite_dir: pathlib.Path):
             text=True,
         )
         if result.stdout.strip():
-            print(result.stdout.strip())
+            logging.info(result.stdout.strip())
         if out_mid.exists():
-            print("  •", out_mid)
+            logging.info("  • %s", out_mid)
         else:
-            print("MIDI export completed but output file was not found where expected.")
+            logging.warning("MIDI export completed but output file was not found where expected.")
     except FileNotFoundError:
-        print("MIDI export skipped (Node not found on PATH).")
+        logging.info("MIDI export skipped (Node not found on PATH).")
     except subprocess.CalledProcessError as e:
-        print("MIDI export failed (non-fatal). Output:")
-        print(e.stdout or "(no output)")
+        logging.warning("MIDI export failed (non-fatal). Output:\n%s", e.stdout or "(no output)")
     except Exception as e:
-        print("MIDI export failed (non-fatal):", e)
+        logging.warning("MIDI export failed (non-fatal): %s", e)
 
 
 def main():
-    templates = _discover_templates()
-    print("Discovered templates (units):")
-    for p in templates:
-        print("  •", p.name)
+    parser = argparse.ArgumentParser(description="Compose suite with checkpointing and resume.")
+    parser.add_argument("--resume", type=str, default=None,
+                        help="Path to an existing runs/<ts>_suite to resume.")
+    parser.add_argument("--checkpoint-every", type=int, default=int(os.getenv("CHECKPOINT_EVERY", "5")),
+                        help="Emit partial stitched outputs every K units (default 5).")
+    parser.add_argument("--verbose", action="store_true", help="Verbose logging.")
+    args = parser.parse_args()
 
     # --- Shared account + DCN session (reuse across all units) ---
     priv = os.getenv("PRIVATE_KEY")
     acct = Account.from_key(priv) if priv else Account.create("TEMPKEY for demo")
-
     client = DCNClient(API_BASE)
     client.ensure_auth(acct)  # single login; tokens stored in client
 
-
-    # Create ONE suite folder upfront
+    # Suite dir (new or resume)
     runs_root = pathlib.Path(__file__).resolve().parent / "runs"
-    ts = datetime.now().strftime("%Y%m%d-%H%M%S")
-    suite_dir = runs_root / f"{ts}_suite"
-    suite_dir.mkdir(parents=True, exist_ok=False)
+    runs_root.mkdir(exist_ok=True)
 
-    units: List[Dict[str, Any]] = []
-    suite_context = ""         # rolling text summary passed to each next unit
-    suite_pt_journal: List[Dict[str, Any]] = []  # merged journal across units
-    prompts_log_lines: List[str] = []            # optional: keep what we asked
+    if args.resume:
+        suite_dir = pathlib.Path(args.resume).resolve()
+        if not suite_dir.exists():
+            raise SystemExit(f"--resume path not found: {suite_dir}")
+        is_resume = True
+    else:
+        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+        suite_dir = runs_root / f"{ts}_suite"
+        suite_dir.mkdir(parents=True, exist_ok=False)
+        is_resume = False
 
-    # keep ALL prior PT JSON bundles (minified) for context
-    ctx_bundles: List[str] = []
+    _setup_logging(suite_dir, args.verbose)
+
+    # Discover templates / load from checkpoint
+    if is_resume:
+        ckpt = _load_json(suite_dir / "checkpoint.json", default={})
+        saved = ckpt.get("templates") or []
+        if saved:
+            templates = [pathlib.Path(p) for p in saved]
+            logging.info("Resuming with saved template order (%d files).", len(templates))
+        else:
+            templates = _discover_templates()
+            logging.info("Resuming without saved order; rediscovered %d templates.", len(templates))
+
+        done_labels = set(ckpt.get("done_units", []))
+        ctx_bundles = list(ckpt.get("ctx_bundles", []))
+
+        # Rehydrate finished units in order
+        units_done: List[Dict[str, Any]] = []
+        for p in templates:
+            lbl = p.stem
+            if lbl in done_labels:
+                u = _load_json(suite_dir / "units" / f"{lbl}.json")
+                if u:
+                    units_done.append(u)
+
+        # We will append new prompt summaries; keep the existing file as-is
+        suite_pt_journal: List[Dict[str, Any]] = _load_json(suite_dir / "pt_journal.json", default=[])
+        logging.info("Resume: %d/%d units already done.", len(units_done), len(templates))
+    else:
+        templates = _discover_templates()
+        _write_json(suite_dir / "templates_order.json", [str(p) for p in templates])
+        units_done: List[Dict[str, Any]] = []
+        suite_pt_journal: List[Dict[str, Any]] = []
+        ctx_bundles: List[str] = []
+        logging.info("New run with %d templates.", len(templates))
+
+    # Persist initial checkpoint so resume works even if we crash early
+    _save_checkpoint(suite_dir, templates, units_done, ctx_bundles, args.checkpoint_every, force_partial=True)
+
+    # Human-readable log file grows as we go
+    hr_log = suite_dir / "prompts_and_summaries.txt"
+
+    # Rolling suite_context from ctx_bundles (respect existing budget)
     suite_context = _mk_bundle_context(ctx_bundles)
 
-    print("\nGenerating units...\n")
-    for path in tqdm(templates, desc="Generating", unit="unit", ncols=80):
-        unit = generate_unit_from_template(
-            path,
-            label=path.stem,
-            fetch=False,
-            suite_context=suite_context,
-            acct=acct,
-            dcn=client,
-        )
+    logging.info("Generating units...")
+    try:
+        for idx, path in enumerate(tqdm(templates, desc="Generating", unit="unit", ncols=80), start=1):
+            label = path.stem
+            if any(u["unit_label"] == label for u in units_done):
+                continue  # already done in resume
 
-        units.append(unit)
+            logging.info("Unit %s (%d/%d): start", label, idx, len(templates))
+            t0 = time.perf_counter()
+            unit = generate_unit_from_template(
+                path,
+                label=label,
+                fetch=False,
+                suite_context=suite_context,
+                acct=acct,
+                dcn=client,
+                session_dir=suite_dir,  # allows pt_generate to dump raw errors if needed
+            )
+            dt = time.perf_counter() - t0
+            logging.info("Unit %s: done in %.1fs | ticks=%d", label, dt, unit["total_ticks"])
 
-        # Merge PT journal
-        suite_pt_journal.extend(unit.get("pt_journal", []))
+            # Merge results in-memory
+            units_done.append(unit)
+            suite_pt_journal.extend(unit.get("pt_journal", []))
 
-        # Keep human-readable logs (unchanged)
-        prompts_log_lines.append(f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n")
-        prompts_log_lines.append(f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n")
+            # Append human-readable logs
+            _append_text(hr_log, f"PROMPT {unit['unit_label']}:\n{unit['rendered_user_text']}\n\n")
+            _append_text(hr_log, f"SUMMARY {unit['unit_label']}:\n{unit['unit_summary_text']}\n\n")
 
-        # NEW: feed forward the model’s actual PT JSON (minified) — keep ALL of them
-        mj = unit.get("model_bundle_minjson")
-        if isinstance(mj, str) and mj.strip():
-            ctx_bundles.append(mj.strip())
+            # Feed forward model’s minified PT JSON
+            mj = unit.get("model_bundle_minjson")
+            if isinstance(mj, str) and mj.strip():
+                ctx_bundles.append(mj.strip())
+                suite_context = _mk_bundle_context(ctx_bundles)
 
-        # Rebuild the suite_context for the NEXT unit from all prior bundles
-        suite_context = _mk_bundle_context(ctx_bundles)
+            # Save durable checkpoint + periodic partial outputs
+            _save_checkpoint(suite_dir, templates, units_done, ctx_bundles, args.checkpoint_every)
 
+        logging.info("All units generated. Stitching final outputs...")
+        suite = _concat_units(units_done)
 
-    # Concatenate units
-    suite = _concat_units(units)
+        _write_json(suite_dir / "composition_suite.json", suite["payload"])
+        _write_json(suite_dir / "schedule.json",            suite["schedule"])
+        _write_json(suite_dir / "pt_journal.json",          suite_pt_journal)
 
-    # Persist EVERYTHING (once) in the single suite folder
-    with open(suite_dir / "composition_suite.json", "w", encoding="utf-8") as f:
-        json.dump(suite["payload"], f, ensure_ascii=False, indent=2)
-    with open(suite_dir / "schedule.json", "w", encoding="utf-8") as f:
-        json.dump(suite["schedule"], f, ensure_ascii=False, indent=2)
-    with open(suite_dir / "pt_journal.json", "w", encoding="utf-8") as f:
-        json.dump(suite_pt_journal, f, ensure_ascii=False, indent=2)
-    with open(suite_dir / "prompts_and_summaries.txt", "w", encoding="utf-8") as f:
-        f.write("\n".join(prompts_log_lines))
-
-    manifest = {
-        "units": [u["unit_label"] for u in units],
-        "total_ticks": suite["total_ticks"],
-        "files": {
-            "payload": "composition_suite.json",
-            "schedule": "schedule.json",
-            "pt_journal": "pt_journal.json",
-            "prompts_and_summaries": "prompts_and_summaries.txt"
+        manifest = {
+            "units": [u["unit_label"] for u in units_done],
+            "total_ticks": suite["total_ticks"],
+            "files": {
+                "payload": "composition_suite.json",
+                "schedule": "schedule.json",
+                "pt_journal": "pt_journal.json",
+                "prompts_and_summaries": "prompts_and_summaries.txt"
+            }
         }
-    }
-    with open(suite_dir / "manifest.json", "w", encoding="utf-8") as f:
-        json.dump(manifest, f, ensure_ascii=False, indent=2)
+        _write_json(suite_dir / "manifest.json", manifest)
 
-    print("Suite written:")
-    print("  •", suite_dir / "composition_suite.json")
-    print("  •", suite_dir / "schedule.json")
-    print("  •", suite_dir / "pt_journal.json")
-    print("  •", suite_dir / "manifest.json")
+        logging.info("Suite written:")
+        logging.info("  • %s", suite_dir / "composition_suite.json")
+        logging.info("  • %s", suite_dir / "schedule.json")
+        logging.info("  • %s", suite_dir / "pt_journal.json")
+        logging.info("  • %s", suite_dir / "manifest.json")
 
-    # Optional MIDI export via Node (non-fatal if unavailable)
-    _maybe_export_midi(suite_dir)
+        _maybe_export_midi(suite_dir)
+
+    except KeyboardInterrupt:
+        logging.warning("Interrupted by user. Partial outputs and checkpoint saved in %s", suite_dir)
+        _save_checkpoint(suite_dir, templates, units_done, ctx_bundles, args.checkpoint_every, force_partial=True)
+    except Exception as e:
+        logging.exception("Run failed. Partial outputs and checkpoint saved in %s", suite_dir)
+        _save_checkpoint(suite_dir, templates, units_done, ctx_bundles, args.checkpoint_every, force_partial=True)
+        raise
+
 
 if __name__ == "__main__":
     main()

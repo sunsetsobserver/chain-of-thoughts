@@ -54,4 +54,3 @@ VALIDATION
 • Three hit instruments generate new staccato patterns in each bar.
 • No overlaps within any instrument.
 • All MIDI pitches within range and legal for band pcs.
-• Aggregate signature present and valid (id = "bars10_13_v1").

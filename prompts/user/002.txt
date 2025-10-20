@@ -39,7 +39,7 @@ PT REALIZATION REQUIREMENTS (so the bundle reproduces the behavior)
 • TIME: strictly increasing using only `add {1,2,3,4}`. For exactly two onsets at 0 and 4, use a single-step pattern that yields `[0,4]` (e.g., seed time=0, transforms `[{"name":"add","args":[4]}]` with `N=2`). No zeros; no mul/div.
 • DURATION: constant 4; values must stay in `{1,2,3,4}` and obey MAX(duration) ≤ s_min (here `s_min = 4`).
 • PITCH: add/sub only. Realize the two chosen targets by setting `seed pitch = Hit1_MIDI` and a single transform whose delta lands exactly on Hit 2 (delta = Hit2_MIDI − Hit1_MIDI).
-• VELOCITY: two values `[124, 114]` (e.g., seed 124 then `add -10`).
+• VELOCITY: two values `[124, 114]` (e.g., e.g., seed 124 then subtract 10).
 • METER: seeds must set numerator=2, denominator=4; numerator/denominator transforms are constant `add 0`.
 
 TEXTURE CHECKS

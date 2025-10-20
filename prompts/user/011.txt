@@ -23,7 +23,7 @@ ABSOLUTE PROHIBITIONS
 • No intra-bar pitch motion; monophony per instrument.
 
 STRUCTURE OF THE RETURN
-Return one JSON bundle (a single bar of 2/4) with exactly six features (one per listed instrument) and a run_plan that produces the chord as specified.
+Return one JSON object with "bars":[ <this single bar bundle> ].
 
 VALIDATION
 • For each instrument: time = [0], duration = [4] only.

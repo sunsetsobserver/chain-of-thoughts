@@ -23,7 +23,7 @@ ADDITIONAL MUSICAL GUARDRAILS
 • Center-weighted voicing: db/cello anchor LOW; bcl LOW↔MID; vn/af/tpt MID↔HIGH.
 
 STRUCTURE OF THE RETURN
-Return one JSON bundle (single bar, 2/4) with exactly six features (one per listed instrument) and a run_plan that produces the hits as specified.
+Return one JSON object with "bars":[ <this single bar bundle> ].
 
 VALIDATION
 • Exactly two notes per instrument at onsets [0, 4] with durations [4, 4].

@@ -4,7 +4,7 @@ The prompt may yield a SINGLE bar bundle or a SECTION with many bars:
 - If the model returns {"features":..., "run_plan":...}: one bar.
 - If it returns {"bars":[ {...}, {...}, ... ]}: multi-bar section.
 
-We also support "context chaining": pass `suite_context` (text summary of prior units)
+Supports "context chaining": pass `suite_context` (text of prior bundles)
 as an extra system message so the model composes with awareness of what came before.
 """
 
@@ -12,7 +12,7 @@ import os, json, time, pathlib, importlib.util, statistics
 from typing import Dict, List, Any, Optional
 from datetime import datetime
 from eth_account import Account
-from openai import OpenAI
+from openai import OpenAI, APITimeoutError
 
 from pt_config import (
     API_BASE, ORDERED_INSTRS, INSTRUMENTS, INSTRUMENT_META,
@@ -63,14 +63,11 @@ def _cap_to_next_onset_and_bar(times: List[int], durations: List[int], bar_ticks
     for i in range(n):
         t = T[i]
         nxt = T[i + 1] if i + 1 < n else bar_ticks
-        # duration cannot exceed the remaining space until the next onset / bar end
         max_ok = max(0, nxt - t)
         if D[i] > max_ok:
             D[i] = max_ok
-        # also ensure nothing crosses the bar boundary
         if t + D[i] > bar_ticks:
             D[i] = max(0, bar_ticks - t)
-    # prune zero or negative durations and any notes starting at/after bar end
     keep_idx = [i for i in range(n) if D[i] > 0 and T[i] < bar_ticks]
     return [T[i] for i in keep_idx], [D[i] for i in keep_idx]
 
@@ -116,6 +113,13 @@ def _load_openai_key() -> str:
     return key_env
 
 # ---------- validation ----------
+def _must_uint(x, label: str) -> int:
+    if not isinstance(x, int):
+        raise RuntimeError(f"{label} must be an unsigned integer")
+    if x < 0:
+        raise RuntimeError(f"{label} must be unsigned (>= 0)")
+    return x
+
 def _validate_bundle(bundle: Dict[str, Any], bar_label: str):
     ALLOWED = {"add", "subtract", "mul", "div"}
     for feat in bundle.get("features", []):
@@ -141,6 +145,7 @@ def _validate_bundle(bundle: Dict[str, Any], bar_label: str):
                         if a in (0, 1):
                             raise RuntimeError(f"[{bar_label}] duration mul/div args must be 2..4. Offender in '{pt.get('name')}'.")
 
+
 # ---------- context summary ----------
 def _summarize_unit(per_instr_unit: Dict[str, Dict[str, List[int]]],
                     bars_count: int, total_ticks: int, num: int, den: int,
@@ -162,6 +167,45 @@ def _summarize_unit(per_instr_unit: Dict[str, Dict[str, List[int]]],
         )
     return "\n".join(lines)
 
+# ---------- JSON extraction helpers ----------
+def _resp_to_dict_safe(resp) -> dict:
+    try:
+        # SDK objects typically support model_dump / to_dict
+        if hasattr(resp, "model_dump"):
+            return resp.model_dump()
+        if hasattr(resp, "to_dict"):
+            return resp.to_dict()
+    except Exception:
+        pass
+    # very defensive fallback
+    try:
+        return json.loads(getattr(resp, "model_dump_json", lambda: "{}")())
+    except Exception:
+        return {}
+
+def _extract_output_text_parts(resp) -> List[str]:
+    parts: List[str] = []
+    try:
+        for msg in getattr(resp, "output", []) or []:
+            for c in getattr(msg, "content", []) or []:
+                if getattr(c, "type", None) == "output_text":
+                    txt = getattr(c, "text", "") or ""
+                    if txt:
+                        parts.append(txt)
+    except Exception:
+        pass
+    return parts
+
+def _first_json_block(text: str) -> str:
+    """Heuristic: slice the first {...} block if the model wrapped JSON in prose."""
+    if not text:
+        return ""
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        return text[start:end+1]
+    return ""
+
 # ---------- main API ----------
 def generate_unit_from_template(
     template_path: pathlib.Path,
@@ -171,18 +215,14 @@ def generate_unit_from_template(
     fetch: bool = False,
     acct: Optional[Account] = None,
     suite_context: Optional[str] = None,   # rolling context string
-    session_dir: Optional[pathlib.Path] = None,  # NEW: shared suite folder; this function writes nothing
-    dcn: Optional[DCNClient] = None,       # <<< ADD THIS
+    session_dir: Optional[pathlib.Path] = None,  # shared suite folder (for error dumps)
+    dcn: Optional[DCNClient] = None,
 ) -> Dict[str, Any]:
     """
     Generate ONE UNIT (one prompt file). The unit can contain many bars.
-
-    IMPORTANT: This function no longer writes ANY files. It returns everything
-    the caller (compose_suite.py) needs to persist once, inside a single suite folder.
-
     Returns dict with:
       unit_label, total_ticks, schedule, per_instr, payload,
-      rendered_user_text, unit_summary_text, pt_journal
+      rendered_user_text, unit_summary_text, pt_journal, model_bundle_minjson
     """
     label = label or template_path.stem
 
@@ -219,9 +259,11 @@ def generate_unit_from_template(
         instruments=INSTRUMENTS,
     )
 
-    # --- OpenAI call (Responses + GPT-5) --------------------------------------
+    # --- OpenAI call (Responses API + Structured Outputs) ---------------------
     OPENAI_API_KEY = _load_openai_key()
-    oai = OpenAI(api_key=OPENAI_API_KEY)
+    oai = OpenAI(
+        api_key=OPENAI_API_KEY
+    )
 
     # Messages (with optional rolling context as extra system message)
     messages = [
@@ -233,7 +275,7 @@ def generate_unit_from_template(
             "content": [{
                 "type": "input_text",
                 "text": (
-                    "REFERENCE PT JSON RESPONSES FROM EARLIER UNITS\n"
+                    "REFERENCE PT JSON RESPONSES FROM EARLIER UNITS IF NEEDED:\n"
                     "Use these ONLY for continuity or literal reuse of earlier fragments.\n"
                     "Do NOT quote, summarize, or echo these objects.\n"
                     "Output exactly ONE JSON object for the CURRENT unit only.\n\n"
@@ -246,23 +288,24 @@ def generate_unit_from_template(
         "content": [{"type": "input_text", "text": user_text}]
     })
 
+    oai = OpenAI(api_key=OPENAI_API_KEY, max_retries=2)  # SDK will retry briefly on 5xx
 
     resp = oai.responses.create(
         model="gpt-5",
         input=messages,
-        text={"format": {"type": "json_object"}},
-        reasoning={ "effort": "low" },
+        text={"format": {"type": "json_object"}},   # flexible JSON mode
+        reasoning={"effort": "low"},                # keep internal chains short
+    )
+    raw_text = (resp.output_text or "").strip()
+
+    obj = json.loads(raw_text)
+    bar_bundles = (
+        obj["bars"] if isinstance(obj, dict) and isinstance(obj.get("bars"), list)
+        else [obj]
     )
 
-    raw_text = (resp.output_text or "").strip()
-    obj = json.loads(raw_text)
-
-    # Keep a minified version of this unit's bundle(s) for chaining
     model_bundle_minjson = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
-
-
-    # Determine if SINGLE bar or SECTION
-    bar_bundles = obj["bars"] if isinstance(obj, dict) and "bars" in obj and isinstance(obj["bars"], list) else [obj]
+    print(f"[{label}] Parsed model JSON: bars={len(bar_bundles)}")
 
     # Unit accumulators
     per_instr_unit = {i: {"pitch": [], "time": [], "duration": [], "velocity": [], "numerator": [], "denominator": []}
@@ -278,11 +321,16 @@ def generate_unit_from_template(
         bar_label = f"bar{local_idx:02d}"
 
         # Validate
+        print(f"[{label}] Validating {bar_label} ...")
         _validate_bundle(bundle, bar_label)
 
         # Rename features uniquely + fix run_plan refs
         name_map: Dict[str, str] = {}; seen = set()
-        for feat in bundle.get("features", []):
+        feats = bundle.get("features", [])
+        runp = bundle.get("run_plan", [])
+        print(f"[{label}] {bar_label}: features={len(feats)}, run_plan={len(runp)}")
+
+        for feat in feats:
             meta = feat.get("meta", {})
             instr = meta.get("instrument", "unknown")
             bar   = meta.get("bar", local_idx)
@@ -291,27 +339,28 @@ def generate_unit_from_template(
             new   = _make_unique_name(instr, bar, role, seen)
             name_map[old] = new
             feat["pt"]["name"] = new
-        for rp in bundle.get("run_plan", []):
+        for rp in runp:
             old = rp.get("feature_name","")
             if old in name_map:
                 rp["feature_name"] = name_map[old]
-        bundle["created_feature_names"] = [f["pt"]["name"] for f in bundle.get("features", [])]
+        bundle["created_feature_names"] = [f["pt"]["name"] for f in feats]
 
         # Enforce meter seeds + constant transforms
-        for rp in bundle.get("run_plan", []):
+        for rp in runp:
             rp.setdefault("seeds", {})
             rp["seeds"]["numerator"]   = NUM
             rp["seeds"]["denominator"] = DEN
-        for feat in bundle.get("features", []):
+        for feat in feats:
             for d in feat.get("pt", {}).get("dimensions", []):
                 fn = (d.get("feature_name") or "").strip().lower()
                 if fn in ("numerator", "denominator"):
                     d["transformations"] = [{"name":"add","args":[0]}]
 
         # Register PTs
-        for feat in bundle.get("features", []):
+        for i, feat in enumerate(feats, start=1):
             pt_name = feat["pt"]["name"]
             instr = (feat.get("meta") or {}).get("instrument", "")
+            print(f"[{label}] {bar_label}: POST feature {i}/{len(feats)} name={pt_name} instr={instr}")
             res = dcn.post_feature(feat["pt"], acct=acct)
 
             # Journal entry (compact)
@@ -329,15 +378,16 @@ def generate_unit_from_template(
             })
 
         # Execute and collect
-        dims_by_name = {feat["pt"]["name"]: feat["pt"]["dimensions"] for feat in bundle.get("features", [])}
+        dims_by_name = {feat["pt"]["name"]: feat["pt"]["dimensions"] for feat in feats}
         exec_by_feature: Dict[str, Dict[str, List[int]]] = {}
 
-        for rp in bundle.get("run_plan", []):
+        for rp in runp:
             fname = rp["feature_name"]
             dims = dims_by_name.get(fname, [])
             seeds = {k:int(v) for (k,v) in (rp.get("seeds") or {}).items()}
             N = int(rp.get("N", 4))
 
+            print(f"[{label}] {bar_label}: EXEC {fname} N={N}")
             samples = dcn.execute_pt(acct, fname, N, seeds, dims)
             streams = _normalize_exec(samples)
             exec_by_feature[fname] = streams
@@ -356,20 +406,18 @@ def generate_unit_from_template(
         # Build per-bar instrument map (to compute actual_end, then offset)
         per_instr_bar = {i: {"pitch": [], "time": [], "duration": [], "velocity": []} for i in ORDERED_INSTRS}
         for fname, streams in exec_by_feature.items():
-            instr = next((f["meta"].get("instrument") for f in bundle.get("features", []) if f["pt"]["name"] == fname), None)
+            instr = next((f["meta"].get("instrument") for f in feats if f["pt"]["name"] == fname), None)
             if not instr:
                 continue
             for key in ("pitch","time","duration","velocity"):
                 if key in streams:
                     per_instr_bar[instr][key].extend(list(streams[key]))
         
-        # --- NEW: cap durations to next onset and to the bar boundary ---
+        # Cap durations to next onset and to the bar boundary
         for instr in ORDERED_INSTRS:
             t = per_instr_bar[instr]["time"]
             d = per_instr_bar[instr]["duration"]
             if t and d:
-                # times should already be strictly increasing; if uncertain, you can sort by time:
-                # pairs = sorted(zip(t, d), key=lambda x: x[0]); t = [p[0] for p in pairs]; d = [p[1] for p in pairs]
                 t_cap, d_cap = _cap_to_next_onset_and_bar(t, d, bar_ticks)
                 per_instr_bar[instr]["time"] = t_cap
                 per_instr_bar[instr]["duration"] = d_cap
@@ -387,6 +435,8 @@ def generate_unit_from_template(
         # Force fixed bar slot; material is guaranteed to fit now
         slot_length = bar_ticks
 
+        # Append into UNIT with offset
+        print(f"[{label}] {bar_label}: end={actual_end} / slot_length={slot_length}")
         schedule.append({
             "bar_local_index": local_idx,
             "start_tick": cumulative,
@@ -395,8 +445,6 @@ def generate_unit_from_template(
             "bar_ticks": bar_ticks,
             "meter": {"numerator": NUM, "denominator": DEN},
         })
-
-        # Append into UNIT with offset
         for instr in ORDERED_INSTRS:
             src = per_instr_bar[instr]
             per_instr_unit[instr]["time"].extend([t + cumulative for t in src["time"]])
