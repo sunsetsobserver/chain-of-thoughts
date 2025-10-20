@@ -14,7 +14,7 @@ For each instrument:
 • TIME: N=2 with onsets [0, 4] (strictly increasing; only `add{4}` or an equivalent single step to land on 4).
 • DURATION: [4, 4] (each note fills its quarter completely; both end ≤ tick 8).
 • PITCH: add/sub only. Choose a legal MIDI for Hit 1 from the instrument’s band-legal pcs near tessitura center; Hit 2 must be a different pc for that same instrument, placed nearby (±3 semitones), still legal for the band.
-• VELOCITY: two values [124, 114] (e.g., seed 124 then `add -10`).
+• VELOCITY: two values [124, 114] (e.g., seed 124 then {"name":"subtract","args":[10]}).
 • METER: numerator=2, denominator=4 via seeds; meter transforms are `add 0`.
 
 ADDITIONAL MUSICAL GUARDRAILS
