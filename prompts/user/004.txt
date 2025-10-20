@@ -15,9 +15,6 @@ Before writing PTs, internally construct a NEW aggregate for Bars 4–6 (NOT reu
 • ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step cycles like 0–3–6–9).
 • Make this Bars-4–6 aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
 
-AGGREGATE MEMORY — REQUIRED OUTPUT KEY
-Alongside your normal bundle, include a top-level JSON key "aggregate_signature" that fully defines the Bars-4–6 aggregate so later bars can reuse it verbatim.
-
 Copy verbatim from context: Pull the aggregate_signature with id: "bars4_6_v1" exactly from the reference PT JSON context. Do not regenerate or reorder PCs. Only rename feature names if required; keep seeds/ops as needed for this bar.
 
 Schema:

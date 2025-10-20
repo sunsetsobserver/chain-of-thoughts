@@ -16,20 +16,6 @@ Construct a new register-partitioned, non-isomorphic aggregate, different from t
 • Assign disjoint pitch-class sets (pcs) to the three bands so that LOW∪MID∪HIGH = 12 pcs (0..11). Each band has 3–4 pcs and an ORDERED list (thirdal/quartal neighborhoods; avoid trivial 0–3–6–9 cycles).
 • Material difference vs Bars 42–45: change the pc→band assignment for at least 6 pitch classes and adjust at least one band boundary per instrument.
 
-AGGREGATE MEMORY — REQUIRED OUTPUT KEY
-Include a compact JSON object:
-"aggregate_signature": {
-  "id": "bars46_49_v1",
-  "bands": {
-    "<instrument>": {
-      "low":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..3–4 ints..]},
-      "mid":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..]},
-      "high": {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..]}
-    },
-    "... six instruments total ..."
-  }
-}
-
 SECTION STRUCTURE
 Produce FOUR bars in 3/4 (ticks 0..11 each): Bars 46, 47, 48, 49.
 
@@ -56,9 +42,6 @@ VARIATION RULES vs the earlier 4×3/4 fragment
 INTERLOCK & VOICING
 • Keep mild rhythmic interlock; adjacent instruments avoid unisons at coincident onsets; sparse octaves OK.
 • Maintain registral spacing: db LOW, vc LOW↔MID, bcl LOW↔MID; vn MID, af MID↔HIGH, tpt MID↔HIGH.
-
-STRUCTURE OF THE RETURN
-Return one JSON object with "bars":[ … ] containing exactly four bars (46–49), each including all six instruments and a single "aggregate_signature" (id = "bars46_49_v1").
 
 VALIDATION
 • Exactly four bars of 3/4 (12 ticks each). All time streams strictly increase; no chords.

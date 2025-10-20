@@ -13,11 +13,6 @@ Internally construct a new aggregate named Aggregate B for Bars 10–13:
 • Disjoint pcs across bands → union = 12 pcs (0–11).
 • Different from Aggregate A in pcs content and/or band boundaries.
 
-AGGREGATE MEMORY — REQUIRED OUTPUT KEY
-Include a top-level JSON key "aggregate_signature" for Aggregate B using the same schema as Aggregate A, with id "bars10_13_v1".
-
-Provide aggregate_signature only once at top level; later sections may reuse it verbatim from reference context.
-
 SECTION STRUCTURE
 Produce four bars in 3/4 (each bar has ticks 0..11).
 Split instruments into two groups (3 + 3):

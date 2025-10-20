@@ -14,25 +14,6 @@ Before writing PTs, internally construct a NEW aggregate named Aggregate A for B
 • ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step patterns like 0–3–6–9).
 • This Aggregate A must be different from any aggregate used in earlier bars (1–6).
 
-AGGREGATE MEMORY — REQUIRED OUTPUT KEY
-Alongside your normal bundle, include a top-level JSON key `aggregate_signature` defining Aggregate A:
-
-```
-"aggregate_signature": {
-  "id": "bars7_9_v1",
-  "bands": {
-    "<instrument>": {
-      "low":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..3–4 ints..]},
-      "mid":  {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..]},
-      "high": {"midi_low": <int>, "midi_high": <int>, "pcs_ordered": [..]}
-    },
-    "... six instruments total ..."
-  }
-}
-```
-
-Include the aggregate_signature once at top level of the multi-bar object. Do not duplicate it per bar. Later prompts may copy it verbatim from reference context.
-
 SECTION STRUCTURE
 Produce three bars in 3/4, each 12 ticks long (ticks 0–12).
 Each bar activates a different instrument pair, so that across Bars 7–9 all six instruments participate exactly once.

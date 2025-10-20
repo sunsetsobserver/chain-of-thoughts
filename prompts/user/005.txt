@@ -6,9 +6,6 @@ Bar 5 — Bars-4–6 aggregate continued; one whole-bar chord (no re-articulatio
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
 
-AGGREGATE REUSE
-Reuse the SAME Bars-4–6 aggregate from Bar 4. Reuse the exact aggregate_signature (same id, bounds, pcs).
-
 BAR-PCSET & VOICING (INTERNAL GUIDE)
 Choose a bar-pcset (size 5–10) that contrasts with Bar 4; center-weighted voicing:
 - double_bass: LOW anchor (avoid unison with cello)

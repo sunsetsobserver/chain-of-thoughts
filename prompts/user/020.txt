@@ -6,12 +6,6 @@ Bar 39 — Variation of Bar 5 (soft whole-bar chord; keep center-weighted voicin
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
 
-AGGREGATE REUSE
-Reuse the SAME Bars 38–40 aggregate from Bar 38. Include the identical
-"aggregate_signature" (id "bars38_40_v1"; unchanged).
-
-Context rule: For Bars 38–40, include one aggregate_signature at top level with id: "bars38_40_v1". Later bars that reuse it must copy it verbatim from the reference PT JSON context.
-
 PT REALIZATION
 • TIME: onset [0] (N=1).
 • DURATION: [16].
@@ -21,4 +15,3 @@ PT REALIZATION
 
 VALIDATION
 One note per instrument; ends at 16; legal ranges; band pcs legal; no overlaps.
-(Include "aggregate_signature" unchanged.)

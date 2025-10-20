@@ -7,11 +7,6 @@ INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
 Everyone plays; monophony per instrument (no chords).
 
-AGGREGATE REUSE
-Reuse the SAME Bars-4–6 aggregate from Bars 4–5.
-Reuse the exact aggregate_signature from Bar 4 (identical id, bounds, pcs).
-Do not redefine or modify it.
-
 BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)
 Define two distinct half-bar pcsets, A (first half, ticks 0–8) and B (second half, ticks 8–16).
 Both are subsets of the aggregate’s band pcs; A ≠ B; each size 4–10.

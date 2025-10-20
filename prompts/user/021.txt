@@ -6,11 +6,6 @@ Bar 40 — Variation of Bar 6 (two half-note chords A→B with gentle color shif
 INSTRUMENTS (EXACT)
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
 
-AGGREGATE REUSE
-Reuse Bars 38–40 aggregate. Include "aggregate_signature" (id "bars38_40_v1").
-
-Context rule: For Bars 38–40, include one aggregate_signature at top level with id: "bars38_40_v1". Later bars that reuse it must copy it verbatim from the reference PT JSON context.
-
 PT REALIZATION — two half-note chords
 • TIME: onsets [0, 8] (N=2).
 • DURATION: [8, 8].
@@ -20,4 +15,3 @@ PT REALIZATION — two half-note chords
 
 VALIDATION
 Exactly two notes per instrument; ends at 16; legal ranges; band pcs legal; avoid adjacent-instrument unisons; sparse octaves OK.
-(Include "aggregate_signature" unchanged.)
