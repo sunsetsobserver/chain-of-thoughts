@@ -1,4 +1,4 @@
-Great—here’s a drop-in replacement for **prompt 10** that tightens the schema usage and removes the common parser traps. Paste this over your current 010.txt.
+Great—here’s a drop-in replacement for prompt 10 that tightens the schema usage and removes the common parser traps. Paste this over your current 010.txt.
 
 ---
 
@@ -15,11 +15,11 @@ Monophony per instrument (no chords).
 ### SCHEMA GUARD (must follow exactly)
 
 * Allowed ops: `"add","subtract","mul","div"` (spelled exactly).
-* **All args are unsigned integers.** To decrease a stream use `"subtract"`, **never** `add -k`.
-* Every dimension must include **at least one** transform. For constants, use `[{"name":"add","args":[0]}]`.
+* All args are unsigned integers. To decrease a stream use `"subtract"`, never `add -k`.
+* Every dimension must include at least one transform. For constants, use `[{"name":"add","args":[0]}]`.
 * Valid `feature_name` values (only): `time, duration, pitch, velocity, numerator, denominator`.
 * For every feature, include `numerator` and `denominator` dimensions with transforms `[{"name":"add","args":[0]}]`, and set seeds to 4 and 4.
-* Return **only** a JSON object: `{"bars":[ <bundle for bar 15>, <bundle for bar 16>, <bundle for bar 17> ]}`.
+* Return only a JSON object: `{"bars":[ <bundle for bar 15>, <bundle for bar 16>, <bundle for bar 17> ]}`.
   Each bar is a complete single-bar bundle with `bundle_name`, exactly six `features`, a `run_plan` of six entries (names match), and `created_feature_names`. No extra keys, no prose.
 
 CONTINUITY & SOURCE MATERIAL (INTERNAL, DO NOT PRINT)
@@ -27,8 +27,8 @@ This section continues the Bars 10–14 technique (background loop + foreground 
 
 ROLE SPLIT (GUIDE, NOT HARD LAW)
 
-* **Background loop layer (quiet, continuous-ish):** double_bass + cello (+ optional bass_clarinet).
-* **Foreground stabs (short, accented, color):** trumpet, violin, alto_flute (+ optional bass_clarinet sharing stabs sparingly).
+* Background loop layer (quiet, continuous-ish): double_bass + cello (+ optional bass_clarinet).
+* Foreground stabs (short, accented, color): trumpet, violin, alto_flute (+ optional bass_clarinet sharing stabs sparingly).
 
 REGISTER TARGETS
 
@@ -42,7 +42,7 @@ DYNAMICS
 * Background loop around mp ≈ 48 (gentle, steady).
 * Foreground stabs around mf–f ≈ 92 (clearly brighter than the loop).
   Small per-note deviations (±6) allowed for shape; no big swells.
-  **When lowering velocity, use `"subtract"` (e.g., `subtract 2/4/6`)—never `add -k`.**
+  When lowering velocity, use `"subtract"` (e.g., `subtract 2/4/6`)—never `add -k`.
 
 PT REALIZATION — PRECISE TIMING & DURATIONS (applies to each of Bars 15, 16, 17)
 Grid: 1/16 ticks; bar length = 16. Monophony is strict (no overlaps per instrument).
@@ -50,13 +50,13 @@ Grid: 1/16 ticks; bar length = 16. Monophony is strict (no overlaps per instrume
 1. TIME
 
 * Use only `{"name":"add","args":[k]}` with k ∈ {1,2,3,4}. No zeros. Onsets strictly increase.
-* **Background loop parts:** choose an irregular cell (e.g., 2–3–1–2 …) producing **N ∈ [5..9]** onsets spread across the bar with ≤ 1/3 aligning with other instruments.
-* **Foreground stabs:** **N ∈ [2..5]** onsets per bar per stab-instrument; prefer syncopation/off-beats.
+* Background loop parts: choose an irregular cell (e.g., 2–3–1–2 …) producing N ∈ [5..9] onsets spread across the bar with ≤ 1/3 aligning with other instruments.
+* Foreground stabs: N ∈ [2..5] onsets per bar per stab-instrument; prefer syncopation/off-beats.
 
 2. DURATION
 
 * Realized values must be in {1,2,3,4}.
-* Let `s_min` be the smallest time step you used for that instrument in the bar; enforce **MAX(duration) ≤ s_min**.
+* Let `s_min` be the smallest time step you used for that instrument in the bar; enforce MAX(duration) ≤ s_min.
 * Background loop: mostly 2–4 ticks (occasionally 1), never exceeding the gap to the next onset.
 * Foreground stabs: 1–2 ticks, never exceeding the gap.
 * You may use `mul/div` but only with args in {2,3,4}. No 0 or 1 for `div/mul`.
@@ -81,14 +81,14 @@ Grid: 1/16 ticks; bar length = 16. Monophony is strict (no overlaps per instrume
 
 STRUCTURE OF THE RETURN
 Return one JSON object with
-`"bars":[ … ]` containing **three** bars (15, 16, 17).
+`"bars":[ … ]` containing three bars (15, 16, 17).
 Each bar is a full six-instrument bundle (4/4) following the schema guard and constraints above.
 
 VALIDATION
 
 * Per bar & per instrument: monophony (no overlaps) and no chords.
 * Time: `add` only in {1,2,3,4}, strictly increasing; last note ends ≤ tick 16.
-* Duration values in {1,2,3,4}; **MAX(duration) ≤ s_min**.
+* Duration values in {1,2,3,4}; MAX(duration) ≤ s_min.
 * Pitch add/sub only; within hard ranges.
 * Velocity ranges respected (loop ≈48; stabs ≈92), with only unsigned args and `subtract` for decreases.
 * Adjacent-instrument unisons avoided on shared onsets; sparse octaves OK.

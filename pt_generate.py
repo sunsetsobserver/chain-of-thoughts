@@ -267,7 +267,144 @@ def generate_unit_from_template(
     resp = oai.responses.create(
         model="gpt-5",
         input=messages,
-        text={"format": {"type": "json_object"}},   # flexible JSON mode
+        text = {
+            "format": {
+                "type": "json_schema",
+                "name": "pt_bundle_bars",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "bars": {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "bundle_name": {"type": "string"},
+                                    "features": {
+                                        "type": "array",
+                                        "minItems": 6,
+                                        "maxItems": 6,
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "meta": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "instrument": {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "alto_flute","violin","bass_clarinet",
+                                                                "trumpet","cello","double_bass"
+                                                            ]
+                                                        },
+                                                        "bar":  {"type": "integer", "minimum": 0},
+                                                        "role": {"type": "string"}
+                                                    },
+                                                    "required": ["instrument","bar","role"],
+                                                    "additionalProperties": False
+                                                },
+                                                "pt": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "name": {"type": "string"},
+                                                        "dimensions": {
+                                                            "type": "array",
+                                                            "minItems": 6,
+                                                            "maxItems": 6,
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "feature_name": {
+                                                                        "type": "string",
+                                                                        "enum": [
+                                                                            "time","duration","pitch",
+                                                                            "velocity","numerator","denominator"
+                                                                        ]
+                                                                    },
+                                                                    "transformations": {
+                                                                        "type": "array",
+                                                                        "minItems": 1,
+                                                                        "items": {
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "name": {
+                                                                                    "type": "string",
+                                                                                    "enum": ["add","subtract","mul","div"]
+                                                                                },
+                                                                                "args": {
+                                                                                    "type": "array",
+                                                                                    "minItems": 1,
+                                                                                    "maxItems": 1,
+                                                                                    "items": {
+                                                                                        "type": "integer",
+                                                                                        "minimum": 0
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "required": ["name","args"],
+                                                                            "additionalProperties": False
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "required": ["feature_name","transformations"],
+                                                                "additionalProperties": False
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": ["name","dimensions"],
+                                                    "additionalProperties": False
+                                                }
+                                            },
+                                            "required": ["meta","pt"],
+                                            "additionalProperties": False
+                                        }
+                                    },
+                                    "run_plan": {
+                                        "type": "array",
+                                        "minItems": 6,
+                                        "maxItems": 6,
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "feature_name": {"type": "string"},
+                                                "N": {"type": "integer", "minimum": 1},
+                                                "seeds": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "time":        {"type": "integer", "minimum": 0},
+                                                        "duration":    {"type": "integer", "minimum": 0},
+                                                        "pitch":       {"type": "integer", "minimum": 0},
+                                                        "velocity":    {"type": "integer", "minimum": 0},
+                                                        "numerator":   {"type": "integer", "minimum": 0},
+                                                        "denominator": {"type": "integer", "minimum": 0}
+                                                    },
+                                                    "required": ["time","duration","pitch","velocity","numerator","denominator"],
+                                                    "additionalProperties": False
+                                                }
+                                            },
+                                            "required": ["feature_name","N","seeds"],
+                                            "additionalProperties": False
+                                        }
+                                    },
+                                    "created_feature_names": {
+                                        "type": "array",
+                                        "minItems": 6,
+                                        "maxItems": 6,
+                                        "items": {"type": "string"}
+                                    }
+                                },
+                                "required": ["bundle_name","features","run_plan","created_feature_names"],
+                                "additionalProperties": False
+                            }
+                        }
+                    },
+                    "required": ["bars"],
+                    "additionalProperties": False
+                },
+                "strict": True
+            }
+        },   
         reasoning={"effort": "low"},                # keep internal chains short
     )
     raw_text = (resp.output_text or "").strip()

@@ -1,11 +1,12 @@
 METER: 4/4
 
 TITLE
-Bar 6 — Two contrasting half-note chords (A then B) from the Bars-4–6 aggregate.
+Bar 6 — Two contrasting half-note chords (A then B) concluding the harmonic material of previous bars 4 and 5.
 
-INSTRUMENTS (EXACT)
+INSTRUMENTS
+Everyone plays, tutti;
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
-Everyone plays; monophony per instrument (no chords).
+Only melodic instrument are used, thus polyphony within one instrument's track is not allowed. Write only one note per instrument at the time.
 
 BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)
 Define two distinct half-bar pcsets, A (first half, ticks 0–8) and B (second half, ticks 8–16).

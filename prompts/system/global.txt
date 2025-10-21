@@ -28,11 +28,11 @@ REGISTRY / PT REQUIREMENTS
 • Each PT has exactly: {"name","dimensions"}.
 • Each dimension’s feature_name is EXACTLY one of:
   "pitch","time","duration","velocity","numerator","denominator"
-• Each transformation is an object: {"name": <string>, "args":[<uint>]} with ONE **unsigned** integer arg.
+• Each transformation is an object: {"name": <string>, "args":[<uint>]} with ONE unsigned integer arg.
 • Allowed ops (spell exactly): "add","subtract","mul","div".
   – Semantics: add(x,a)=x+a; subtract(x,a)=x−a; mul(x,a)=x*a; div(x,a)=floor(x/a).
-• **Never use negative args.** To decrease a stream use "subtract" (e.g., {"name":"subtract","args":[6]}), never "add -6".
-• Every dimension must include **at least one** transformation. For a constant stream, use [{"name":"add","args":[0]}].
+• Never use negative args. To decrease a stream use "subtract" (e.g., {"name":"subtract","args":[6]}), never "add -6".
+• Every dimension must include at least one transformation. For a constant stream, use [{"name":"add","args":[0]}].
 
 
 TIME (STRICTLY INCREASING ONSETS; NO CHORDS)
@@ -66,12 +66,12 @@ METER (PER-UNIT)
 
 DURATION (MUL/DIV ALLOWED; MUST REMAIN SAFE)
 • Allowed ops: add, subtract, mul, div. For mul/div, args ∈ {2,3,4}; never 0 or 1.
-• **Monophony guarantee:** MAX(duration) ≤ s_min (the smallest time step used for that feature).
+• Monophony guarantee: MAX(duration) ≤ s_min (the smallest time step used for that feature).
 • If you want longer sustains, first increase s_min by using larger time steps, then keep MAX(duration) ≤ s_min.
 
 
 PITCH (NON-MONOTONIC, MUSICAL)
-• Use add & subtract only; **do not use mul/div on pitch**.
+• Use add & subtract only; do not use mul/div on pitch.
 • Include small steps (±1, ±2) and occasional leaps (±5, ±7, ±12) followed by corrective motion.
 • Avoid >3 same-direction steps in a row.
 • Net drift per bar near zero (≈ in [−2..+2]).
@@ -159,7 +159,7 @@ PER BAR
 • Exactly six features (one per instrument), where meta.instrument is one of:
   ["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"].
 • Each feature has exactly the six dimensions listed; each dimension has ≥1 transformation.
-• All transformation args are single **unsigned** integers; to decrease use "subtract" (never "add -k").
+• All transformation args are single unsigned integers; to decrease use "subtract" (never "add -k").
 • pitch uses add/sub only; realized pitches stay strictly within the HARD RANGE.
 • velocity uses add/sub only with small, musical steps (or as the user prompt specifies).
 • numerator/denominator transforms are exactly add 0, with seeds set to the unit meter.

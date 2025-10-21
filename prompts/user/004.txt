@@ -1,24 +1,23 @@
 METER: 3/4
 
 TITLE
-Bar 4 — First presentation of the Bars-4–6 aggregate (pp/ppp, center-weighted voicing).
+Bar 4 — One chord for all instruments (tutti) filling in the whole bar of 3/4 (pp/ppp, center-weighted voicing).
 
 INSTRUMENTS (EXACT)
-Use these six instruments and no others:
+Use all six instruments:
 [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
-Everyone plays; monophony per instrument (no chords).
+Everyone plays; monophony, one note per instrument (no chords). All instruments together create one chord.
 
-AGGREGATE (INTERNAL, DO NOT PRINT)
-Before writing PTs, internally construct a NEW aggregate for Bars 4–6 (NOT reused from Bars 1 or 3):
+CHORD'S HARMONY (INTERNAL, DO NOT PRINT)
+Before writing PTs, internally construct a NEW scale for Bars 4–6 (NOT reused from Bars 1 or 3):
 • Split each instrument’s playable MIDI range into LOW/MID/HIGH bands.
 • Assign disjoint pitch-class sets (pcs) to bands; each band has 3–4 pcs; union across the three bands is EXACTLY the 12 pcs (0..11).
 • ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step cycles like 0–3–6–9).
-• Make this Bars-4–6 aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
+• Make this Bars-4–6 chordal aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
 
 Rules:
 - pcs_ordered is exactly 4 pcs per band, disjoint across bands; union is all 12 pcs.
 - Bands cover the instrument’s playable MIDI range without gaps.
-- Choose "id" as a short stable string (e.g., "bars4_6_v1").
 - Keep this object compact and valid JSON.
 
 BAR-SPECIFIC PCSET + VOICING TARGETS (INTERNAL GUIDE)
@@ -34,12 +33,12 @@ PT REALIZATION (WHAT TO OUTPUT VIA THE BUNDLE) — ONE sustained bar-long note p
 Per instrument:
 • TIME: exactly one onset at tick 0 (N=1). Do not create any additional onsets in this bar.
 • DURATION: the single note lasts the full bar → 12 ticks. It must end exactly at tick 12.
-• PITCH: choose one MIDI near tessitura center that belongs to the bar-pcset and is legal for the instrument’s band at that register. Keep this pitch constant for the entire bar (no pitch changes inside the bar).
+• PITCH: choose one MIDI near tessitura center that belongs to the bar-pcset and is legal for each instrument’s band at that register. Keep this pitch constant for the entire bar (no pitch changes inside the bar).
 • VELOCITY: very soft (pp–ppp): use a seed ≈ 40–48 and keep it constant (tiny deltas ≤2 allowed).
 • METER: numerator=3, denominator=4 via seeds; meter transforms are add 0.
 
 VALIDATION
-• Exactly one note per instrument in this bar (one onset, one bar-long sustain).
+• Exactly one note per instrument in this bar (one onset, one bar-long sustain over the whole bar of 3/4).
 • All MIDI inside hard instrument ranges; chosen pcs legal for the band at that register.
 • No overlaps (monophony per instrument holds trivially with N=1).
-• The bar-long note ends at or before tick 12 (target = exactly 12).
+• The bar-long note ends exactly at tick 12.

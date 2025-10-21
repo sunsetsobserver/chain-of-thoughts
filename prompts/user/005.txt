@@ -1,30 +1,32 @@
 METER: 4/4
 
 TITLE
-Bar 5 — Bars-4–6 aggregate continued; one whole-bar chord (no re-articulation).
+Bar 5 — one whole-bar chord (no re-articulation). Continuation of the harmonic material started in the previous bar 4.
 
-INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+INSTRUMENTS
+Everyone plays: [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. 
+Single instrument can only play one note at the time (no polyphony within one instrument allowed).
 
 BAR-PCSET & VOICING (INTERNAL GUIDE)
 Choose a bar-pcset (size 5–10) that contrasts with Bar 4; center-weighted voicing:
 - double_bass: LOW anchor (avoid unison with cello)
 - cello + bass_clarinet: LOW↔MID
 - violin + alto_flute + trumpet: MID (avoid exact unisons)
+Important: consider correct voicing rules between this and previous chord.
 
 PT REALIZATION — exactly one sustained whole-bar note per instrument
 Hard constraints per instrument:
 • TIME: one onset at tick 0 with N=1. No other onsets in this bar.  
-• DURATION: 16 — the note lasts the full 4/4 bar (ticks 0..16). Ends exactly at 16.  
+• DURATION: 16 ticks — the note lasts the full 4/4 bar (ticks 0..16). Starts exactly at the beginning of the bar and ends exactly at the end (fills in the whole bar of 4/4; takes 16 ticks).  
 • PITCH: choose one legal MIDI inside the instrument’s band and inside the bar-pcset; keep it constant for the entire bar (no intra-bar pitch change).  
 • VELOCITY: choose a fixed soft dynamic (e.g., pp–p ≈ 44–52). Velocity is constant within the bar.  
 • METER: numerator=4, denominator=4 via seeds; meter transforms are `add 0`.
 
 ABSOLUTE PROHIBITIONS
-• No quarter or sub-quarter re-articulation.  
+• No re-articulation. For each instrument N=1, and that's it.
 • No onsets other than the single onset at 0.  
 • No intra-bar pitch changes.
 
 VALIDATION
 • Per instrument: exactly one note with onset `[0]` and duration `[16]`.  
-• Ranges respected; pcs legal per band; avoid adjacent-instrument unisons; octave doublings sparse.
+• Ranges respected; pcs legal per band; avoid adjacent-instrument unisons; octave doublings sparse, consider good voicing with the previous bar's material.
