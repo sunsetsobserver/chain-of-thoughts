@@ -36,9 +36,9 @@ REGISTRY / PT REQUIREMENTS
 
 
 TIME (STRICTLY INCREASING ONSETS; NO CHORDS)
-• "time" uses ONLY {"name":"add","args":[k]} with k ∈ {1,2,3,4}. No zeros. No subtract/mul/div.
+• "time" uses only {"name":"add","args":[k]} with a positive integer k (k ≥ 1). Never 0. Do not use subtract/mul/div on time.
 • Onsets strictly increase: time[i+1] > time[i].
-• Let s_min = MIN over all "add" args in your time dimension for that feature; remember this number.
+• Choose add-steps so the next onset lands exactly where the next rhythmic event begins. k can be any positive value up to the bar length (BAR_TICKS) if the musical design requires long gaps (e.g., homophonic sustains).
 
 MONOPHONY — how time and duration must work together
 You write one melodic line per instrument (no overlapping notes within the same instrument).
@@ -63,12 +63,10 @@ METER (PER-UNIT)
 • For both "numerator" and "denominator", transforms are EXACTLY [{"name":"add","args":[0]}].
 • All realized notes must end ≤ BAR_TICKS for the current unit.
 
-
-DURATION (MUL/DIV ALLOWED; MUST REMAIN SAFE)
-• Allowed ops: add, subtract, mul, div. For mul/div, args ∈ {2,3,4}; never 0 or 1.
-• Monophony guarantee: MAX(duration) ≤ s_min (the smallest time step used for that feature).
-• If you want longer sustains, first increase s_min by using larger time steps, then keep MAX(duration) ≤ s_min.
-
+DURATION (MUL/DIV ALLOWED; NO OVERLAPS)
+• Allowed ops: add, subtract, mul, div. (For mul/div, args ∈ {2,3,4}; never 0 or 1.)
+• Overlap rule (general): for each onset i, choose duration[i] ≤ (next_onset − this_onset); for the last onset, duration ≤ (BAR_TICKS − this_onset).
+• Long sustains (e.g., half, dotted half) are explicitly allowed as long as they fit the gap. Do not simulate sustains by repeating identical short notes unless the user asks for articulation.
 
 PITCH (NON-MONOTONIC, MUSICAL)
 • Use add & subtract only; do not use mul/div on pitch.
@@ -76,7 +74,6 @@ PITCH (NON-MONOTONIC, MUSICAL)
 • Avoid >3 same-direction steps in a row.
 • Net drift per bar near zero (≈ in [−2..+2]).
 • Every realized MIDI must stay strictly inside the instrument HARD RANGE (provided in the user prompt).
-
 
 RANGE CONTRACT (ABSOLUTE — DO NOT EXCEED)
 • Choose the pitch seed inside the hard range, preferably near tessitura center (±4 semitones).
@@ -86,7 +83,6 @@ RANGE CONTRACT (ABSOLUTE — DO NOT EXCEED)
   – Let Δ_max_prefix be the max running-sum; Δ_min_prefix the min running-sum.
   – REQUIRE: 0 ≤ Δ_max_prefix ≤ H_up and 0 ≥ Δ_min_prefix ≥ −H_dn.
 • If a planned step would cross a boundary, immediately reflect direction with a compensating step so the realized MIDI stays inside range. No external clamping.
-
 
 VELOCITY
 • 0..127. Use add/sub only. Small step deltas (typically ≤ 8, or as the user prompt specifies).

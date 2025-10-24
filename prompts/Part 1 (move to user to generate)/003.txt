@@ -1,0 +1,61 @@
+METER: 4/4
+
+TITLE
+Bar 3 — pp trio in a NEW register-partitioned, non-isomorphic aggregate (contrast with Bar 1)
+
+INSTRUMENT POLICY
+Use exactly three ACTIVE instruments chosen from:
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+
+• The other three instruments must be SILENT in this bar.
+• To keep the bundle schema consistent while producing silence, still include features for all six instruments, but for the silent ones set:
+  – run_plan.N = 1
+  – seeds.time = BAR_TICKS (i.e., 16)
+  – any duration seed in {1,2,3,4}
+  This yields onsets at/after the bar boundary and will result in zero realized notes in this bar.
+
+GLOBAL CHARACTER
+Dynamic is pp ≈ 30 for every realized note. Intimate, chamber-like trio; no vertical tutti.
+
+CONTRAST AGGREGATE (BUILD THIS INTERNALLY; DO NOT PRINT IT)
+Construct a new register-partitioned, non-isomorphic aggregate different from the one you used in Bar 1:
+
+1) Partition each instrument’s playable MIDI range into three contiguous bands: LOW / MID / HIGH (bottom/middle/top third).
+2) Assign to each band a disjoint pitch-class set of exactly 4 pcs so that LOW ∪ MID ∪ HIGH = all 12 pcs (0..11).
+3) Make this aggregate contrast Bar 1’s: at least one band must use a different pcs set and/or different band bounds; bias away from any triadic clustering you used before.
+4) Inside each band, order pcs to suggest thirdal/quartal neighborhoods (avoid trivial 0–3–6–9 cycles).
+
+MELODIC REALIZATION (HOW TO USE PTs)
+For the three ACTIVE instruments only:
+
+PITCH
+• Use add/sub only on `pitch`.
+• Treat the ordered pcs of the current band as a local “scale.” Make small degree steps (±1, ±2 within that set) with rare corrective leaps (±5, ±7, ±12 in semitones) that immediately return to a legal band pc.
+• If a planned delta would land off the band set, snap by ±1 at that step so the note falls on a legal pc.
+• Seed the opening pitch near the instrument’s tessitura center on a legal pc. Keep every realized MIDI strictly inside the hard range.
+• Avoid >3 same-direction moves; net drift per line in [−2..+2].
+
+TIME
+• Strictly increasing onsets using only `add {1,2,3,4}`; no zeros; no chords.
+• Choose a gentle, irregular cell per instrument (e.g., 2–3–1–2 …) to avoid alignment across parts.
+
+DURATION
+• Values must be in {1,2,3,4} and obey MAX(duration) ≤ s_min where s_min is that instrument’s smallest time step, guaranteeing no overlaps.
+• All notes must end by tick 16.
+
+VELOCITY
+• Constant pp = 30 (use `velocity` add/sub to stay near 30; deltas ≤ 2).
+
+TEXTURE & DENSITY
+• Exactly three ACTIVE lines; the other three are silent as described above.
+• Target onsets (soft bounds; stay close):
+  – winds/strings candidates (e.g., alto_flute, violin, bass_clarinet, cello): 3–6 notes
+  – trumpet or double_bass if chosen: 2–4 notes (sparser)
+• Desynchronize entries; ≤ ~1/4 of onsets may coincide across the active trio.
+• Favor interval-classes {1,2,5,6} at incidental vertical contacts; avoid functional gestures.
+
+METER & GRID
+• This bar is 4/4 on a 1/16 grid → BAR_TICKS = 16.
+• In the bundle, keep `numerator`/`denominator` transforms constant `add 0`, with seeds set to 4 and 4.
+
+Return one JSON object with "bars":[ <this single bar bundle> ].

@@ -1,46 +1,71 @@
 METER: 3/4
 
 TITLE
-Bar 1 — Register-partitioned, non-isomorphic scale; airy monophony with internal crescendo.
+Part 2 — Intro (Bars 1–11): calm, homophonic string progression building an expressive and quickly shifting harmonic progression idea.
+Post-tonal harmonies blending tonal and jazz chords into 12-tone schema, but maintaining some thirdal and quartal qualities with possible jazz extensions (2/9, 4/11, 5, 6/13, 7 where musical).
+Paint a surrealist, expressive and colorful harmonic progression.
 
-INSTRUMENTS (EXACT)
-Use these six instruments and no others:
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
-Every instrument must appear in this bar (one monophonic line each; no chords).
+FORCES
+Strings only: violin, cello, double_bass. (Winds tacet placeholders to satisfy six-feature schema; see TACET note.)
 
-GOAL (MUSICAL TECHNIQUE TO APPLY)
-Compose the bar by first designing a register-partitioned, non-isomorphic scale and then realizing it *through the PTs* (pitch/time/duration/velocity). Do not output the scale as data; instead, embed its effect in your pitch transformations + seeds.
+TEXTURE (HOMOPHONY)
+All three strings always play the same rhythm together: they enter and release at the same times each bar. If there’s a rest, all three rest together.
 
-1) REGISTER PARTITION (per instrument)
-   • Split each instrument’s hard MIDI range into three contiguous bands: LOW / MID / HIGH (bottom/middle/top third of its range).
-   • For the *piece as a whole*, assign three disjoint pitch-class sets (pcs) — one set per band — so that:
-       – LOW_pcs, MID_pcs, HIGH_pcs are pairwise disjoint,
-       – their union is all 12 pcs (0..11),
-       – each band has exactly 4 pcs,
-       – internal adjacency within each band suggests thirdal/quartal neighborhoods (prefer step relations ≈ ±3 or ±4 semitones); avoid trivial uniform cycles.
-   • Non-isomorphism: the playable pcs change when a note crosses a band boundary. (The same pitch letter in a higher register is *not* guaranteed the same pc availability as below.)
+RHYTHMS (choose freely per bar, any order, with variety; no two identical bars in a row unless musically justified)
+Align events to the quarter grid (bar has ticks 0,4,8).
 
-2) MELODIC REALIZATION (how to use PTs to stay inside the band pcs)
-   • PITCH dimension: use only add/sub integers to construct a short degree-step pattern relative to the ordered pcs of the current band at each onset.
-       – Choose a repeating pattern using small steps (±1, ±2 degrees within the band’s ordered pcs) with occasional leaps (±5, ±7, ±12 semitones) immediately followed by corrective stepwise motion that lands back on a band-legal pc.
-       – If a planned semitone add/sub would land off the band set, apply a one-time ±1 adjustment at that step so the resulting MIDI pitch snaps to the nearest legal pc for the band before continuing the planned pattern.
-       – Avoid >3 same-direction moves in a row; net drift per line per bar in [−2..+2].
-       – Choose the pitch seed near each instrument’s tessitura center so that the opening note is already a band-legal pc.
-   • TIME dimension: strictly increasing onsets using only add {1,2,3,4}; no zeros; no mul/div; no chords.
-   • DURATION dimension: values in {1,2,3,4} and MAX(duration) ≤ s_min where s_min is that instrument’s smallest time step, ensuring monophony and no overlaps.
-   • VELOCITY dimension: smooth crescendo across the bar ≈ 50 → 80, with per-step deltas ≤ 8. (Shape may be slightly asymmetrical but must rise overall.)
+1. Dotted half (fills the bar).
+2. Half + Quarter.
+3. Quarter + Half.
+4. Half + Quarter rest.
+5. Quarter rest + Half.
 
-3) TEXTURE, DENSITY, ROLES (match the original Bar-1 character)
-   • Airy, interleaved entries; avoid vertical stacking: ≤ ~1/3 of onsets may coincide across instruments.
-   • Target onsets per instrument (soft bounds; stay close):
-       – alto_flute:      6–10 (MID↔HIGH bands)
-       – violin:          5–9  (MID↔HIGH)
-       – bass_clarinet:   3–6  (LOW↔MID)
-       – trumpet:         2–5  (MID↔HIGH), sparser color
-       – cello:           2–5  (LOW↔MID)
-       – double_bass:     2–4  (LOW), foundational, the sparsest
-   • Keep every realized MIDI pitch inside the instrument’s hard range and inside the band-legal pcs at its onset register.
-   • Vertical color at chance alignments favors interval-classes {1,2,5,6}; avoid triadic pull and consecutive perfect-fifth alignments; no functional cadences.
+These are achieved by carefully planning for the correct time and duration parameters.
 
-FORM FOR THIS PROMPT
-Compose exactly one bar (12 ticks at 1/16 grid). All notes must end ≤ tick 12. Realize the above purely through your PT design (transformations + seeds). Return a single bundle with exactly six features (one per listed instrument) and a run_plan that produces the lines as specified.
+ENGINE REALIZATION OF THESE RHYTHMS
+RHYTHM→PT MAPPING (3/4, BAR_TICKS = 12)
+• Quarter = 4 ticks, Half = 8, Dotted half = 12 (used as duration values).
+• Write exactly the number of musical events in the bar (N = 1 or 2). Use single sustained notes (no chained quarters).
+Patterns:
+1) Dotted half — N=1, onset 0, duration 12.
+2) Half + Quarter — N=2, onsets 0 and 8, durations 8 and 4 (time adds: [8]).
+3) Quarter + Half — N=2, onsets 0 and 4, durations 4 and 8 (time adds: [4]).
+4) Half + Quarter rest — N=1, onset 0, duration 8 (you may include a harmless extra `add` in time; with N=1 no extra onset is realized).
+5) Quarter rest + Half — N=1, onset 4, duration 8 (set seeds.time = 4; you may include a harmless extra `add`).
+Rests are realized by omitting events (no silent notes). Do not simulate sustains by repeating the same pitch on 4-tick segments.
+
+HARMONY & VOICING (musical but flexible)
+• double_bass = root of each chord.
+• cello + violin supply the other two chord tones, favoring post-tonal harmonies (meaning blendings of tonal and jazz chords into 12-tone schema, but maintaining some thirdal and quartal qualities) with possible jazz extensions (2/9, 4/11, 5, 6/13, 7 where musical).
+• Aim for clear voice-leading, keep spacing comfortable;
+• Build a melodic/harmonic idea across the 11 bars: gentle growth, small inflections, one or two subtle returns of earlier harmony. Make it harmonically rich and quickly shifting, making quick contrast in colours and expressivity.
+
+RANGES (stay inside)
+• double_bass : MIDI 28–55 (prefer low–mid).
+• cello : MIDI 36–76 (prefer low–mid).
+• violin : MIDI 55–100 (prefer mid).
+
+DYNAMICS (calm arc)
+Soft and sustained (≈ p ), with very gentle shaping for small crescendos and diminuendos for expressivity; small changes only.
+
+TACET (WINDS PLACEHOLDERS)
+Include alto_flute, bass_clarinet, trumpet as silent placeholders each bar: `N=1`, a single note placed safely near bar end (e.g., time seed 11, duration 1, velocity 0) so they are inaudible but schema-valid.
+
+FINAL OUTPUT (schema essentials)
+Return one JSON object with top-level `"bars":[ … ]` containing 11 bars .
+Each bar has exactly six features with `meta.instrument` in: `["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"]`.
+Each feature’s `pt.dimensions` list has exactly six entries in this order (keys & order matter):
+
+```
+"dimensions":[
+ {"feature_name":"time", "transformations":[...]},
+ {"feature_name":"duration", "transformations":[...]},
+ {"feature_name":"pitch", "transformations":[...]},
+ {"feature_name":"velocity", "transformations":[...]},
+ {"feature_name":"numerator", "transformations":[{"name":"add","args":[0]}]},
+ {"feature_name":"denominator","transformations":[{"name":"add","args":[0]}]}
+]
+```
+
+Include a run_plan with six entries (one per feature); `"feature_name"` matches `pt.name`; meter seeds = 3/4 .
+Before returning, self-check: 11 bars present; strings share the same onsets per bar; and instrumental ranges should be respected.

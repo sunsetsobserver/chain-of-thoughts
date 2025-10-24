@@ -1,0 +1,65 @@
+METER: 4/4
+
+TITLE
+Bars 21–34 — sustained drone field with interleaved “ripple” runs (short, bright), 4/4 throughout.
+
+INSTRUMENTS (EXACT)
+[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+Monophony per instrument at all times (no chords inside a single part).
+
+GLOBAL CHARACTER
+A center-weighted, slowly shifting drone bed in low–mid registers, with occasional bright, short ripples that dance above it. Keep overall density light to moderate; never exceed ~6 simultaneous sounding lines.
+
+SECTION STRUCTURE
+Produce exactly fourteen bars of 4/4 (ticks 0..15 per bar). Return one JSON object with:
+  "bars": [ { …bar 21… }, { …bar 22… }, … { …bar 34… } ]
+Each bar includes features for all six instruments.
+
+DRONE BED (BACKDROP)
+• TIME: Each instrument sustains 0–2 notes per bar (often 0–1). Onsets strictly increase using only add {1,2,3,4}.  
+• DURATION (drone notes): long pulses per note, each note in between 3–12 ticks duration, always ≤ distance to the next onset and ≤ bar end.  
+• PITCH: add/sub only; keep inside hard range, bias to LOW for double_bass, LOW↔MID for cello/bass_clarinet, MID for violin, MID↔HIGH for alto_flute/trumpet. Prefer smooth stepwise lines with occasional corrective leaps (±5, ±7, ±12) that immediately return to stepwise motion.  
+• VELOCITY: calm mp–mf backdrop ≈ 56–72 (small per-step deltas ≤4).  
+• METER: seeds set numerator=4, denominator=4; transforms add 0.
+
+RIPPLES OVERLAY (A MUST — INTERLEAVED ABOVE THE DRONE)
+For each bar, add short, bright monophonic “ripple” gestures with these precise rules:
+
+Activation & counts (per bar)
+• Up to 3 ripple gestures can occur in a bar (0..3); it’s fine if some bars have fewer.  
+• Never exceed 6 simultaneous sounding lines at any tick (ensemble concurrency cap ≈ 6).
+
+Each ripple gesture (per instrument)
+• PICK THE START: Choose a local start tick lt0 ∈ [0..15] where current ensemble concurrency < 6. If full, try another tick.  
+• INSTRUMENT ELIGIBILITY: pick an instrument that is not sounding at lt0. (It may have sounded earlier in the bar; that’s okay if it’s silent at the ripple onset.)  
+• LENGTH: 3–6 notes (inclusive).  
+• TIME: strictly increasing onsets; per-note gaps are 1 or 2 ticks (add {1,2}); all onsets < 16.  
+• DURATION: each note lasts 1 or 2 ticks (always ≤ distance to next onset and within bar). If a 2-tick choice would violate the concurrency cap on any covered tick, shrink that note to 1 tick.  
+• PITCH STEPS (PC LOGIC): use only add/sub semitone deltas that realize **tertian/quartal pitch-class moves (±3 or ±4)** from the previous note’s pc, then **snap** to the nearest legal MIDI inside the instrument’s range around the movement direction. Keep all realized pitches strictly within hard ranges.  
+• VELOCITY: bright but small: ≈ 88–96 (stable within a ripple; tiny per-note deltas ≤4).  
+• MONOPHONY: a ripple cannot overlap any other note for the same instrument.
+
+INTERLOCK & DENSITY
+• Drone bed and ripples together must respect the concurrency cap (~6).  
+• Across instruments, avoid exact unisons on shared ripple onsets; octave doublings are okay but keep them sparse.  
+• Keep ripple activity desynchronized; prefer off-beats; at most ~1/3 of ripple onsets may land on {0,4,8,12}.
+
+PT REALIZATION HINTS (to satisfy the engine’s rules)
+• For drone notes: time uses add {1,2,3,4}; durations realized may be 3–8 ticks and are always ≤ gap or bar end.  
+• For ripples: time add steps in {1,2}; durations from {1,2}; enforce no overlaps by keeping MAX(duration) ≤ smallest time step in that gesture (s_min).  
+• Pitch uses add/sub only (no mul/div).  
+• Velocity uses add/sub with small deltas (as ranges above).  
+• Seeds set numerator=4 and denominator=4 for all features; numerator/denominator transforms are [{"name":"add","args":[0]}].
+
+STRUCTURE OF THE RETURN
+Return ONE JSON object with:
+• "bars": [ …14 bar objects… ]  
+Each bar object contains six features (one per instrument) and a run_plan producing the combined drone+ ripple behavior as above.
+
+VALIDATION
+• All time streams strictly increase; no chords within a single instrument.  
+• Ripple gestures: 3–6 notes, duration ∈ {1,2}, gaps ∈ {1,2}, monophonic, inside range.  
+• Drone pulses: 0–2 notes per bar per instrument, durations 3–8 ticks, inside range, no overlaps.  
+• Ensemble concurrency never exceeds ~6 simultaneous sounding notes.  
+• Every realized pitch is inside the instrument’s hard MIDI range.  
+• Meter fixed per bar at 4/4 via seeds; transforms for meter are add 0.
