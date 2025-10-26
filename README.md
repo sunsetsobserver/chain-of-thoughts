@@ -253,6 +253,54 @@ After each unit, we capture the model’s **raw PT JSON** (minified) and feed **
 - Literal reuse becomes possible: when you ask to “reuse the Background Loop from the reference bundle that has N=… (transpose +2, rename),” the model can copy the prior structure.
 - We no longer pass earlier user prompts or summaries into the model’s context. Those remain in `runs/<ts>_suite/prompts_and_summaries.txt` for human reading.
 
+### Controlling how much prior JSON the model sees (context window)
+
+By default, each unit call includes a **system “reference” block** containing prior **model JSON bundles** (not your text prompts). You can now control _how many_ of those previous bundles are included, and cap their total size.
+
+**Flags / env vars**
+
+- `--context-last N` or `CONTEXT_LAST=N`
+
+  - `all` (default) → include **all** prior bundles (subject to budget)
+  - `1` → include **only the last** prior bundle
+  - `0` → include **none** (each unit composes in isolation)
+  - Any integer `N≥0` is accepted
+
+- `--context-budget CHARS` or `CONTEXT_BUDGET_CHARS=CHARS`
+
+  - Max characters from prior bundles to embed (default **15000**).
+  - If the budget is tight, fewer than `N` may be included.
+
+**Behavior**
+
+- The generator packs the **latest bundles first** until the budget is reached.
+- Only the **model’s JSON outputs** are included, never earlier user prompts.
+- Works with **resume**: you can change these flags mid-run; inclusion is recomputed from the stored bundle list.
+
+**When to use what**
+
+- `--context-last 1` — great for sections that should **literally repeat** or closely reference the immediately preceding unit.
+- `--context-last all` — best for **long-range continuity** and thematic recall across many units.
+- `--context-last 0` — useful for **independent sections** or A/B experiments.
+
+**Examples**
+
+```bash
+# Only the last prior bundle (tight repeat control)
+python compose_suite.py --context-last 1
+
+# All prior bundles, but allow a bigger budget
+python compose_suite.py --context-last all --context-budget 30000
+
+# No prior context (fresh start every unit)
+python compose_suite.py --context-last 0
+
+# Using env vars instead of flags
+CONTEXT_LAST=1 CONTEXT_BUDGET_CHARS=20000 python compose_suite.py
+```
+
+> Tip: If you see the model missing a repeat because the reference didn’t fit, raise `--context-budget` or reduce `--context-last` so the _most recent_ bundle always fits.
+
 ---
 
 ## Validation & guardrails (what the generator enforces)

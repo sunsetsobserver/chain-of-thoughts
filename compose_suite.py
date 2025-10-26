@@ -34,22 +34,37 @@ import time
 from tqdm import tqdm
 
 
-def _mk_bundle_context(snippets: List[str], budget_chars: int = 15000) -> str:
+def _mk_bundle_context(
+    snippets: List[str],
+    budget_chars: int = 15000,
+    max_items: int | None = None,
+    newest_first: bool = False,
+    separator: str = "\n\n-----\n\n",
+) -> str:
+    """
+    Build the rolling system context from prior model JSON bundles.
+    - max_items=None  → use all snippets (default)
+      max_items>=0    → use only the last N snippets (0 = none)
+    - budget_chars caps total characters.
+    - newest_first controls final ordering for readability (doesn't affect model ability).
+    """
     if not snippets:
         return ""
-    sep = "\n\n-----\n\n"
-    out = []
-    total = 0
-    # keep most-recent-first until budget is hit
-    for s in reversed(snippets):
-        need = len(s) + (len(sep) if out else 0)
+    # Take only the last N if requested
+    seq = snippets[-max_items:] if (isinstance(max_items, int) and max_items >= 0) else list(snippets)
+    # Pack from newest to oldest until budget is hit
+    packed, total = [], 0
+    for s in reversed(seq):
+        need = len(s) + (len(separator) if packed else 0)
         if total + need > budget_chars:
             break
-        if out:
-            out.append(sep)
-        out.append(s)
+        if packed:
+            packed.append(separator)
+        packed.append(s)
         total += need
-    return "".join(reversed(out))
+    # packed is newest→older; flip if caller prefers oldest→newest
+    final = "".join(reversed(packed)) if not newest_first else "".join(packed)
+    return final
 
 
 def _discover_templates() -> List[pathlib.Path]:
@@ -211,12 +226,40 @@ def _maybe_export_midi(suite_dir: pathlib.Path):
 
 def main():
     parser = argparse.ArgumentParser(description="Compose suite with checkpointing and resume.")
+    parser.add_argument(
+        "--context-last",
+        default=os.getenv("CONTEXT_LAST", "all"),
+        help="How many previous model JSON bundles to include in system context per call. "
+             "'all' (default), an integer N (e.g., 1), or 0 for none."
+    )
+    parser.add_argument(
+        "--context-budget",
+        type=int,
+        default=int(os.getenv("CONTEXT_BUDGET_CHARS", "15000")),
+        help="Max total characters from prior bundles to include in system context (default 15000)."
+    )
     parser.add_argument("--resume", type=str, default=None,
                         help="Path to an existing runs/<ts>_suite to resume.")
     parser.add_argument("--checkpoint-every", type=int, default=int(os.getenv("CHECKPOINT_EVERY", "5")),
                         help="Emit partial stitched outputs every K units (default 5).")
     parser.add_argument("--verbose", action="store_true", help="Verbose logging.")
     args = parser.parse_args()
+
+    # Parse --context-last
+    def _parse_context_last(val: str) -> int | None:
+        if val is None:
+            return None
+        v = str(val).strip().lower()
+        if v in ("all", "", "-1"):
+            return None  # None == unlimited items
+        try:
+            n = int(v)
+            return max(0, n)
+        except Exception:
+            return None
+
+    context_last = _parse_context_last(args.context_last)
+    context_budget = int(args.context_budget)
 
     # --- Shared account + DCN session (reuse across all units) ---
     priv = os.getenv("PRIVATE_KEY")
@@ -282,7 +325,9 @@ def main():
     hr_log = suite_dir / "prompts_and_summaries.txt"
 
     # Rolling suite_context from ctx_bundles (respect existing budget)
-    suite_context = _mk_bundle_context(ctx_bundles)
+    suite_context = _mk_bundle_context(
+        ctx_bundles, budget_chars=context_budget, max_items=context_last
+    )
 
     logging.info("Generating units...")
     try:
@@ -317,7 +362,9 @@ def main():
             mj = unit.get("model_bundle_minjson")
             if isinstance(mj, str) and mj.strip():
                 ctx_bundles.append(mj.strip())
-                suite_context = _mk_bundle_context(ctx_bundles)
+                suite_context = _mk_bundle_context(
+                    ctx_bundles, budget_chars=context_budget, max_items=context_last
+                )
 
             # Save durable checkpoint + periodic partial outputs
             _save_checkpoint(suite_dir, templates, units_done, ctx_bundles, args.checkpoint_every)

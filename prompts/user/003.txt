@@ -1,76 +1,89 @@
 METER: 3/4
+Ticks per bar: 12 (quarter=4, half=8, dotted half=12)
 
 TITLE
-Part 2 — Trumpet Entrance (Bars 23–33): strings and winds continue exactly what they played before-calm, homophonic group writing; trumpet enters above with a vivid, faster, jazz-inflected solo (question/answer). 
-Post-tonal color that blends post-tonal/jazz harmony into a 12-tone aware palette; thirdal/quartal tendencies with tasteful extensions (2/9, 4/11, 6/13, 7 where musical). The three layers remain transparent and balanced.
+Part 3 — Bars 31–45 (15 bars): strings AND winds repeat exactly their 15-bar materials from earlier units; trumpet enters with a gentle, lyrical line. Post-tonal color with jazz extensions (2/9, 4/11, 6/13, 7), quartal/quintal inflections, smooth spacing.
 
-FORCES
-Three layers:
-• Strings (grouped homophony): violin, cello, double_bass — repeat once again the idea from Bars 1-11, which they also already repeated once before in Bars 12-22.
-• Winds (grouped homophony): alto_flute, bass_clarinet — repeat exactly the material that they played in Bars 12-22.
-• Trumpet (solo): independent monophonic melody (faster rhythm), clearly foregrounded but never masking harmony.
+FORCES (6 features per bar, exact order)
+["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"]
 
-RHYTHM→PT MAPPING (3/4, BAR_TICKS = 12)
-• Quarter = 4 ticks, Half = 8, Dotted half = 12 (used as duration values).
-• Write exactly the number of musical events in the bar (N = 1 or 2). Use single sustained notes (no chained quarters).
-Patterns:
-1) Dotted half — N=1, onset 0, duration 12.
-2) Half + Quarter — N=2, onsets 0 and 8, durations 8 and 4 (time adds: [8]).
-3) Quarter + Half — N=2, onsets 0 and 4, durations 4 and 8 (time adds: [4]).
-4) Half + Quarter rest — N=1, onset 0, duration 8 (you may include a harmless extra `add` in time; with N=1 no extra onset is realized).
-5) Quarter rest + Half — N=1, onset 4, duration 8 (set seeds.time = 4; you may include a harmless extra `add`).
-Rests are realized by omitting events (no silent notes). Do not simulate sustains by repeating the same pitch on 4-tick segments.
+AUTHORITATIVE REFERENCES (DO NOT ALTER ANY NUMBERS)
+• Strings must copy from Prompt 1 (Bars 1–15) exactly.
+• Winds must copy from Prompt 2 (its 15 bars) exactly.
 
-LITERAL REPEAT (groups)
-• Strings (Bars 23–33): copy Bars 1–11 exactly (Bar 23 ← Bar 1, …, Bar 33 ← Bar 11). New `pt.name` only.
-• Winds (Bars 23–33): copy Bars 12–22 exactly (Bar 23 ← Bar 12, …, Bar 33 ← Bar 22). New `pt.name` only.
+Paste the JSONs here:
 
-TEXTURE
-• Within each group (strings; winds): identical rhythm per bar (same onsets & durations); rests apply to the whole group segment.
-• Between groups: strings vs winds may choose different patterns each bar to maintain a gentle dialogue.
-• Trumpet: fully independent rhythm/melody, weaving above, sometimes dovetailing with group changes but not bound to their grid, should be in close dialogue with the harmony of the rest, as if they play the trumpet's accompaniament.
+<<<REFERENCE_WINDS_JSON_START>>>
+PASTE THE EXACT JSON OUTPUT OF the previous prompt here (its 15 bars)
+<<<REFERENCE_WINDS_JSON_END>>>
 
-Trumpet (solo): quick, lyrical, question/answer over two-bar spans.
-– Primary motion in eighths and sixteenths, but also occasional quarter notes possible and occasional break for phrasing: time steps add {1,2,3} predominantly; occasional {3,4,5} to shape phrases.
-– Durations mostly 1–4 ticks, with occasional 4-8 ticks for cadential lean-tos or held color tones.
-– N per bar typically 5–12 (stay readable, no walls of notes).
-– Leave tiny breath space in ~every other bar by omitting one short slot near the end.
-– Clear phrase commas at the barline or beat 3→next bar.
+LITERAL REPEAT MAPPINGS (exact copy of numbers)
+Let current bars be Bars 31–45 (15 bars).
+• Strings mapping (violin, cello, double_bass):
+  - Bar 31 ← Strings Bar 1 from REFERENCE_STRINGS
+  - Bar 32 ← Strings Bar 2
+  - …
+  - Bar 45 ← Strings Bar 15
+• Winds mapping (alto_flute, bass_clarinet):
+  - Bar 31 ← Winds Bar 1 from REFERENCE_WINDS
+  - Bar 32 ← Winds Bar 2
+  - …
+  - Bar 45 ← Winds Bar 15
 
-HARMONY & VOICING of Trumpet (solo)
-• Range: MIDI 55–92 (prefer mid–high). Shape a singing line that outlines/extends the vertical harmony (9/11/13, altered color tones, chromatic approaches). Favor stepwise motion with occasional expressive leaps (4th/5th/6th, occasional 7th then resolve).
-• Avoid sitting on the bass root; prefer extensions/upper structures. Resolve dissonances tastefully to inside notes at phrase ends.
-• Dynamic presence: mf→f, with local peaks; never cover the harmony.
+COPY RULES (bit-for-bit identity except names)
+For each mapped bar and each relevant instrument:
+• Copy the entire pt.dimensions array (same keys, same transform names, same args, same order).
+• Copy run_plan.N and run_plan.seeds exactly (time, duration, pitch, velocity, numerator, denominator).
+• Assign fresh pt.name strings (unique) but do not change any other numeric content.
 
-The test of the instruments repeat exactly what they played before.
+TRUMPET (NEW MATERIAL)
+• Trumpet is now active (not tacet). Choose one allowed pattern per bar (independent of strings/winds), aligned to {0,4,8}:
+  - Half + 4 sixteents notes: N=5, onsets 0,8,9,10,11; durations 8,1,1,1,1
+  - 4 sixteents notes + Half: N=5, onsets 0,1,2,3,4; durations 1,1,1,1,8
+  - Two sixteenths + one eight + one eight + two sixteents + Quarter rest: N=7, onsets 0,1,2,4,6,7 durations 1,1,2,2,1,1
+  - Quarter rest + 4 sixteents + 2 eight notes: N=1, onsets 4,8,10 durations 1,1,1,1,2,2
+• Use single sustained notes (no chained quarters). Keep dynamics soft (≈ p–mp). Prefer clear, stepwise motion with occasional jumps and leaps for longer notes.
 
-DYNAMICS
-Trumpet in the foreground (mf→f) with musical contour. Balance overlaps so the harmony reads. The rest of instruments repeat how they played before.
+GROUPED HOMOPHONY
+• Strings group: homophony is inherited by exact repeat from REFERENCE_STRINGS.
+• Winds group: homophony is inherited by exact repeat from REFERENCE_WINDS.
+• Trumpet: independent line (solo group of one). Stays within the harmonic field created by the strings and winds. 
 
-OUTPUT SCOPE
-Generate exactly 11 bars labeled conceptually as Bars 23–33 (meter 3/4). Strings and winds proceed exactly as in earlier bars (grouped homophony, independent between groups). Trumpet adds the solo line above as specified.
+HARMONY & VOICING
+• Maintain clear vertical sonorities with strings+bass; avoid blatant parallel perfect fifths with double_bass across successive changes.
+• Tasteful extensions (2/9, 4/11, 6/13, 7) and quartal/quintal color allowed within the hard range.
 
-FINAL OUTPUT (schema essentials)
-Return one JSON object with top-level `"bars":[ … ]` containing 11 bars.
-Each bar has exactly six features with `meta.instrument` in:
-`["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"]`.
-Each feature’s `pt.dimensions` list has exactly six entries in this order (keys & order matter):
+HARD RANGES (MIDI)
+• alto_flute: 53..81
+• violin: 55..88
+• bass_clarinet: 43..74
+• trumpet: 60..82
+• cello: 48..74
+• double_bass: 31..55
 
-```
-"dimensions":[
-  {"feature_name":"time","transformations":[...]},
-  {"feature_name":"duration","transformations":[...]},
-  {"feature_name":"pitch","transformations":[...]},
-  {"feature_name":"velocity","transformations":[...]},
-  {"feature_name":"numerator","transformations":[{"name":"add","args":[0]}]},
-  {"feature_name":"denominator","transformations":[{"name":"add","args":[0]}]}
-]
-```
+SCHEMA REQUIREMENTS (strict)
+• Return ONE JSON object with top-level "bars":[ … ] containing EXACTLY 15 bars (Bars 31–45).
+• Each bar has exactly six features with meta.instrument in this exact order:
+  ["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"].
+• Each feature’s pt.dimensions list has exactly six entries in THIS order:
+  time, duration, pitch, velocity, numerator(add 0), denominator(add 0).
+• Include a run_plan with six entries (one per feature); run_plan[i].feature_name MUST equal that feature’s pt.name.
+• All meter seeds set numerator=3, denominator=4.
+• Last onset + duration ≤ 12 in every feature.
 
-Include a `run_plan` with six entries (one per feature); `"feature_name"` string-matches the corresponding `pt.name`; meter seeds = 3/4.
+PRECEDENCE LADDER
+1) Exact numeric copy for strings from REFERENCE_STRINGS (bar mapping)
+2) Exact numeric copy for winds from REFERENCE_WINDS (bar mapping)
+3) Schema & instrument order
+4) Hard ranges
+5) Allowed rhythms
+6) Harmony/style guidance
 
-SELF-CHECK BEFORE RETURNING
-• 11 bars present.
-• Group homophony holds inside strings and inside winds per bar; Their groups repeat exactly the material played in the previous 11 bars (Bars 12-22)
-• Trumpet uses faster values then the rest of the groups as specified; last note ends ≤ 12 ticks.
-• All pitches within stated ranges; vertical harmony remains clear; trumpet extends/enlivens without masking.
+MANDATORY SELF-CHECK BEFORE RETURNING
+• Count bars == 15. If not, regenerate.
+• For every string and wind feature in Bars 31–45, confirm that pt.dimensions and run_plan (N + seeds) match the mapped reference bar bit-for-bit (except pt.name). If any mismatch, regenerate.
+• Trumpet patterns conform to allowed rhythms; N ∈ {1,2}; seeds.time ∈ {0,4,8} (or ≈4 for the “Quarter rest + Half” case).
+• All pitches within hard ranges; last onset+duration ≤ 12.
+
+OUTPUT
+Return exactly ONE JSON object (no prose).

@@ -1,7 +1,7 @@
 METER: 3/4
 
 TITLE
-Part 2 — Intro (Bars 1–11): calm, homophonic string progression building an expressive and quickly shifting harmonic progression idea.
+Part 2 — Intro (Bars 1–15): calm, homophonic string progression building an expressive and quickly shifting harmonic progression idea.
 Post-tonal harmonies blending tonal and jazz chords into 12-tone schema, but maintaining some thirdal and quartal qualities with possible jazz extensions (2/9, 4/11, 5, 6/13, 7 where musical).
 Paint a surrealist, expressive and colorful harmonic progression.
 
@@ -52,7 +52,7 @@ TACET (WINDS PLACEHOLDERS)
 Include alto_flute, bass_clarinet, trumpet as silent placeholders each bar: `N=1`, a single note placed safely near bar end (e.g., time seed 11, duration 1, velocity 0) so they are inaudible but schema-valid.
 
 FINAL OUTPUT (schema essentials)
-Return one JSON object with top-level `"bars":[ … ]` containing 11 bars .
+Return one JSON object with top-level `"bars":[ … ]` containing 15 bars .
 Each bar has exactly six features with `meta.instrument` in: `["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"]`.
 Each feature’s `pt.dimensions` list has exactly six entries in this order (keys & order matter):
 
@@ -68,4 +68,23 @@ Each feature’s `pt.dimensions` list has exactly six entries in this order (key
 ```
 
 Include a run_plan with six entries (one per feature); `"feature_name"` matches `pt.name`; meter seeds = 3/4 .
-Before returning, self-check: 11 bars present; strings share the same onsets per bar; and instrumental ranges should be respected.
+Before returning, self-check: 15 bars present; strings share the same onsets per bar; and instrumental ranges should be respected.
+
+SCHEMA REQUIREMENTS (strict)
+• Return ONE JSON object with top-level "bars":[ … ] containing EXACTLY 15 bars (Bars 1–15).
+• Each bar has exactly six features with meta.instrument in this order:
+  ["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"].
+• Each feature’s pt.dimensions list has exactly six entries in THIS order:
+  1) time, 2) duration, 3) pitch, 4) velocity, 5) numerator (add 0), 6) denominator (add 0).
+• Include a run_plan with six entries (one per feature); run_plan[i].feature_name MUST equal that feature’s pt.name.
+• All meter seeds set numerator=3, denominator=4.
+• Last onset + duration ≤ 12 in every feature.
+• Strings share identical time/duration within a bar; winds & trumpet are tacet placeholders.
+
+MANDATORY SELF-CHECK BEFORE RETURNING
+1) Count bars == 15. If not, regenerate.
+2) In every bar: exactly 6 features in the required instrument order.
+3) For strings, verify group-homophony: identical onsets/durations across violin/cello/double_bass in that bar.
+4) No duration chaining; note counts (N) are 1 or 2 only.
+5) All pitches remain within hard ranges.
+6) Tacet placeholders: N=1, duration=1, velocity=0, seeds.time≈11.
