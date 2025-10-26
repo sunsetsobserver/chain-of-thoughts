@@ -4,7 +4,7 @@ TITLE
 Bar 41 — Half note long breath (full ensemble silence).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. All silent.
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. All silent.
 
 PT REALIZATION — encode silence explicitly
 For each instrument:

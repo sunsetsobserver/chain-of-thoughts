@@ -4,7 +4,7 @@ TITLE
 Bars 7–9 — Three “cloud duo” bars in 3/4, each featuring one unique pair of instruments (pp, airy texture).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Monophony per instrument (no chords inside a single part).
 
 AGGREGATE (INTERNAL, DO NOT PRINT)

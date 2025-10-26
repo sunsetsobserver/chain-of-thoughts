@@ -4,7 +4,7 @@ TITLE
 Bar 39 — Variation of Bar 5 (soft whole-bar chord; keep center-weighted voicing).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
 
 PT REALIZATION
 • TIME: onset [0] (N=1).

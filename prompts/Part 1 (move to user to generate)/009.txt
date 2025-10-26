@@ -4,7 +4,7 @@ TITLE
 Bar 14 — Recall of Bar 2 (two tutti hits, same timing & dynamics)
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony per instrument.
 
 RECALL SPEC (use reference PT JSON): 
 Copy the per-instrument pitch seed and single-step delta from Bar-2’s PT JSON in the reference context (same meter 2/4). Use the identical time and duration patterns ([0,4] and [4,4]) and [124,114] velocities. You may change feature names only.

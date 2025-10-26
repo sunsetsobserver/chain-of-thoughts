@@ -5,7 +5,7 @@ Bar 2 — Two tutti verticals from two fresh register-partitioned aggregates (co
 
 INSTRUMENTS (EXACT)
 Use these six instruments and no others:
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Every instrument must sound on BOTH verticals; still monophonic per instrument.
 
 MUSICAL TECHNIQUE (WHAT TO CONSTRUCT INTERNALLY — DO NOT PRINT IT)

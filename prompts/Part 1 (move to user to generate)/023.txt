@@ -4,7 +4,7 @@ TITLE
 Bars 42–45 — Endgame: four airy “cloud” bars (pp), low density, gentle taper.
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Monophony per instrument (no chords).
 
 SECTION POLICY (applies to EACH of Bars 42, 43, 44, 45)

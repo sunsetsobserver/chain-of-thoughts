@@ -5,7 +5,7 @@ Bar 4 — One chord for all instruments (tutti) filling in the whole bar of 3/4 
 
 INSTRUMENTS (EXACT)
 Use all six instruments:
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Everyone plays; monophony, one note per instrument (no chords). All instruments together create one chord.
 
 CHORD'S HARMONY (INTERNAL, DO NOT PRINT)

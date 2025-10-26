@@ -4,7 +4,7 @@ TITLE
 Bar 36 — Literal repeat of Bar 5 (soft, one whole-bar chord; no re-articulation).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
 
 PT REALIZATION — exactly one sustained whole-bar note per instrument
 • TIME: one onset at tick 0 (N=1).

@@ -4,7 +4,7 @@ TITLE
 Bar 37 — Literal repeat of Bar 6 (two half-note tutti chords A then B).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony per instrument.
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony per instrument.
 
 PT REALIZATION — two half-note chords per instrument
 • TIME: onsets [0, 8] (N=2). No other onsets.

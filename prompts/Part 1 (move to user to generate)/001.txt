@@ -5,7 +5,7 @@ Bar 1 — Register-partitioned, non-isomorphic scale; airy monophony with intern
 
 INSTRUMENTS (EXACT)
 Use these six instruments and no others:
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Every instrument must appear in this bar (one monophonic line each; no chords).
 
 GOAL (MUSICAL TECHNIQUE TO APPLY)

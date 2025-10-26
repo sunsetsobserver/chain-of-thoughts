@@ -4,7 +4,7 @@ TITLE
 Bars 21–34 — sustained drone field with interleaved “ripple” runs (short, bright), 4/4 throughout.
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Monophony per instrument at all times (no chords inside a single part).
 
 GLOBAL CHARACTER

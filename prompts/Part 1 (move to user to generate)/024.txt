@@ -7,7 +7,7 @@ CONTEXT LINK (INTERNAL, DO NOT PRINT)
 This section answers the earlier 4×3/4 fragment (Bars 42–45) with new harmony and rhythm. All supporting instruments are extremely soft (ppp), while the trumpet now carries a through-composed, triumphant melody (not just sustained tones). Keep the new aggregate materially different from the one used in Bars 42–45.
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Monophony per instrument (no chords).
 
 AGGREGATE (INTERNAL, DO NOT PRINT) — “Aggregate C” for Bars 46–49

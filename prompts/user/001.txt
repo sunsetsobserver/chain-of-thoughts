@@ -1,7 +1,7 @@
 METER: 3/4
 
 TITLE
-Part 2 — Intro (Bars 1–15): calm, homophonic string progression building an expressive and quickly shifting harmonic progression idea.
+Part 2 — Intro (Bars 1–12): calm, homophonic string progression building an expressive and quickly shifting harmonic progression idea.
 Post-tonal harmonies blending tonal and jazz chords into 12-tone schema, but maintaining some thirdal and quartal qualities with possible jazz extensions (2/9, 4/11, 5, 6/13, 7 where musical).
 Paint a surrealist, expressive and colorful harmonic progression.
 
@@ -41,9 +41,9 @@ HARMONY & VOICING (musical but flexible)
 • Build a melodic/harmonic idea across the 11 bars: gentle growth, small inflections, one or two subtle returns of earlier harmony. Make it harmonically rich and quickly shifting, making quick contrast in colours and expressivity.
 
 RANGES (stay inside)
-• double_bass : MIDI 28–55 (prefer low–mid).
-• cello : MIDI 36–76 (prefer low–mid).
-• violin : MIDI 55–100 (prefer mid).
+• double_bass : MIDI 31–55 (prefer low–mid).
+• cello : MIDI 48–74 (prefer low–mid).
+• violin : MIDI 55–88 (prefer mid).
 
 DYNAMICS (calm arc)
 Soft and sustained (≈ p ), with very gentle shaping for small crescendos and diminuendos for expressivity; small changes only.
@@ -52,7 +52,7 @@ TACET (WINDS PLACEHOLDERS)
 Include alto_flute, bass_clarinet, trumpet as silent placeholders each bar: `N=1`, a single note placed safely near bar end (e.g., time seed 11, duration 1, velocity 0) so they are inaudible but schema-valid.
 
 FINAL OUTPUT (schema essentials)
-Return one JSON object with top-level `"bars":[ … ]` containing 15 bars .
+Return one JSON object with top-level `"bars":[ … ]` containing 12 bars .
 Each bar has exactly six features with `meta.instrument` in: `["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"]`.
 Each feature’s `pt.dimensions` list has exactly six entries in this order (keys & order matter):
 
@@ -68,10 +68,10 @@ Each feature’s `pt.dimensions` list has exactly six entries in this order (key
 ```
 
 Include a run_plan with six entries (one per feature); `"feature_name"` matches `pt.name`; meter seeds = 3/4 .
-Before returning, self-check: 15 bars present; strings share the same onsets per bar; and instrumental ranges should be respected.
+Before returning, self-check: 12 bars present; strings share the same onsets per bar; and instrumental ranges should be respected.
 
 SCHEMA REQUIREMENTS (strict)
-• Return ONE JSON object with top-level "bars":[ … ] containing EXACTLY 15 bars (Bars 1–15).
+• Return ONE JSON object with top-level "bars":[ … ] containing EXACTLY 12 bars (Bars 1–12).
 • Each bar has exactly six features with meta.instrument in this order:
   ["alto_flute","violin","bass_clarinet","trumpet","cello","double_bass"].
 • Each feature’s pt.dimensions list has exactly six entries in THIS order:
@@ -82,9 +82,9 @@ SCHEMA REQUIREMENTS (strict)
 • Strings share identical time/duration within a bar; winds & trumpet are tacet placeholders.
 
 MANDATORY SELF-CHECK BEFORE RETURNING
-1) Count bars == 15. If not, regenerate.
+1) Count bars == 12. If not, regenerate.
 2) In every bar: exactly 6 features in the required instrument order.
 3) For strings, verify group-homophony: identical onsets/durations across violin/cello/double_bass in that bar.
 4) No duration chaining; note counts (N) are 1 or 2 only.
 5) All pitches remain within hard ranges.
-6) Tacet placeholders: N=1, duration=1, velocity=0, seeds.time≈11.
+6) Tacet placeholders: N=1, time.transforms=[add 0], seed.time=11, duration=1, velocity=0, seeds.time=11.

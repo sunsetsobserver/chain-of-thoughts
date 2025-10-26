@@ -5,7 +5,7 @@ Bar 6 — Two contrasting half-note chords (A then B) concluding the harmonic ma
 
 INSTRUMENTS
 Everyone plays, tutti;
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Only melodic instrument are used, thus polyphony within one instrument's track is not allowed. Write only one note per instrument at the time.
 
 BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)

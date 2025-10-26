@@ -4,7 +4,7 @@ TITLE
 Bar 5 — one whole-bar chord (no re-articulation). Continuation of the harmonic material started in the previous bar 4.
 
 INSTRUMENTS
-Everyone plays: [alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. 
+Everyone plays: [alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Single instrument can only play one note at the time (no polyphony within one instrument allowed).
 
 BAR-PCSET & VOICING (INTERNAL GUIDE)

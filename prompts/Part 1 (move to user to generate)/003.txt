@@ -5,7 +5,7 @@ Bar 3 — pp trio in a NEW register-partitioned, non-isomorphic aggregate (contr
 
 INSTRUMENT POLICY
 Use exactly three ACTIVE instruments chosen from:
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 
 • The other three instruments must be SILENT in this bar.
 • To keep the bundle schema consistent while producing silence, still include features for all six instruments, but for the silent ones set:

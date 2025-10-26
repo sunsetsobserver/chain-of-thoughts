@@ -4,7 +4,7 @@ TITLE
 Bars 10–13 — Four bars of 3/4 featuring a background loop and foreground staccato hits (Aggregate B).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Monophony per instrument.
 
 AGGREGATE (INTERNAL, DO NOT PRINT)

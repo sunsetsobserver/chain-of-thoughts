@@ -4,7 +4,7 @@ TITLE
 Bar 38 — Variation of Bar 4 (pp/ppp center-weighted chord; tiny registral/pitch-class shift).
 
 INSTRUMENTS (EXACT)
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass]. Everyone plays; monophony only.
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
 
 PT REALIZATION — one sustained note per instrument
 • TIME: one onset at tick 0 (N=1).

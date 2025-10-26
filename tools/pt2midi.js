@@ -11,25 +11,25 @@ require('jzz-midi-smf')(JZZ);
 const CHANNELS = Array.from({ length: 16 }, (_, i) => i).filter(c => c !== 9);
 const GM_PROGRAMS = {
   alto_flute:   73,
-  violin:       40,
   bass_clarinet:71,
   trumpet:      56,
+  violin:       40,
   cello:        42,
   double_bass:  43
 };
 const INSTR_ORDER = [
   'alto_flute',
-  'violin',
   'bass_clarinet',
   'trumpet',
+  'violin',
   'cello',
   'double_bass'
 ];
 const FRIENDLY_NAMES = {
   alto_flute: 'Alto Flute',
-  violin: 'Violin',
   bass_clarinet: 'Bass Clarinet in Bb',
   trumpet: 'Trumpet in C',
+  violin: 'Violin',
   cello: 'Cello',
   double_bass: 'Contrabass'
 };

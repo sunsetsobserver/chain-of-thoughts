@@ -37,7 +37,7 @@ REGISTRY / PT REQUIREMENTS
 
 TIME (STRICTLY INCREASING ONSETS; NO CHORDS)
 • "time" uses only {"name":"add","args":[k]} with a positive integer k (k ≥ 1). Never 0. Do not use subtract/mul/div on time.
-• Onsets strictly increase: time[i+1] > time[i].
+• Onsets strictly increase: time[i+1] > time[i]. Their increase is also dependent on the encoded corresponding durations. For instance, if event which duration is 8 ticks starts at time onset 2, then the next time value has to be 10, thus time feature uses transformation add 8 here as well, etc.
 • Choose add-steps so the next onset lands exactly where the next rhythmic event begins. k can be any positive value up to the bar length (BAR_TICKS) if the musical design requires long gaps (e.g., homophonic sustains).
 
 MONOPHONY — how time and duration must work together

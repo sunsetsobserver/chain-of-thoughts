@@ -1,7 +1,3 @@
-Great—here’s a drop-in replacement for prompt 10 that tightens the schema usage and removes the common parser traps. Paste this over your current 010.txt.
-
----
-
 METER: 4/4
 
 TITLE
@@ -9,7 +5,7 @@ Bars 15–17 — Loop background + accented foreground stabs (continuation of Ba
 
 INSTRUMENTS (EXACT)
 Use these six instruments and no others:
-[alto_flute, violin, bass_clarinet, trumpet, cello, double_bass].
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
 Monophony per instrument (no chords).
 
 ### SCHEMA GUARD (must follow exactly)
