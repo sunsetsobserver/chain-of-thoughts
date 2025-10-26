@@ -4,6 +4,8 @@ composition_working_files/
 depreciated/
 runs/
 
+.DS_Store
+
 # Node
 node_modules/
 npm-debug.log*
