@@ -38,10 +38,10 @@ For each mapped bar and each relevant instrument:
 
 TRUMPET (NEW MATERIAL)
 • Trumpet is now active (not tacet). Choose one allowed pattern per bar (independent of strings/winds), aligned to {0,4,8}:
-  - Half + 4 sixteents notes: N=5, onsets 0,8,9,10,11; durations 8,1,1,1,1
-  - 4 sixteents notes + Half: N=5, onsets 0,1,2,3,4; durations 1,1,1,1,8
-  - Two sixteenths + one eight + one eight + two sixteents + Quarter rest: N=7, onsets 0,1,2,4,6,7 durations 1,1,2,2,1,1
-  - Quarter rest + 4 sixteents + 2 eight notes: N=1, onsets 4,8,10 durations 1,1,1,1,2,2
+  - Half note + 4 sixteents notes: N=5, onsets 0,8,9,10,11; durations 8,1,1,1,1
+  - 4 sixteents notes + Half note: N=5, onsets 0,1,2,3,4; durations 1,1,1,1,8
+  - Two sixteenths + one eight + one eight + two sixteents + Quarter rest: N=6, onsets 0,1,2,4,6,7 durations 1,1,2,2,1,1
+  - Quarter rest + 4 sixteents + 2 eight notes: N=6, onsets 4,5,6,7,8,10 durations 1,1,1,1,2,2
 • Use single sustained notes (no chained quarters). Keep dynamics soft (≈ p–mp). Prefer clear, stepwise motion with occasional jumps and leaps for longer notes.
 
 GROUPED HOMOPHONY
