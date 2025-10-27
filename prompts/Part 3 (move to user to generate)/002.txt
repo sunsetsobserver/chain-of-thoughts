@@ -1,0 +1,37 @@
+METER: 3/4
+
+TITLE
+Part 3 — Bars 5–8 — Response Loop A: ppp bed + triumphant trumpet melody on top.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument (no chords).
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME / DURATION / VELOCITY / METER: `add` only; no `mul`/`div`; when N>1 for TIME, never add 0.
+• PITCH: `add`/`subtract` only.
+
+AGGREGATE R-A (INTERNAL, DO NOT PRINT)
+Construct a new aggregate for Bars 5–8 (materially different from Aggregate A: change ≥ 6 pcs→band assignments across the ensemble and shift ≥ 1 band boundary for ≥ 2 instruments).
+
+PT REALIZATION
+
+Trumpet (triumphant melody)
+• TIME: strictly increasing using steps from {1,2,3,4}; 4–8 notes per bar (varied).
+• DURATION: values in {1,2,3,4}; fit gaps (runner caps).
+• PITCH: through-composed line across Bars 5–8; favor MID↔HIGH; avoid >3 same-direction steps; net drift per bar in [−2..+2]; band-legal pcs; hard-range legal.
+• VELOCITY: forte ≈ 108–116 (small arcs allowed, step Δ ≤ 8).
+• METER: seeds numerator=3, denominator=4; transforms add 0.
+
+All other instruments (ppp bed)
+• TIME: steps {1,2,3,4}; 3–6 notes per bar; keep loose against the trumpet (avoid frequent exact coincidences).
+• DURATION: {1,2,3,4}; monophony.
+• PITCH: add/sub within R-A band pcs; seed near tessitura center; mainly stepwise with occasional corrective leaps (±5, ±7, ±12) that return to steps; hard-range legal.
+• VELOCITY: ppp ≈ 22 (±2).
+• METER: seeds 3/4; transforms add 0.
+
+VARIATION WITHIN LOOP A
+For each non-trumpet instrument, avoid literal copy of Bars 1–4 onset patterns; include at least one different duration value per instrument/bar.
+
+VALIDATION
+Exactly four 3/4 bars; time streams strictly increase; durations fit gaps; last note ends ≤ 12; trumpet ≈ 108–116 vs others ppp ≈ 22; band pcs + hard ranges respected.

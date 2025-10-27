@@ -1,0 +1,21 @@
+METER: 4/4
+
+TITLE
+Part 3 — Bar 18 — Cadence B: two half-bar tutti chords (renewed color).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Monophony per instrument.
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME / DURATION / VELOCITY / METER: `add` only; no `mul`/`div`.
+• PITCH: `add`/`subtract` only.
+
+PT REALIZATION (exact, single bar)
+• TIME: exactly two onsets at ticks [0, 8] (N=2). Implement as seed time=0 with time.add 8.
+• DURATION: [8, 8] — seed dur=8 with duration.add 0.
+• PITCH: add/sub only; center-weighted voicing; on Hit 2, at least two instruments change octave or neighbor pc vs Hit 1; avoid adjacent-instrument unisons; sparse octaves OK.
+• VELOCITY: strong tutti ≈ 112 (constant; velocity.add 0).
+• METER: seeds numerator=4, denominator=4; transforms add 0.
+
+VALIDATION
+Exactly two notes per instrument at [0,8] with durations [8,8]; last ends ≤ 16; spacing rules observed.

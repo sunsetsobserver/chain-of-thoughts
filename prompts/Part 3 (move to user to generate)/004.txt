@@ -1,0 +1,24 @@
+METER: 3/4
+
+TITLE
+Part 3 — Bars 10–13 — Cloud Loop B (pp), varied reprise.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument.
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME / DURATION / VELOCITY / METER: `add` only; when N>1 for TIME, never add 0; no `mul`/`div`.
+• PITCH: `add`/`subtract` only.
+
+SECTION POLICY (each bar)
+Same density/timing/duration/velocity rules as Cloud Loop A, but build Aggregate B anew (new pcs→band mapping; adjust ≥ 1 band boundary for ≥ 3 instruments). Keep textures airy; avoid frequent vertical alignments.
+
+VARIATION vs Bars 1–4
+For every instrument and bar, avoid literal onset copies; include at least one different duration value per instrument/bar.
+
+HARD RANGES / METER
+Ranges as before; meter seeds 3/4; transforms add 0.
+
+OUTPUT
+Return one JSON object with "bars":[ … ] for four bars (10–13).

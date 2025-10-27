@@ -1,0 +1,26 @@
+METER: 3/4
+
+TITLE
+Part 3 — Bars 14–17 — Response Loop B: ppp bed + triumphant trumpet (varied).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME / DURATION / VELOCITY / METER: `add` only; when N>1 for TIME, never add 0; no `mul`/`div`.
+• PITCH: `add`/`subtract` only.
+
+AGGREGATE R-B (INTERNAL)
+Derive a new aggregate for Bars 14–17, materially different from R-A (≥ 6 pcs reassigned across ensemble and ≥ 1 band boundary shift for ≥ 2 instruments).
+
+PT REALIZATION
+Follow Response Loop A rules: trumpet forte through-line; others ppp interlocking; time steps {1,2,3,4}; durations {1,2,3,4}; pitch add/sub within bands; monophony.
+
+VARIATION constraint
+For each non-trumpet instrument and bar, avoid literal onset copies of Bars 5–8; include at least one different duration value.
+
+METER / RANGES / VALIDATION
+Same as earlier 3/4 prompts.
+
+OUTPUT
+One JSON object with "bars":[ … ] for four bars (14–17).

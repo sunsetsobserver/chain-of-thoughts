@@ -1,0 +1,36 @@
+METER: 4/4
+
+TITLE
+Part 3 — Bars 23–24 — Final Cadential Bracket (tutti, then open question).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Monophony per instrument.
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME / DURATION / VELOCITY / METER: `add` only; no `mul`/`div`.
+• PITCH: `add`/`subtract` only.
+• For N=1 bars, implement TIME with seed time=0 and time.add 0.
+
+BAR 23 — Strong cadence (decisive)
+• TIME: onsets [0,8] (N=2). Implement as seed time=0 with time.add 8.
+• DURATION: [8,8] (seed dur=8; duration.add 0).
+• PITCH: add/sub only; robust, center-weighted voicing; Hit 2 uses different pcs for each instrument (not equal to Hit 1).
+• VELOCITY: strong tutti ≈ 112 (constant; velocity.add 0).
+• METER: seeds 4/4; transforms add 0.
+
+BAR 24 — Open question (calm, suspended)
+Choose **one**:
+(A) Whole-bar sustain (preferred): N=1, onset 0, dur 16 → implement with seed time=0 + time.add 0; seed dur=16 + duration.add 0; gentle voicing.
+(B) Two half-notes: N=2, onsets [0,8] via time.add 8; durs [8,8]; softer spacing.
+• PITCH: avoid triadic 3rd implications; allow open 5ths with added 2/9 or 11; airy spacing.
+• VELOCITY: mp→p taper across the bar(s): if N=1 keep a single soft value (≈ 56–48); if N=2 make the second softer.
+• METER: seeds 4/4; transforms add 0.
+
+HARD RANGES (MIDI)
+af 53..81 • bcl 43..74 • tpt 60..82 • vn 55..88 • vc 48..74 • db 31..55
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ … ] for two 4/4 bars (23–24). Per bar: six features, six dimensions (time, duration, pitch, velocity, numerator(add 0), denominator(add 0)); run_plan present; seeds set to 4/4.
+
+VALIDATION
+Bar 23 exactly matches the [0,8]/[8,8]/≈112 spec; Bar 24 meets the chosen pattern and dynamic taper; no adjacent-instrument unisons; sparse octaves OK; last notes end ≤ 16.

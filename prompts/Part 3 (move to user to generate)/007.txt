@@ -1,0 +1,21 @@
+METER: 3/4
+
+TITLE
+Part 3 — Bars 19–22 — Cloud Loop C (pp→ppp), most delicate reprise.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument.
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME / DURATION / VELOCITY / METER: `add` only; when N>1 for TIME, never add 0; no `mul`/`div`.
+• PITCH: `add`/`subtract` only.
+
+SECTION POLICY (each bar)
+Use the Cloud rules again; taper dynamics over the four bars (pp ≈ 30 → ppp ≈ 22 by Bar 22). Build Aggregate C anew (new pcs→band mapping; tweak ≥ 1 band boundary for ≥ 2 instruments). Optional flutter (as before) allowed in at most one of these four bars and by only one instrument.
+
+METER / RANGES / VALIDATION
+Same as prior 3/4 cloud prompts.
+
+OUTPUT
+One JSON object with "bars":[ … ] for four bars (19–22).

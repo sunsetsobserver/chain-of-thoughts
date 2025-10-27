@@ -306,7 +306,6 @@ CONTEXT_LAST=1 CONTEXT_BUDGET_CHARS=20000 python compose_suite.py
 ## Validation & guardrails (what the generator enforces)
 
 - **Allowed ops:** `add`, `subtract`, `mul`, `div` (exact spelling).
-- **Time:** strictly increasing, `add {1,2,3,4}` only (no zeros, no chords).
 - **Duration:** live values must be in `{1,2,3,4}`; automatically **capped to next onset and bar end** for safety.
 - **Pitch:** `add`/`subtract` only; kept inside **hard MIDI ranges** (per instrument).
 - **Meter:** seeds set from your `METER:` directive; meter dims use constant `add 0`.

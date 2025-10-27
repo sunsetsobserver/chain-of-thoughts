@@ -1,0 +1,28 @@
+METER: 2/4
+
+TITLE
+Part 3 — Bars 9–10 — Cadence A (two 2/4 bars): one half-bar tutti chord per bar (center-weighted, decisive).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Monophony per instrument.
+
+SAFE OPS (ENGINE-FRIENDLY)
+• TIME: `add` only. For N=1 (this section), use add 0 with seed time=0 (yields onset [0]).
+• DURATION / VELOCITY / METER: `add` only; no `mul`/`div`.
+• PITCH: `add`/`subtract` only.
+
+PT REALIZATION (per bar)
+• TIME: exactly one onset at tick 0 (N=1). Implement as seed time=0 with time.add 0.
+• DURATION: constant 8 (seed dur=8; duration.add 0).
+• PITCH: add/sub only. Bar 9 = Hit A; Bar 10 = Hit B (choose a different pc for each instrument than Bar 9; nearby register). Stay strictly within hard ranges.
+• VELOCITY: strong tutti ≈ 112 (constant per event; velocity.add 0).
+• METER: seeds numerator=2, denominator=4; transforms add 0.
+
+HARD RANGES (MIDI)
+af 53..81 • bcl 43..74 • tpt 60..82 • vn 55..88 • vc 48..74 • db 31..55
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ … ] containing two bars (Bars 9–10), each a complete six-instrument bundle in 2/4.
+
+VALIDATION
+Per bar & instrument: time [0], duration [8]; last end ≤ 8; pitch in hard range; avoid adjacent-instrument unisons; sparse octaves OK.
