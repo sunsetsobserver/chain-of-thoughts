@@ -1,0 +1,1634 @@
+PROMPT 001:
+METER: 3/4
+
+TITLE
+Bar 1 — Register-partitioned, non-isomorphic scale; airy monophony with internal crescendo.
+
+INSTRUMENTS (EXACT)
+Use these six instruments and no others:
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Every instrument must appear in this bar (one monophonic line each; no chords).
+
+GOAL (MUSICAL TECHNIQUE TO APPLY)
+Compose the bar by first designing a register-partitioned, non-isomorphic scale and then realizing it *through the PTs* (pitch/time/duration/velocity). Do not output the scale as data; instead, embed its effect in your pitch transformations + seeds.
+
+1) REGISTER PARTITION (per instrument)
+   • Split each instrument’s hard MIDI range into three contiguous bands: LOW / MID / HIGH (bottom/middle/top third of its range).
+   • For the *piece as a whole*, assign three disjoint pitch-class sets (pcs) — one set per band — so that:
+       – LOW_pcs, MID_pcs, HIGH_pcs are pairwise disjoint,
+       – their union is all 12 pcs (0..11),
+       – each band has exactly 4 pcs,
+       – internal adjacency within each band suggests thirdal/quartal neighborhoods (prefer step relations ≈ ±3 or ±4 semitones); avoid trivial uniform cycles.
+   • Non-isomorphism: the playable pcs change when a note crosses a band boundary. (The same pitch letter in a higher register is *not* guaranteed the same pc availability as below.)
+
+2) MELODIC REALIZATION (how to use PTs to stay inside the band pcs)
+   • PITCH dimension: use only add/sub integers to construct a short degree-step pattern relative to the ordered pcs of the current band at each onset.
+       – Choose a repeating pattern using small steps (±1, ±2 degrees within the band’s ordered pcs) with occasional leaps (±5, ±7, ±12 semitones) immediately followed by corrective stepwise motion that lands back on a band-legal pc.
+       – If a planned semitone add/sub would land off the band set, apply a one-time ±1 adjustment at that step so the resulting MIDI pitch snaps to the nearest legal pc for the band before continuing the planned pattern.
+       – Avoid >3 same-direction moves in a row; net drift per line per bar in [−2..+2].
+       – Choose the pitch seed near each instrument’s tessitura center so that the opening note is already a band-legal pc.
+   • TIME dimension: strictly increasing onsets using only add {1,2,3,4}; no zeros; no mul/div; no chords.
+   • DURATION dimension: values in {1,2,3,4} and MAX(duration) ≤ s_min where s_min is that instrument’s smallest time step, ensuring monophony and no overlaps.
+   • VELOCITY dimension: smooth crescendo across the bar ≈ 50 → 80, with per-step deltas ≤ 8. (Shape may be slightly asymmetrical but must rise overall.)
+
+3) TEXTURE, DENSITY, ROLES (match the original Bar-1 character)
+   • Airy, interleaved entries; avoid vertical stacking: ≤ ~1/3 of onsets may coincide across instruments.
+   • Target onsets per instrument (soft bounds; stay close):
+       – alto_flute:      6–10 (MID↔HIGH bands)
+       – violin:          5–9  (MID↔HIGH)
+       – bass_clarinet:   3–6  (LOW↔MID)
+       – trumpet:         2–5  (MID↔HIGH), sparser color
+       – cello:           2–5  (LOW↔MID)
+       – double_bass:     2–4  (LOW), foundational, the sparsest
+   • Keep every realized MIDI pitch inside the instrument’s hard range and inside the band-legal pcs at its onset register.
+   • Vertical color at chance alignments favors interval-classes {1,2,5,6}; avoid triadic pull and consecutive perfect-fifth alignments; no functional cadences.
+
+FORM FOR THIS PROMPT
+Compose exactly one bar (12 ticks at 1/16 grid). All notes must end ≤ tick 12. Realize the above purely through your PT design (transformations + seeds). Return a single bundle with exactly six features (one per listed instrument) and a run_plan that produces the lines as specified.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 001:
+UNIT 001: bars=1, total_ticks=12, meter=3/4
+- alto_flute: notes=7, pitch[64..77], avg_vel=65.6, last_pitch=67, last_on=9, last_end=10
+- bass_clarinet: notes=5, pitch[51..58], avg_vel=64.0, last_pitch=51, last_on=10, last_end=12
+- trumpet: notes=3, pitch[70..77], avg_vel=64.0, last_pitch=70, last_on=8, last_end=10
+- violin: notes=7, pitch[67..77], avg_vel=65.0, last_pitch=70, last_on=11, last_end=12
+- cello: notes=4, pitch[51..58], avg_vel=62.5, last_pitch=54, last_on=7, last_end=8
+- double_bass: notes=4, pitch[33..36], avg_vel=59.0, last_pitch=36, last_on=8, last_end=10
+
+PROMPT 002:
+METER: 2/4
+
+TITLE
+Bar 2 — Two tutti verticals from two fresh register-partitioned aggregates (contrast with Bar 1).
+
+INSTRUMENTS (EXACT)
+Use these six instruments and no others:
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Every instrument must sound on BOTH verticals; still monophonic per instrument.
+
+MUSICAL TECHNIQUE (WHAT TO CONSTRUCT INTERNALLY — DO NOT PRINT IT)
+Design two distinct register-partitioned, non-isomorphic aggregates, call them A and B. Realize them purely via PT design (pitch/time/duration/velocity). Do not output the aggregates — only the PT bundle.
+
+Aggregate A and B (both must satisfy):
+• Partition register into three contiguous bands (LOW / MID / HIGH) over the playable MIDI range.
+• Assign to each band a disjoint pitch-class set (pcs) of exactly 4 pcs; LOW_pcs ∪ MID_pcs ∪ HIGH_pcs = all 12 pcs (0..11).
+• The order of pcs within each band matters (defines neighborhood for targeting), and the pcs should suggest thirdal/quartal neighborhoods (avoid trivial equal-step cycles like 0–3–6–9).
+• A and B must be different (at least one band uses a different pcs set and/or different band spans).
+• Contrast with Bar 1 (choose pcs so the sonority palette is perceptibly different). Even though earlier PT JSON is visible in the reference context, do not copy Bar-1 sets—design new A and B.
+
+VOICING RULES (HOW TO REALIZE THE TWO HITS WITH PTs)
+We will create exactly two simultaneous verticals (tutti chords) at relative bar ticks 0 and 4, each with duration 4 ticks (quarter notes on a 1/16 grid). No other notes in this bar.
+
+For EACH instrument:
+1) Determine its band for voicing by using the instrument’s tessitura center (LOW/MID/HIGH).
+2) Hit 1 (tick 0, dur 4): choose one pitch-class from Aggregate A’s pcs for that band, then snap to the nearest legal MIDI inside the instrument’s range around tessitura center.
+3) Hit 2 (tick 4, dur 4): choose a pitch-class from Aggregate B’s pcs for that band, not equal to the first hit’s pc for that same instrument; target a nearby register (±3 semitones window is fine), then snap to the nearest legal MIDI inside range for Aggregate B.
+4) Avoid unisons across adjacent instruments on each hit (mild constraint); octave doublings are acceptable but keep them sparse.
+5) Keep voicings center-weighted (db/cello anchor LOW, bcl/cello share LOW↔MID, vn/af/tpt occupy MID↔HIGH).
+
+DYNAMICS
+Two fixed dynamic levels for clarity of contrast:
+• Hit 1 velocity ≈ 124 (stronger)
+• Hit 2 velocity ≈ 114 (slightly softer)
+
+Context rule: When later prompts ask to recall Bar-2, they will copy from this bar’s PT JSON in the reference context; keep your bundle clean and unambiguous (one feature per instrument, simple single-step time pattern to [0,4]).
+
+PT REALIZATION REQUIREMENTS (so the bundle reproduces the behavior)
+• TIME: strictly increasing using only `add {1,2,3,4}`. For exactly two onsets at 0 and 4, use a single-step pattern that yields `[0,4]` (e.g., seed time=0, transforms `[{"name":"add","args":[4]}]` with `N=2`). No zeros; no mul/div.
+• DURATION: constant 4; values must stay in `{1,2,3,4}` and obey MAX(duration) ≤ s_min (here `s_min = 4`).
+• PITCH: add/sub only. Realize the two chosen targets by setting `seed pitch = Hit1_MIDI` and a single transform whose delta lands exactly on Hit 2 (delta = Hit2_MIDI − Hit1_MIDI).
+• VELOCITY: two values `[124, 114]` (e.g., e.g., seed 124 then subtract 10).
+• METER: seeds must set numerator=2, denominator=4; numerator/denominator transforms are constant `add 0`.
+
+TEXTURE CHECKS
+• Exactly two notes per instrument; both verticals are tutti; no extra events.
+• All MIDI pitches must be inside each instrument’s hard range and on a band-legal pcs for the respective aggregate and register.
+• Notes must end at or before tick 8.
+
+FORM FOR THIS PROMPT
+Return one bundle with exactly six features (one per listed instrument) and a run_plan that produces:
+– time onsets `[0,4]`,
+– duration `[4,4]`,
+– pitch realized from Aggregate A then B as above,
+– velocity `[124,114]`,
+while respecting the PT op constraints.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 8
+- Seeds must set numerator=2, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 002:
+UNIT 002: bars=1, total_ticks=8, meter=2/4
+- alto_flute: notes=2, pitch[63..66], avg_vel=119.0, last_pitch=63, last_on=4, last_end=8
+- bass_clarinet: notes=2, pitch[58..59], avg_vel=119.0, last_pitch=59, last_on=4, last_end=8
+- trumpet: notes=2, pitch[70..71], avg_vel=119.0, last_pitch=70, last_on=4, last_end=8
+- violin: notes=2, pitch[75..76], avg_vel=119.0, last_pitch=76, last_on=4, last_end=8
+- cello: notes=2, pitch[61..62], avg_vel=119.0, last_pitch=62, last_on=4, last_end=8
+- double_bass: notes=2, pitch[43..45], avg_vel=119.0, last_pitch=43, last_on=4, last_end=8
+
+PROMPT 003:
+METER: 4/4
+
+TITLE
+Bar 3 — pp trio in a NEW register-partitioned, non-isomorphic aggregate (contrast with Bar 1)
+
+INSTRUMENT POLICY
+Use exactly three ACTIVE instruments chosen from:
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+
+• The other three instruments must be SILENT in this bar.
+• To keep the bundle schema consistent while producing silence, still include features for all six instruments, but for the silent ones set:
+  – run_plan.N = 1
+  – seeds.time = BAR_TICKS (i.e., 16)
+  – any duration seed in {1,2,3,4}
+  This yields onsets at/after the bar boundary and will result in zero realized notes in this bar.
+
+GLOBAL CHARACTER
+Dynamic is pp ≈ 30 for every realized note. Intimate, chamber-like trio; no vertical tutti.
+
+CONTRAST AGGREGATE (BUILD THIS INTERNALLY; DO NOT PRINT IT)
+Construct a new register-partitioned, non-isomorphic aggregate different from the one you used in Bar 1:
+
+1) Partition each instrument’s playable MIDI range into three contiguous bands: LOW / MID / HIGH (bottom/middle/top third).
+2) Assign to each band a disjoint pitch-class set of exactly 4 pcs so that LOW ∪ MID ∪ HIGH = all 12 pcs (0..11).
+3) Make this aggregate contrast Bar 1’s: at least one band must use a different pcs set and/or different band bounds; bias away from any triadic clustering you used before.
+4) Inside each band, order pcs to suggest thirdal/quartal neighborhoods (avoid trivial 0–3–6–9 cycles).
+
+MELODIC REALIZATION (HOW TO USE PTs)
+For the three ACTIVE instruments only:
+
+PITCH
+• Use add/sub only on `pitch`.
+• Treat the ordered pcs of the current band as a local “scale.” Make small degree steps (±1, ±2 within that set) with rare corrective leaps (±5, ±7, ±12 in semitones) that immediately return to a legal band pc.
+• If a planned delta would land off the band set, snap by ±1 at that step so the note falls on a legal pc.
+• Seed the opening pitch near the instrument’s tessitura center on a legal pc. Keep every realized MIDI strictly inside the hard range.
+• Avoid >3 same-direction moves; net drift per line in [−2..+2].
+
+TIME
+• Strictly increasing onsets using only `add {1,2,3,4}`; no zeros; no chords.
+• Choose a gentle, irregular cell per instrument (e.g., 2–3–1–2 …) to avoid alignment across parts.
+
+DURATION
+• Values must be in {1,2,3,4} and obey MAX(duration) ≤ s_min where s_min is that instrument’s smallest time step, guaranteeing no overlaps.
+• All notes must end by tick 16.
+
+VELOCITY
+• Constant pp = 30 (use `velocity` add/sub to stay near 30; deltas ≤ 2).
+
+TEXTURE & DENSITY
+• Exactly three ACTIVE lines; the other three are silent as described above.
+• Target onsets (soft bounds; stay close):
+  – winds/strings candidates (e.g., alto_flute, violin, bass_clarinet, cello): 3–6 notes
+  – trumpet or double_bass if chosen: 2–4 notes (sparser)
+• Desynchronize entries; ≤ ~1/4 of onsets may coincide across the active trio.
+• Favor interval-classes {1,2,5,6} at incidental vertical contacts; avoid functional gestures.
+
+METER & GRID
+• This bar is 4/4 on a 1/16 grid → BAR_TICKS = 16.
+• In the bundle, keep `numerator`/`denominator` transforms constant `add 0`, with seeds set to 4 and 4.
+
+Return one JSON object with "bars":[ <this single bar bundle> ].
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 003:
+UNIT 003: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=5, pitch[60..66], avg_vel=30.0, last_pitch=65, last_on=12, last_end=13
+- bass_clarinet: notes=4, pitch[58..61], avg_vel=30.0, last_pitch=58, last_on=12, last_end=14
+- trumpet: notes=0
+- violin: notes=6, pitch[79..84], avg_vel=30.0, last_pitch=80, last_on=10, last_end=11
+- cello: notes=0
+- double_bass: notes=0
+
+PROMPT 004:
+METER: 3/4
+
+TITLE
+Bar 4 — One chord for all instruments (tutti) filling in the whole bar of 3/4 (pp/ppp, center-weighted voicing).
+
+INSTRUMENTS (EXACT)
+Use all six instruments:
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Everyone plays; monophony, one note per instrument (no chords). All instruments together create one chord.
+
+CHORD'S HARMONY (INTERNAL, DO NOT PRINT)
+Before writing PTs, internally construct a NEW scale for Bars 4–6 (NOT reused from Bars 1 or 3):
+• Split each instrument’s playable MIDI range into LOW/MID/HIGH bands.
+• Assign disjoint pitch-class sets (pcs) to bands; each band has 3–4 pcs; union across the three bands is EXACTLY the 12 pcs (0..11).
+• ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step cycles like 0–3–6–9).
+• Make this Bars-4–6 chordal aggregate materially different from Bars 1 and 3 (different band boundaries and pcs contents).
+
+Rules:
+- pcs_ordered is exactly 4 pcs per band, disjoint across bands; union is all 12 pcs.
+- Bands cover the instrument’s playable MIDI range without gaps.
+- Keep this object compact and valid JSON.
+
+BAR-SPECIFIC PCSET + VOICING TARGETS (INTERNAL GUIDE)
+For Bar 4 select ONE bar-pcset (size 5–10) drawn from the union of band pcs;
+voicing hint = “spread”; register targets by instrument:
+
+double_bass: LOW, cello: LOW↔MID, bass_clarinet: LOW↔MID,
+
+violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH.
+Avoid unisons between adjacent neighbors; octave doublings okay but sparse.
+
+PT REALIZATION (WHAT TO OUTPUT VIA THE BUNDLE) — ONE sustained bar-long note per instrument
+Per instrument:
+• TIME: exactly one onset at tick 0 (N=1). Do not create any additional onsets in this bar.
+• DURATION: the single note lasts the full bar → 12 ticks. It must end exactly at tick 12.
+• PITCH: choose one MIDI near tessitura center that belongs to the bar-pcset and is legal for each instrument’s band at that register. Keep this pitch constant for the entire bar (no pitch changes inside the bar).
+• VELOCITY: very soft (pp–ppp): use a seed ≈ 40–48 and keep it constant (tiny deltas ≤2 allowed).
+• METER: numerator=3, denominator=4 via seeds; meter transforms are add 0.
+
+VALIDATION
+• Exactly one note per instrument in this bar (one onset, one bar-long sustain over the whole bar of 3/4).
+• All MIDI inside hard instrument ranges; chosen pcs legal for the band at that register.
+• No overlaps (monophony per instrument holds trivially with N=1).
+• The bar-long note ends exactly at tick 12.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 004:
+UNIT 004: bars=1, total_ticks=12, meter=3/4
+- alto_flute: notes=1, pitch[71..71], avg_vel=42.0, last_pitch=71, last_on=0, last_end=12
+- bass_clarinet: notes=1, pitch[56..56], avg_vel=42.0, last_pitch=56, last_on=0, last_end=12
+- trumpet: notes=1, pitch[79..79], avg_vel=46.0, last_pitch=79, last_on=0, last_end=12
+- violin: notes=1, pitch[68..68], avg_vel=45.0, last_pitch=68, last_on=0, last_end=12
+- cello: notes=1, pitch[59..59], avg_vel=43.0, last_pitch=59, last_on=0, last_end=12
+- double_bass: notes=1, pitch[45..45], avg_vel=44.0, last_pitch=45, last_on=0, last_end=12
+
+PROMPT 005:
+METER: 4/4
+
+TITLE
+Bar 5 — one whole-bar chord (no re-articulation). Continuation of the harmonic material started in the previous bar 4.
+
+INSTRUMENTS
+Everyone plays: [alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Single instrument can only play one note at the time (no polyphony within one instrument allowed).
+
+BAR-PCSET & VOICING (INTERNAL GUIDE)
+Choose a bar-pcset (size 5–10) that contrasts with Bar 4; center-weighted voicing:
+- double_bass: LOW anchor (avoid unison with cello)
+- cello + bass_clarinet: LOW↔MID
+- violin + alto_flute + trumpet: MID (avoid exact unisons)
+Important: consider correct voicing rules between this and previous chord.
+
+PT REALIZATION — exactly one sustained whole-bar note per instrument
+Hard constraints per instrument:
+• TIME: one onset at tick 0 with N=1. No other onsets in this bar.  
+• DURATION: 16 ticks — the note lasts the full 4/4 bar (ticks 0..16). Starts exactly at the beginning of the bar and ends exactly at the end (fills in the whole bar of 4/4; takes 16 ticks).  
+• PITCH: choose one legal MIDI inside the instrument’s band and inside the bar-pcset; keep it constant for the entire bar (no intra-bar pitch change).  
+• VELOCITY: choose a fixed soft dynamic (e.g., pp–p ≈ 44–52). Velocity is constant within the bar.  
+• METER: numerator=4, denominator=4 via seeds; meter transforms are `add 0`.
+
+ABSOLUTE PROHIBITIONS
+• No re-articulation. For each instrument N=1, and that's it.
+• No onsets other than the single onset at 0.  
+• No intra-bar pitch changes.
+
+VALIDATION
+• Per instrument: exactly one note with onset `[0]` and duration `[16]`.  
+• Ranges respected; pcs legal per band; avoid adjacent-instrument unisons; octave doublings sparse, consider good voicing with the previous bar's material.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 005:
+UNIT 005: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=1, pitch[69..69], avg_vel=48.0, last_pitch=69, last_on=0, last_end=16
+- bass_clarinet: notes=1, pitch[51..51], avg_vel=46.0, last_pitch=51, last_on=0, last_end=16
+- trumpet: notes=1, pitch[66..66], avg_vel=50.0, last_pitch=66, last_on=0, last_end=16
+- violin: notes=1, pitch[72..72], avg_vel=47.0, last_pitch=72, last_on=0, last_end=16
+- cello: notes=1, pitch[50..50], avg_vel=48.0, last_pitch=50, last_on=0, last_end=16
+- double_bass: notes=1, pitch[41..41], avg_vel=45.0, last_pitch=41, last_on=0, last_end=16
+
+PROMPT 006:
+METER: 4/4
+
+TITLE
+Bar 6 — Two contrasting half-note chords (A then B) concluding the harmonic material of previous bars 4 and 5.
+
+INSTRUMENTS
+Everyone plays, tutti;
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Only melodic instrument are used, thus polyphony within one instrument's track is not allowed. Write only one note per instrument at the time.
+
+BAR-LEVEL MATERIAL (INTERNAL, DO NOT PRINT)
+Define two distinct half-bar pcsets, A (first half, ticks 0–8) and B (second half, ticks 8–16).
+Both are subsets of the aggregate’s band pcs; A ≠ B; each size 4–10.
+Register targets:
+
+* double_bass: LOW   cello: LOW↔MID   bass_clarinet: LOW↔MID
+* violin: MID   alto_flute: MID↔HIGH   trumpet: MID↔HIGH
+  Avoid adjacent-instrument unisons; octave doublings OK but sparse.
+
+PT REALIZATION — exactly two half-note chords per instrument
+Each instrument plays one chord on tick 0 (pcset A) and one chord on tick 8 (pcset B).
+Hard constraints per instrument:
+• TIME: two onsets at ticks 0 and 8 (N = 2). No other onsets.
+• DURATION: 8 for each note → half-note sustain (0–8, 8–16).
+• PITCH: for each half, choose one legal MIDI from the targeted band belonging to the appropriate pcset (A or B).
+ Pitch is constant within each half; change between halves (A→B).
+• VELOCITY: pcset A ≈ forte (108–116), pcset B ≈ mezzo-forte (88–96). Constant within each half.
+• METER: numerator = 4, denominator = 4 via seeds; meter transforms are `add 0`.
+
+ABSOLUTE PROHIBITIONS
+• No re-articulation inside a half bar.
+• No extra onsets besides [0, 8].
+• No pitch changes within a half-note sustain.
+
+STRUCTURE OF THE RETURN
+Return a single JSON object representing Bar 6, realized as a six-instrument bundle with two half-note chords (A and B) within one 4/4 bar.
+
+VALIDATION
+• Per instrument: exactly two notes (onsets [0, 8], durations [8, 8]).
+• All MIDI values inside hard instrument ranges.
+• Chosen pcs legal for bands and pcsets; octave doublings sparse; avoid neighbor unisons.
+• Last note ends exactly at tick 16.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 006:
+UNIT 006: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=2, pitch[69..71], avg_vel=99.5, last_pitch=69, last_on=8, last_end=16
+- bass_clarinet: notes=2, pitch[54..56], avg_vel=102.0, last_pitch=54, last_on=8, last_end=16
+- trumpet: notes=2, pitch[78..79], avg_vel=106.0, last_pitch=78, last_on=8, last_end=16
+- violin: notes=2, pitch[67..72], avg_vel=104.0, last_pitch=72, last_on=8, last_end=16
+- cello: notes=2, pitch[50..55], avg_vel=102.0, last_pitch=50, last_on=8, last_end=16
+- double_bass: notes=2, pitch[41..45], avg_vel=101.0, last_pitch=41, last_on=8, last_end=16
+
+PROMPT 007:
+METER: 3/4
+
+TITLE
+Bars 7–9 — Three “cloud duo” bars in 3/4, each featuring one unique pair of instruments (pp, airy texture).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument (no chords inside a single part).
+
+AGGREGATE (INTERNAL, DO NOT PRINT)
+Before writing PTs, internally construct a NEW aggregate named Aggregate A for Bars 7–9:
+• Split each instrument’s playable MIDI range into LOW / MID / HIGH bands.
+• Assign disjoint pitch-class sets (pcs) to these bands; each band has 3–4 pcs; the union of all bands = 12 pcs (0–11).
+• ORDER inside each band matters (thirdal/quartal neighborhoods; avoid equal-step patterns like 0–3–6–9).
+• This Aggregate A must be different from any aggregate used in earlier bars (1–6).
+
+SECTION STRUCTURE
+Produce three bars in 3/4, each 12 ticks long (ticks 0–12).
+Each bar activates a different instrument pair, so that across Bars 7–9 all six instruments participate exactly once.
+Example pairing: Bar 7 = [alto_flute, violin]; Bar 8 = [bass_clarinet, cello]; Bar 9 = [trumpet, double_bass].
+All non-active instruments remain silent in that bar.
+
+PT REALIZATION (PER ACTIVE INSTRUMENT)
+• TIME: strictly increasing onsets using only `add {1, 2, 3, 4}` (no 0). Target 4–7 notes per bar.
+• DURATION: values in {1, 2, 3, 4}; each duration ≤ distance to next onset; no overlaps.
+• PITCH: `add` / `subtract` steps inside the ordered pcs of the current band (from Aggregate A); seed near tessitura center; stay within hard MIDI range. Net drift per bar in [−2..+2].
+• VELOCITY: constant pp ≈ 30 (±2).
+• METER: numerator = 3, denominator = 4 via seeds; meter transforms `add 0`.
+• NON-ACTIVE INSTRUMENTS: realize no note (`run_plan.N = 1`, `seeds.time = 12`).
+
+INTERLOCK RULES
+• ≤ 1/3 of onsets may align between the two active instruments per bar.
+• Keep mild rhythmic interlock and register separation (~6–12 semitones apart).
+
+STRUCTURE OF THE RETURN
+Return one JSON object with `"bars":[ … ]` containing three bars (7–9) as described above, each a six-instrument bundle.
+
+VALIDATION
+• Exactly three bars, each 3/4 (12 ticks).
+• Each bar: two active instruments only, others silent.
+• Active instruments follow time/duration/pitch/velocity rules and stay within range.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 007:
+UNIT 007: bars=3, total_ticks=36, meter=3/4
+- alto_flute: notes=6, pitch[64..69], avg_vel=29.2, last_pitch=67, last_on=10, last_end=11
+- bass_clarinet: notes=5, pitch[55..60], avg_vel=29.3, last_pitch=56, last_on=21, last_end=22
+- trumpet: notes=6, pitch[64..70], avg_vel=30.0, last_pitch=64, last_on=34, last_end=35
+- violin: notes=6, pitch[70..80], avg_vel=30.0, last_pitch=70, last_on=11, last_end=12
+- cello: notes=6, pitch[60..67], avg_vel=30.8, last_pitch=60, last_on=23, last_end=24
+- double_bass: notes=6, pitch[43..53], avg_vel=29.2, last_pitch=53, last_on=35, last_end=36
+
+PROMPT 008:
+METER: 3/4
+
+TITLE
+Bars 10–13 — Four bars of 3/4 featuring a background loop and foreground staccato hits (Aggregate B).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument.
+
+AGGREGATE (INTERNAL, DO NOT PRINT)
+Internally construct a new aggregate named Aggregate B for Bars 10–13:
+• Same band structure as before (LOW/MID/HIGH per instrument, 3–4 pcs each).
+• Disjoint pcs across bands → union = 12 pcs (0–11).
+• Different from Aggregate A in pcs content and/or band boundaries.
+
+SECTION STRUCTURE
+Produce four bars in 3/4 (each bar has ticks 0..11).
+Split instruments into two groups (3 + 3):
+• Background Loop Group: steady loop repeated identically in each of the four bars.
+• Foreground Hit Group: new short staccato events each bar.
+
+PT REALIZATION
+
+Background Loop (3 instruments)
+• TIME: strictly increasing onsets using add {1,2,3,4} (no 0). Aim for 4–8 notes per bar; all onsets < 12.
+• DURATION: positive and ≤ distance to next onset or bar end (so no overlaps).
+• PITCH: add/sub only within Aggregate B band pcs; seed ≈ tessitura center; stay inside hard range.
+• VELOCITY: ≈ 48 (±4), consistent.
+• The same loop (timing, durations, pitches, velocities) repeats exactly in all four bars.
+
+Literal repetition across bars: Make the loop identical in all four bars by using the same dimensions and run_plan (seeds, N) per loop instrument so the realized arrays (time, duration, pitch, velocity) are byte-for-byte identical across Bars 10–13.
+
+Foreground Hits (3 instruments)
+• Each bar contains 3–8 short events.
+• Events may involve 1–3 of the foreground instruments at once; no unisons between active neighbors in the same event (octaves OK but sparse).
+• TIME: prefer off-beats; ≤ ~1/3 of events may fall on {0,4,8}.
+• DURATION: 1–3 ticks (staccato); no overlaps within any single instrument.
+• PITCH: legal Aggregate B band pcs and instrument ranges; add/sub only.
+• VELOCITY: ≈ 92 (±6), energetic contrast with the loop.
+• Each bar’s foreground material is newly composed (do not copy earlier bars).
+
+GENERAL RULES
+• All time streams strictly increase; durations never exceed the gap to the next onset or bar end.
+• All pitches legal for both Aggregate B and instrument hard ranges.
+• Meter fixed per bar via seeds: numerator=3, denominator=4; transforms are add 0.
+• Monophony enforced for every instrument.
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ … ] containing four bars (10–13), each including all six instruments.
+
+VALIDATION
+• Exactly four bars in 3/4 (12 ticks per bar).
+• Three loop instruments repeat identical material across all four bars.
+• Three hit instruments generate new staccato patterns in each bar.
+• No overlaps within any instrument.
+• All MIDI pitches within range and legal for band pcs.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 008:
+UNIT 008: bars=4, total_ticks=48, meter=3/4
+- alto_flute: notes=24, pitch[67..73], avg_vel=48.3, last_pitch=72, last_on=46, last_end=47
+- bass_clarinet: notes=24, pitch[54..59], avg_vel=48.8, last_pitch=56, last_on=47, last_end=48
+- trumpet: notes=20, pitch[66..75], avg_vel=92.9, last_pitch=71, last_on=46, last_end=47
+- violin: notes=20, pitch[69..77], avg_vel=93.0, last_pitch=72, last_on=46, last_end=47
+- cello: notes=24, pitch[59..63], avg_vel=48.7, last_pitch=61, last_on=47, last_end=48
+- double_bass: notes=20, pitch[42..51], avg_vel=93.0, last_pitch=45, last_on=47, last_end=48
+
+PROMPT 009:
+METER: 2/4
+
+TITLE
+Bar 14 — Recall of Bar 2 (two tutti hits, same timing & dynamics)
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony per instrument.
+
+RECALL SPEC (use reference PT JSON): 
+Copy the per-instrument pitch seed and single-step delta from Bar-2’s PT JSON in the reference context (same meter 2/4). Use the identical time and duration patterns ([0,4] and [4,4]) and [124,114] velocities. You may change feature names only.
+
+PT REALIZATION — two hits only
+For each instrument:
+• TIME: N=2 with onsets [0, 4] (strictly increasing; only `add{4}` or an equivalent single step to land on 4).
+• DURATION: [4, 4] (each note fills its quarter completely; both end ≤ tick 8).
+• PITCH: add/sub only. Choose a legal MIDI for Hit 1 from the instrument’s band-legal pcs near tessitura center; Hit 2 must be a different pc for that same instrument, placed nearby (±3 semitones), still legal for the band.
+• VELOCITY: two values [124, 114] (e.g., seed 124 then {"name":"subtract","args":[10]}).
+• METER: numerator=2, denominator=4 via seeds; meter transforms are `add 0`.
+
+ADDITIONAL MUSICAL GUARDRAILS
+• No extra onsets, no re-articulations other than the two hits.
+• Avoid unisons among adjacent instruments on each hit (mild constraint); sparse octaves acceptable.
+• Center-weighted voicing: db/cello anchor LOW; bcl LOW↔MID; vn/af/tpt MID↔HIGH.
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ <this single bar bundle> ].
+
+VALIDATION
+• Exactly two notes per instrument at onsets [0, 4] with durations [4, 4].
+• All pitches inside hard instrument ranges and legal for the chosen band pcs.
+• Time strictly increasing; durations ≤ next onset; last note ends ≤ tick 8.
+• Meter constant via seeds (`add 0` on numerator/denominator).
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 8
+- Seeds must set numerator=2, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 009:
+UNIT 009: bars=1, total_ticks=8, meter=2/4
+- alto_flute: notes=2, pitch[63..66], avg_vel=119.0, last_pitch=63, last_on=4, last_end=8
+- bass_clarinet: notes=2, pitch[58..59], avg_vel=119.0, last_pitch=59, last_on=4, last_end=8
+- trumpet: notes=2, pitch[70..71], avg_vel=119.0, last_pitch=70, last_on=4, last_end=8
+- violin: notes=2, pitch[75..76], avg_vel=119.0, last_pitch=76, last_on=4, last_end=8
+- cello: notes=2, pitch[61..62], avg_vel=119.0, last_pitch=62, last_on=4, last_end=8
+- double_bass: notes=2, pitch[43..45], avg_vel=119.0, last_pitch=43, last_on=4, last_end=8
+
+PROMPT 010:
+METER: 4/4
+
+TITLE
+Bars 15–17 — Loop background + accented foreground stabs (continuation of Bars 10–14 plan).
+
+INSTRUMENTS (EXACT)
+Use these six instruments and no others:
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument (no chords).
+
+### SCHEMA GUARD (must follow exactly)
+
+* Allowed ops: `"add","subtract","mul","div"` (spelled exactly).
+* All args are unsigned integers. To decrease a stream use `"subtract"`, never `add -k`.
+* Every dimension must include at least one transform. For constants, use `[{"name":"add","args":[0]}]`.
+* Valid `feature_name` values (only): `time, duration, pitch, velocity, numerator, denominator`.
+* For every feature, include `numerator` and `denominator` dimensions with transforms `[{"name":"add","args":[0]}]`, and set seeds to 4 and 4.
+* Return only a JSON object: `{"bars":[ <bundle for bar 15>, <bundle for bar 16>, <bundle for bar 17> ]}`.
+  Each bar is a complete single-bar bundle with `bundle_name`, exactly six `features`, a `run_plan` of six entries (names match), and `created_feature_names`. No extra keys, no prose.
+
+CONTINUITY & SOURCE MATERIAL (INTERNAL, DO NOT PRINT)
+This section continues the Bars 10–14 technique (background loop + foreground stabs) adapted for three 4/4 bars (ticks per bar = 16). Keep recognizable continuity with your Bars 10–14 plan (motivic cells, interval flavor, registral roles), but vary details so it feels like a new paragraph.
+
+ROLE SPLIT (GUIDE, NOT HARD LAW)
+
+* Background loop layer (quiet, continuous-ish): double_bass + cello (+ optional bass_clarinet).
+* Foreground stabs (short, accented, color): trumpet, violin, alto_flute (+ optional bass_clarinet sharing stabs sparingly).
+
+REGISTER TARGETS
+
+* double_bass: LOW anchor
+* cello: LOW↔MID, bass_clarinet: LOW↔MID
+* violin: MID, alto_flute: MID↔HIGH, trumpet: MID↔HIGH
+  Avoid adjacent-instrument unisons on shared onsets; sparse octave doublings are fine.
+
+DYNAMICS
+
+* Background loop around mp ≈ 48 (gentle, steady).
+* Foreground stabs around mf–f ≈ 92 (clearly brighter than the loop).
+  Small per-note deviations (±6) allowed for shape; no big swells.
+  When lowering velocity, use `"subtract"` (e.g., `subtract 2/4/6`)—never `add -k`.
+
+PT REALIZATION — PRECISE TIMING & DURATIONS (applies to each of Bars 15, 16, 17)
+Grid: 1/16 ticks; bar length = 16. Monophony is strict (no overlaps per instrument).
+
+1. TIME
+
+* Use only `{"name":"add","args":[k]}` with k ∈ {1,2,3,4}. No zeros. Onsets strictly increase.
+* Background loop parts: choose an irregular cell (e.g., 2–3–1–2 …) producing N ∈ [5..9] onsets spread across the bar with ≤ 1/3 aligning with other instruments.
+* Foreground stabs: N ∈ [2..5] onsets per bar per stab-instrument; prefer syncopation/off-beats.
+
+2. DURATION
+
+* Realized values must be in {1,2,3,4}.
+* Let `s_min` be the smallest time step you used for that instrument in the bar; enforce MAX(duration) ≤ s_min.
+* Background loop: mostly 2–4 ticks (occasionally 1), never exceeding the gap to the next onset.
+* Foreground stabs: 1–2 ticks, never exceeding the gap.
+* You may use `mul/div` but only with args in {2,3,4}. No 0 or 1 for `div/mul`.
+
+3. PITCH
+
+* `add` / `subtract` only (no mul/div).
+* Stay within hard MIDI range; bias to the register targets above.
+* Background loop: small moves (±1, ±2) with rare corrective leaps (±5, ±7, ±12) that immediately return to stepwise motion; net drift per bar in [−2..+2].
+* Foreground stabs: choose color tones that form crunchy, non-triadic verticals against the loop; avoid exact pitch reuse on consecutive stabs for the same instrument.
+* If decreasing pitch, use `"subtract"`—never `add -k`.
+
+4. VELOCITY
+
+* Background loop: near 48 with small stepwise changes (use `add`/`subtract` 1–4).
+* Foreground stabs: near 92; brief terraces or tiny arcs allowed; keep clearly louder than the loop.
+
+5. METER SEEDS (every feature, every bar)
+
+* Seeds: `numerator=4`, `denominator=4`.
+* Transforms for both are exactly `[{"name":"add","args":[0]}]`.
+
+STRUCTURE OF THE RETURN
+Return one JSON object with
+`"bars":[ … ]` containing three bars (15, 16, 17).
+Each bar is a full six-instrument bundle (4/4) following the schema guard and constraints above.
+
+VALIDATION
+
+* Per bar & per instrument: monophony (no overlaps) and no chords.
+* Time: `add` only in {1,2,3,4}, strictly increasing; last note ends ≤ tick 16.
+* Duration values in {1,2,3,4}; MAX(duration) ≤ s_min.
+* Pitch add/sub only; within hard ranges.
+* Velocity ranges respected (loop ≈48; stabs ≈92), with only unsigned args and `subtract` for decreases.
+* Adjacent-instrument unisons avoided on shared onsets; sparse octaves OK.
+
+---
+
+This keeps your musical spec intact, but explicitly forbids the parser-breaking patterns (negative args, empty transform arrays, missing meter transforms) and nails the wrapper shape for multi-bar output.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 010:
+UNIT 010: bars=3, total_ticks=48, meter=4/4
+- alto_flute: notes=13, pitch[67..73], avg_vel=91.8, last_pitch=72, last_on=42, last_end=44
+- bass_clarinet: notes=17, pitch[55..61], avg_vel=57.9, last_pitch=57, last_on=46, last_end=48
+- trumpet: notes=14, pitch[68..75], avg_vel=92.9, last_pitch=72, last_on=43, last_end=45
+- violin: notes=14, pitch[70..78], avg_vel=92.2, last_pitch=70, last_on=43, last_end=45
+- cello: notes=20, pitch[57..61], avg_vel=48.9, last_pitch=59, last_on=46, last_end=48
+- double_bass: notes=21, pitch[40..45], avg_vel=48.1, last_pitch=43, last_on=46, last_end=48
+
+PROMPT 011:
+METER: 2/4
+
+TITLE
+Bar 18 — Recap hit compressed: quarter-note tutti chord on beat 1, rest on beat 2.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony per instrument.
+
+CONTEXT LINK (INTERNAL, DO NOT PRINT)
+Choose the chord from material in Bars 15–17 (the loop+stabs section). Use the reference PT JSON context to find an actual vertical and copy its pitch-class content/registral shape. (the loop+stabs section). Select a vertical (or near-simultaneous cluster) that actually occurred there and reuse its pitch-class content/registral shape here. Favor center-weighted voicing, avoid adjacent-instrument unisons; sparse octave doublings are fine. (Suite context contains Bars 15–17 summaries.)
+
+PT REALIZATION — one note on beat 1 only; silence on beat 2
+Per instrument:
+• TIME: exactly one onset at tick 0 (N=1). No onset at tick 4.
+• DURATION: 4 ticks (quarter note). The note spans 0..4 only.
+• PITCH: one legal MIDI drawn from the chosen Bar-16–18 vertical, adjusted to each instrument’s targeted register (db LOW; vc/bcl LOW↔MID; vn MID; af/tpt MID↔HIGH). No pitch changes inside the bar.
+• VELOCITY: strong recap hit ≈ 108–116 (constant).
+• METER: numerator=2, denominator=4 via seeds; transforms for meter are `add 0`.
+
+ABSOLUTE PROHIBITIONS
+• No second onset at tick 4.
+• No ties or sustains into beat 2 (silence after tick 4).
+• No intra-bar pitch motion; monophony per instrument.
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ <this single bar bundle> ].
+
+VALIDATION
+• For each instrument: time = [0], duration = [4] only.
+• All MIDI inside hard instrument ranges; pcs legal per band/targeted register.
+• Avoid adjacent-instrument unisons in the chord; octave doublings sparse.
+• Last sounding sample ends ≤ tick 4; bar ticks are 0..7; no other notes exist in this bar.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 8
+- Seeds must set numerator=2, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 011:
+UNIT 011: bars=1, total_ticks=8, meter=2/4
+- alto_flute: notes=1, pitch[71..71], avg_vel=112.0, last_pitch=71, last_on=0, last_end=4
+- bass_clarinet: notes=1, pitch[56..56], avg_vel=112.0, last_pitch=56, last_on=0, last_end=4
+- trumpet: notes=1, pitch[68..68], avg_vel=112.0, last_pitch=68, last_on=0, last_end=4
+- violin: notes=1, pitch[78..78], avg_vel=112.0, last_pitch=78, last_on=0, last_end=4
+- cello: notes=1, pitch[59..59], avg_vel=112.0, last_pitch=59, last_on=0, last_end=4
+- double_bass: notes=1, pitch[42..42], avg_vel=112.0, last_pitch=42, last_on=0, last_end=4
+
+PROMPT 012:
+METER: 4/4
+
+TITLE
+Bars 21–34 — sustained drone field with interleaved “ripple” runs (short, bright), 4/4 throughout.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument at all times (no chords inside a single part).
+
+GLOBAL CHARACTER
+A center-weighted, slowly shifting drone bed in low–mid registers, with occasional bright, short ripples that dance above it. Keep overall density light to moderate; never exceed ~6 simultaneous sounding lines.
+
+SECTION STRUCTURE
+Produce exactly fourteen bars of 4/4 (ticks 0..15 per bar). Return one JSON object with:
+  "bars": [ { …bar 21… }, { …bar 22… }, … { …bar 34… } ]
+Each bar includes features for all six instruments.
+
+DRONE BED (BACKDROP)
+• TIME: Each instrument sustains 0–2 notes per bar (often 0–1). Onsets strictly increase using only add {1,2,3,4}.  
+• DURATION (drone notes): long pulses per note, each note in between 3–12 ticks duration, always ≤ distance to the next onset and ≤ bar end.  
+• PITCH: add/sub only; keep inside hard range, bias to LOW for double_bass, LOW↔MID for cello/bass_clarinet, MID for violin, MID↔HIGH for alto_flute/trumpet. Prefer smooth stepwise lines with occasional corrective leaps (±5, ±7, ±12) that immediately return to stepwise motion.  
+• VELOCITY: calm mp–mf backdrop ≈ 56–72 (small per-step deltas ≤4).  
+• METER: seeds set numerator=4, denominator=4; transforms add 0.
+
+RIPPLES OVERLAY (A MUST — INTERLEAVED ABOVE THE DRONE)
+For each bar, add short, bright monophonic “ripple” gestures with these precise rules:
+
+Activation & counts (per bar)
+• Up to 3 ripple gestures can occur in a bar (0..3); it’s fine if some bars have fewer.  
+• Never exceed 6 simultaneous sounding lines at any tick (ensemble concurrency cap ≈ 6).
+
+Each ripple gesture (per instrument)
+• PICK THE START: Choose a local start tick lt0 ∈ [0..15] where current ensemble concurrency < 6. If full, try another tick.  
+• INSTRUMENT ELIGIBILITY: pick an instrument that is not sounding at lt0. (It may have sounded earlier in the bar; that’s okay if it’s silent at the ripple onset.)  
+• LENGTH: 3–6 notes (inclusive).  
+• TIME: strictly increasing onsets; per-note gaps are 1 or 2 ticks (add {1,2}); all onsets < 16.  
+• DURATION: each note lasts 1 or 2 ticks (always ≤ distance to next onset and within bar). If a 2-tick choice would violate the concurrency cap on any covered tick, shrink that note to 1 tick.  
+• PITCH STEPS (PC LOGIC): use only add/sub semitone deltas that realize **tertian/quartal pitch-class moves (±3 or ±4)** from the previous note’s pc, then **snap** to the nearest legal MIDI inside the instrument’s range around the movement direction. Keep all realized pitches strictly within hard ranges.  
+• VELOCITY: bright but small: ≈ 88–96 (stable within a ripple; tiny per-note deltas ≤4).  
+• MONOPHONY: a ripple cannot overlap any other note for the same instrument.
+
+INTERLOCK & DENSITY
+• Drone bed and ripples together must respect the concurrency cap (~6).  
+• Across instruments, avoid exact unisons on shared ripple onsets; octave doublings are okay but keep them sparse.  
+• Keep ripple activity desynchronized; prefer off-beats; at most ~1/3 of ripple onsets may land on {0,4,8,12}.
+
+PT REALIZATION HINTS (to satisfy the engine’s rules)
+• For drone notes: time uses add {1,2,3,4}; durations realized may be 3–8 ticks and are always ≤ gap or bar end.  
+• For ripples: time add steps in {1,2}; durations from {1,2}; enforce no overlaps by keeping MAX(duration) ≤ smallest time step in that gesture (s_min).  
+• Pitch uses add/sub only (no mul/div).  
+• Velocity uses add/sub with small deltas (as ranges above).  
+• Seeds set numerator=4 and denominator=4 for all features; numerator/denominator transforms are [{"name":"add","args":[0]}].
+
+STRUCTURE OF THE RETURN
+Return ONE JSON object with:
+• "bars": [ …14 bar objects… ]  
+Each bar object contains six features (one per instrument) and a run_plan producing the combined drone+ ripple behavior as above.
+
+VALIDATION
+• All time streams strictly increase; no chords within a single instrument.  
+• Ripple gestures: 3–6 notes, duration ∈ {1,2}, gaps ∈ {1,2}, monophonic, inside range.  
+• Drone pulses: 0–2 notes per bar per instrument, durations 3–8 ticks, inside range, no overlaps.  
+• Ensemble concurrency never exceeds ~6 simultaneous sounding notes.  
+• Every realized pitch is inside the instrument’s hard MIDI range.  
+• Meter fixed per bar at 4/4 via seeds; transforms for meter are add 0.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 012:
+UNIT 012: bars=15, total_ticks=240, meter=4/4
+- alto_flute: notes=36, pitch[60..82], avg_vel=83.4, last_pitch=60, last_on=222, last_end=223
+- bass_clarinet: notes=16, pitch[56..63], avg_vel=65.7, last_pitch=60, last_on=216, last_end=224
+- trumpet: notes=34, pitch[60..76], avg_vel=84.0, last_pitch=60, last_on=220, last_end=224
+- violin: notes=30, pitch[60..80], avg_vel=80.9, last_pitch=60, last_on=223, last_end=224
+- cello: notes=14, pitch[58..62], avg_vel=60.7, last_pitch=60, last_on=212, last_end=220
+- double_bass: notes=14, pitch[40..60], avg_vel=63.8, last_pitch=60, last_on=208, last_end=216
+
+PROMPT 013:
+METER: 3/4
+
+TITLE
+Bar 35 — LITERAL reprise of Bar 4 (pp/ppp, center-weighted voicing), no re-composition.
+
+REALIZATION — IDENTICAL FORM (one sustained note per instrument)
+Everyone plays one bar-long sustain; monophonic per instrument.
+
+Hard constraints (copy from Bar 4):
+• TIME: exactly one onset at tick 0; N=1. No other onsets.
+• DURATION: 12 (spans 0..12, ends exactly at 12).
+• PITCH: identical MIDI values to Bar 4 if available in context. If exact values are unknown, choose the nearest legal MIDI for the same instrument, band, and bar-pcset used in Bar 4, preserving center-weighted voicing and avoiding adjacent-instrument unisons (octaves sparse).
+• VELOCITY: very soft, identical to Bar 4 if available; otherwise constant pp–ppp ≈ 40–48 (tiny deltas ≤2).
+• METER: numerator=3, denominator=4 via seeds; transforms for meter are add 0.
+
+VALIDATION
+• Exactly one note per instrument (onset [0], duration [12]).
+• All MIDI inside hard ranges; pcs legal for the original band at that register.
+• No re-articulation; no extra events.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 013:
+UNIT 013: bars=1, total_ticks=12, meter=3/4
+- alto_flute: notes=1, pitch[71..71], avg_vel=42.0, last_pitch=71, last_on=0, last_end=12
+- bass_clarinet: notes=1, pitch[56..56], avg_vel=42.0, last_pitch=56, last_on=0, last_end=12
+- trumpet: notes=1, pitch[79..79], avg_vel=46.0, last_pitch=79, last_on=0, last_end=12
+- violin: notes=1, pitch[68..68], avg_vel=45.0, last_pitch=68, last_on=0, last_end=12
+- cello: notes=1, pitch[59..59], avg_vel=43.0, last_pitch=59, last_on=0, last_end=12
+- double_bass: notes=1, pitch[45..45], avg_vel=44.0, last_pitch=45, last_on=0, last_end=12
+
+PROMPT 014:
+METER: 4/4
+
+TITLE
+Bar 36 — LITERAL reprise of Bar 5 (single whole-bar chord, soft), no re-composition.
+
+REALIZATION — IDENTICAL FORM (one sustained note per instrument)
+Everyone plays one whole-bar sustain; monophonic per instrument.
+
+Hard constraints (copy from Bar 5):
+• TIME: exactly one onset at tick 0; N=1. No other onsets.
+• DURATION: 16 (spans 0..16, ends exactly at 16).
+• PITCH: identical MIDI values to Bar 5 if available; otherwise select the nearest legal MIDI for the same instrument, band, and Bar-5 bar-pcset, preserving center-weighted voicing and avoiding adjacent-instrument unisons (octaves sparse).
+• VELOCITY: identical to Bar 5 if available; otherwise constant soft ≈ 44–52.
+• METER: seeds set numerator=4, denominator=4; meter transforms add 0.
+
+Literal reuse from context: Copy the earlier bar’s PT design exactly from the reference PT JSON (same N, seeds, and transformations), changing only feature names.
+
+VALIDATION
+• Per instrument: time [0], duration [16] only; no extra events.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 014:
+UNIT 014: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=1, pitch[69..69], avg_vel=48.0, last_pitch=69, last_on=0, last_end=16
+- bass_clarinet: notes=1, pitch[51..51], avg_vel=46.0, last_pitch=51, last_on=0, last_end=16
+- trumpet: notes=1, pitch[66..66], avg_vel=50.0, last_pitch=66, last_on=0, last_end=16
+- violin: notes=1, pitch[72..72], avg_vel=47.0, last_pitch=72, last_on=0, last_end=16
+- cello: notes=1, pitch[50..50], avg_vel=48.0, last_pitch=50, last_on=0, last_end=16
+- double_bass: notes=1, pitch[41..41], avg_vel=45.0, last_pitch=41, last_on=0, last_end=16
+
+PROMPT 015:
+METER: 4/4
+
+TITLE
+Bar 37 — LITERAL reprise of Bar 6: two half-note chords (A then B), no re-composition.
+
+REALIZATION — IDENTICAL FORM (two half-notes per instrument)
+Each instrument plays a chord at tick 0 (pcset A) and tick 8 (pcset B).
+
+Hard constraints (copy from Bar 6):
+• TIME: N=2 with onsets [0, 8]. No other onsets.
+• DURATION: [8, 8] (sustains 0–8 and 8–16).
+• PITCH: identical to Bar 6 if available; otherwise choose nearest legal MIDIs for the same instrument, bands, and half-bar pcsets (A then B), avoiding adjacent-instrument unisons; octaves sparse.
+• VELOCITY: first half forte ≈ 108–116, second half mezzo-forte ≈ 88–96, constant within each half; copy exact values if available.
+• METER: seeds numerator=4, denominator=4; meter transforms add 0.
+
+ABSOLUTE PROHIBITIONS
+• No re-articulation inside each half; no extra onsets beyond [0, 8].
+• No intra-half pitch changes.
+
+Literal reuse from context: Copy the earlier bar’s PT design exactly from the reference PT JSON (same N, seeds, and transformations), changing only feature names.
+
+VALIDATION
+• Exactly two notes per instrument with durations [8,8], ending at 16.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 015:
+UNIT 015: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=2, pitch[69..71], avg_vel=99.5, last_pitch=69, last_on=8, last_end=16
+- bass_clarinet: notes=2, pitch[54..56], avg_vel=102.0, last_pitch=54, last_on=8, last_end=16
+- trumpet: notes=2, pitch[78..79], avg_vel=106.0, last_pitch=78, last_on=8, last_end=16
+- violin: notes=2, pitch[67..72], avg_vel=104.0, last_pitch=72, last_on=8, last_end=16
+- cello: notes=2, pitch[50..55], avg_vel=102.0, last_pitch=50, last_on=8, last_end=16
+- double_bass: notes=2, pitch[41..45], avg_vel=101.0, last_pitch=41, last_on=8, last_end=16
+
+PROMPT 016:
+METER: 3/4
+
+TITLE
+Bar 35 — Literal repeat of Bar 4 (pp/ppp, center-weighted voicing; one bar-long sustain per instrument).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
+
+PT REALIZATION — one sustained note per instrument
+• TIME: exactly one onset at tick 0 (N=1).
+• DURATION: 12 (full bar; ends exactly at tick 12).
+• PITCH: pick the same (or nearest legal) tessitura-centered MIDI used in Bar 4 for each instrument, legal in the aggregate band at that register; constant through the bar.
+• VELOCITY: pp–ppp ≈ 40–48, constant (tiny ±2 OK).
+• METER: numerator=3, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+Exactly one note per instrument; ends at tick 12; legal ranges; band-legal pcs; no overlaps.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 016:
+UNIT 016: bars=1, total_ticks=12, meter=3/4
+- alto_flute: notes=1, pitch[71..71], avg_vel=42.0, last_pitch=71, last_on=0, last_end=12
+- bass_clarinet: notes=1, pitch[56..56], avg_vel=42.0, last_pitch=56, last_on=0, last_end=12
+- trumpet: notes=1, pitch[79..79], avg_vel=46.0, last_pitch=79, last_on=0, last_end=12
+- violin: notes=1, pitch[68..68], avg_vel=45.0, last_pitch=68, last_on=0, last_end=12
+- cello: notes=1, pitch[59..59], avg_vel=43.0, last_pitch=59, last_on=0, last_end=12
+- double_bass: notes=1, pitch[45..45], avg_vel=44.0, last_pitch=45, last_on=0, last_end=12
+
+PROMPT 017:
+METER: 4/4
+
+TITLE
+Bar 36 — Literal repeat of Bar 5 (soft, one whole-bar chord; no re-articulation).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
+
+PT REALIZATION — exactly one sustained whole-bar note per instrument
+• TIME: one onset at tick 0 (N=1).
+• DURATION: 16 (full bar; ends exactly at 16).
+• PITCH: same (or nearest legal) choices as Bar 5 per role; constant.
+• VELOCITY: pp–p ≈ 44–52, constant (small ±2..4 OK).
+• METER: numerator=4, denominator=4 via seeds; meter transforms add 0.
+
+VALIDATION
+Per instrument: onset [0], duration [16]; legal ranges; band-legal pcs; no overlaps.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 017:
+UNIT 017: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=1, pitch[69..69], avg_vel=48.0, last_pitch=69, last_on=0, last_end=16
+- bass_clarinet: notes=1, pitch[51..51], avg_vel=46.0, last_pitch=51, last_on=0, last_end=16
+- trumpet: notes=1, pitch[66..66], avg_vel=50.0, last_pitch=66, last_on=0, last_end=16
+- violin: notes=1, pitch[72..72], avg_vel=47.0, last_pitch=72, last_on=0, last_end=16
+- cello: notes=1, pitch[50..50], avg_vel=48.0, last_pitch=50, last_on=0, last_end=16
+- double_bass: notes=1, pitch[41..41], avg_vel=45.0, last_pitch=41, last_on=0, last_end=16
+
+PROMPT 018:
+METER: 4/4
+
+TITLE
+Bar 37 — Literal repeat of Bar 6 (two half-note tutti chords A then B).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony per instrument.
+
+PT REALIZATION — two half-note chords per instrument
+• TIME: onsets [0, 8] (N=2). No other onsets.
+• DURATION: [8, 8].
+• PITCH: chord A at tick 0 and chord B at tick 8 matching Bar 6 roles/spacing (or nearest legal); constant within each half.
+• VELOCITY: A ≈ 108–116; B ≈ 88–96; constant within halves.
+• METER: numerator=4, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+Exactly two notes per instrument; ends exactly at tick 16; ranges and band pcs legal; avoid adjacent-instrument unisons; sparse octaves OK.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 018:
+UNIT 018: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=2, pitch[69..71], avg_vel=99.5, last_pitch=69, last_on=8, last_end=16
+- bass_clarinet: notes=2, pitch[54..56], avg_vel=102.0, last_pitch=54, last_on=8, last_end=16
+- trumpet: notes=2, pitch[78..79], avg_vel=106.0, last_pitch=78, last_on=8, last_end=16
+- violin: notes=2, pitch[67..72], avg_vel=104.0, last_pitch=72, last_on=8, last_end=16
+- cello: notes=2, pitch[50..55], avg_vel=102.0, last_pitch=50, last_on=8, last_end=16
+- double_bass: notes=2, pitch[41..45], avg_vel=101.0, last_pitch=41, last_on=8, last_end=16
+
+PROMPT 019:
+METER: 3/4
+
+TITLE
+Bar 38 — Variation of Bar 4 (pp/ppp center-weighted chord; tiny registral/pitch-class shift).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
+
+PT REALIZATION — one sustained note per instrument
+• TIME: one onset at tick 0 (N=1).
+• DURATION: 12 (ends exactly at 12).
+• PITCH: choose a legal MIDI near the Bar-4 role/region but reflecting the new aggregate’s band pcs; constant.
+• VELOCITY: pp–ppp ≈ 40–48, constant.
+• METER: seeds numerator=3, denominator=4; transforms add 0.
+
+VALIDATION
+Exactly one note per instrument; ends at tick 12; legal ranges; band-legal pcs; no overlaps.
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 019:
+UNIT 019: bars=1, total_ticks=12, meter=3/4
+- alto_flute: notes=1, pitch[70..70], avg_vel=44.0, last_pitch=70, last_on=0, last_end=12
+- bass_clarinet: notes=1, pitch[57..57], avg_vel=42.0, last_pitch=57, last_on=0, last_end=12
+- trumpet: notes=1, pitch[78..78], avg_vel=46.0, last_pitch=78, last_on=0, last_end=12
+- violin: notes=1, pitch[69..69], avg_vel=43.0, last_pitch=69, last_on=0, last_end=12
+- cello: notes=1, pitch[60..60], avg_vel=41.0, last_pitch=60, last_on=0, last_end=12
+- double_bass: notes=1, pitch[44..44], avg_vel=40.0, last_pitch=44, last_on=0, last_end=12
+
+PROMPT 020:
+METER: 4/4
+
+TITLE
+Bar 39 — Variation of Bar 5 (soft whole-bar chord; keep center-weighted voicing).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.
+
+PT REALIZATION
+• TIME: onset [0] (N=1).
+• DURATION: [16].
+• PITCH: legal per band under the new aggregate; close to Bar 5 roles but not identical.
+• VELOCITY: pp–p ≈ 44–52, constant.
+• METER: numerator=4, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+One note per instrument; ends at 16; legal ranges; band pcs legal; no overlaps.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 020:
+UNIT 020: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=1, pitch[68..68], avg_vel=48.0, last_pitch=68, last_on=0, last_end=16
+- bass_clarinet: notes=1, pitch[53..53], avg_vel=46.0, last_pitch=53, last_on=0, last_end=16
+- trumpet: notes=1, pitch[65..65], avg_vel=50.0, last_pitch=65, last_on=0, last_end=16
+- violin: notes=1, pitch[74..74], avg_vel=49.0, last_pitch=74, last_on=0, last_end=16
+- cello: notes=1, pitch[52..52], avg_vel=47.0, last_pitch=52, last_on=0, last_end=16
+- double_bass: notes=1, pitch[42..42], avg_vel=45.0, last_pitch=42, last_on=0, last_end=16
+
+PROMPT 021:
+METER: 4/4
+
+TITLE
+Bar 40 — Variation of Bar 6 (two half-note chords A→B with gentle color shift).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony per instrument.
+
+PT REALIZATION — two half-note chords
+• TIME: onsets [0, 8] (N=2).
+• DURATION: [8, 8].
+• PITCH: pick chord A (0..8) and chord B (8..16) from the new aggregate’s band pcs; related to the Bar-37 voicing but with small re-spacing/pc substitutions; constant within halves.
+• VELOCITY: A ≈ 104–112; B ≈ 84–92 (slightly gentler than Bar 37).
+• METER: numerator=4, denominator=4 via seeds; transforms add 0.
+
+VALIDATION
+Exactly two notes per instrument; ends at 16; legal ranges; band pcs legal; avoid adjacent-instrument unisons; sparse octaves OK.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 021:
+UNIT 021: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=2, pitch[69..70], avg_vel=99.0, last_pitch=69, last_on=8, last_end=16
+- bass_clarinet: notes=2, pitch[55..57], avg_vel=97.0, last_pitch=55, last_on=8, last_end=16
+- trumpet: notes=2, pitch[77..78], avg_vel=100.0, last_pitch=77, last_on=8, last_end=16
+- violin: notes=2, pitch[69..72], avg_vel=99.5, last_pitch=72, last_on=8, last_end=16
+- cello: notes=2, pitch[50..53], avg_vel=96.5, last_pitch=50, last_on=8, last_end=16
+- double_bass: notes=2, pitch[42..44], avg_vel=96.0, last_pitch=42, last_on=8, last_end=16
+
+PROMPT 022:
+METER: 2/4
+
+TITLE
+Bar 41 — Half note long breath (full ensemble silence).
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. All silent.
+
+PT REALIZATION — encode silence explicitly
+For each instrument:
+• RUN PLAN: N = 1
+• SEEDS: time = 8 (i.e., onset at/after bar boundary), duration = any {1,2,3,4}, velocity arbitrary.
+Result: no realized notes inside this 2/4 bar.
+
+METER
+Seeds numerator=2, denominator=4; transforms add 0.
+
+VALIDATION
+No notes realized for any instrument within ticks 0..7.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 8
+- Seeds must set numerator=2, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 022:
+UNIT 022: bars=1, total_ticks=8, meter=2/4
+- alto_flute: notes=0
+- bass_clarinet: notes=0
+- trumpet: notes=0
+- violin: notes=0
+- cello: notes=0
+- double_bass: notes=0
+
+PROMPT 023:
+METER: 3/4
+
+TITLE
+Bars 42–45 — Endgame: four airy “cloud” bars (pp), low density, gentle taper.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument (no chords).
+
+SECTION POLICY (applies to EACH of Bars 42, 43, 44, 45)
+• Dynamic: pp ≈ 28–34 per note.
+• Density per instrument per bar:
+  – winds/violin/cello: 2–4 notes;
+  – trumpet/double_bass: 1–3 notes (sparser).
+• TIME: strictly increasing; only add {1,2,3,4}; ≤ ~1/4 of onsets coincide across instruments.
+• DURATION: values in {1,2,3,4}; each duration ≤ gap to next onset; no overlaps.
+• PITCH: add/sub only within Aggregate C band pcs; seed near tessitura center; net drift per line per bar in [−2..+2]; stay inside hard ranges.
+• VELOCITY: stable pp; small stepwise changes (±2 max).
+• METER: numerator=3, denominator=4 via seeds; transforms add 0.
+
+OPTIONAL TEXTURAL DETAIL
+In at most **one** of the four bars, allow a brief 1–2 tick “flutter” (staccato pair) by **one** instrument only; keep it pp and notate as separate onsets with durations 1–2 and legal spacing (still monophonic, no overlaps).
+
+STRUCTURE OF THE RETURN
+Return one JSON object with "bars":[ … ] containing **four** 3/4 bars (ticks 0..11 each),
+all following the rules above.
+
+VALIDATION
+Per bar & per instrument: monophony; time add {1..4} strictly increasing; last note ends ≤ 12; values of duration in {1,2,3,4}; pitch in range and band pcs; ≤ ~1/4 vertical alignments; optional flutter appears in at most one bar and by only one instrument.
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 023:
+UNIT 023: bars=4, total_ticks=48, meter=3/4
+- alto_flute: notes=11, pitch[66..69], avg_vel=30.0, last_pitch=66, last_on=40, last_end=42
+- bass_clarinet: notes=11, pitch[55..59], avg_vel=29.8, last_pitch=59, last_on=43, last_end=45
+- trumpet: notes=7, pitch[66..70], avg_vel=30.3, last_pitch=70, last_on=44, last_end=46
+- violin: notes=12, pitch[72..78], avg_vel=29.2, last_pitch=74, last_on=42, last_end=44
+- cello: notes=8, pitch[58..62], avg_vel=29.8, last_pitch=58, last_on=47, last_end=48
+- double_bass: notes=7, pitch[42..44], avg_vel=28.7, last_pitch=44, last_on=41, last_end=43
+
+PROMPT 024:
+METER: 3/4
+
+TITLE
+Bars 46–49 — “Response” fragment in 3/4: ppp texture, triumphant trumpet melody on top.
+
+CONTEXT LINK (INTERNAL, DO NOT PRINT)
+This section answers the earlier 4×3/4 fragment (Bars 42–45) with new harmony and rhythm. All supporting instruments are extremely soft (ppp), while the trumpet now carries a through-composed, triumphant melody (not just sustained tones). Keep the new aggregate materially different from the one used in Bars 42–45.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument (no chords).
+
+AGGREGATE (INTERNAL, DO NOT PRINT) — “Aggregate C” for Bars 46–49
+Construct a new register-partitioned, non-isomorphic aggregate, different from the one used in Bars 42–45:
+• For each instrument, split its playable MIDI range into LOW / MID / HIGH (contiguous, covering the whole range, no gaps).
+• Assign disjoint pitch-class sets (pcs) to the three bands so that LOW∪MID∪HIGH = 12 pcs (0..11). Each band has 3–4 pcs and an ORDERED list (thirdal/quartal neighborhoods; avoid trivial 0–3–6–9 cycles).
+• Material difference vs Bars 42–45: change the pc→band assignment for at least 6 pitch classes and adjust at least one band boundary per instrument.
+
+SECTION STRUCTURE
+Produce FOUR bars in 3/4 (ticks 0..11 each): Bars 46, 47, 48, 49.
+
+PT REALIZATION
+
+Trumpet (triumphant melody — loud, singing line)
+• TIME: strictly increasing onsets using only add {1,2,3,4}; no zeros; 4–8 notes per bar (varied across bars).
+• DURATION: realized values in {1,2,3,4}; each duration ≤ distance to the next onset (and last note ends ≤ 12).
+• PITCH: add/sub only. Compose a melodic through-line across Bars 46–49—motivic development, no copy-paste. Favor MID↔HIGH register. Avoid >3 same-direction steps; net drift per bar in [−2..+2]. Keep pitches strictly inside the hard MIDI range and band-legal pcs.
+• VELOCITY: triumphant forte ≈ 108–116 (small local arcs allowed, step deltas ≤ 8). This MUST be clearly louder than all others in these bars.
+• METER: seeds set numerator=3, denominator=4; their transforms are constant add 0.
+
+All other instruments (ppp answer-texture, interlocking)
+• TIME: strictly increasing using only add {1,2,3,4}; 3–6 notes per bar; avoid heavy alignment with trumpet (≤ 1/3 of their onsets may coincide with trumpet onsets).
+• DURATION: realized values in {1,2,3,4}; guarantee monophony with MAX(duration) ≤ s_min where s_min is that instrument’s smallest time step in the bar.
+• PITCH: add/sub only within band pcs of Aggregate C; seed near tessitura center; frequent small steps (±1, ±2) with occasional corrective leaps (±5, ±7, ±12) that immediately return to stepwise motion. Stay strictly within the hard MIDI range and band pcs.
+• VELOCITY: ppp ≈ 22 (±2) — whisper-soft bed beneath the trumpet.
+• METER: seeds numerator=3, denominator=4; transforms add 0.
+
+VARIATION RULES vs the earlier 4×3/4 fragment
+• For EACH non-trumpet instrument in EACH bar: the onset set must differ materially from Bars 42–45 (target Jaccard overlap < 0.5); use at least one different duration value per instrument/bar.
+• For EACH non-trumpet instrument: step-patterns must not be a literal copy of the earlier fragment—alter at least half the positions.
+
+INTERLOCK & VOICING
+• Keep mild rhythmic interlock; adjacent instruments avoid unisons at coincident onsets; sparse octaves OK.
+• Maintain registral spacing: db LOW, vc LOW↔MID, bcl LOW↔MID; vn MID, af MID↔HIGH, tpt MID↔HIGH.
+
+VALIDATION
+• Exactly four bars of 3/4 (12 ticks each). All time streams strictly increase; no chords.
+• For every instrument: durations in {1,2,3,4}; durations fit the gaps; last note ends ≤ 12.
+• Pitch add/sub only; inside instrument hard ranges and legal band pcs.
+• Dynamics: trumpet ≈ 108–116; all others ppp ≈ 22.
+• Seeds set numerator=3, denominator=4 (transforms add 0).
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 12
+- Seeds must set numerator=3, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 024:
+UNIT 024: bars=4, total_ticks=48, meter=3/4
+- alto_flute: notes=15, pitch[68..72], avg_vel=22.5, last_pitch=72, last_on=46, last_end=47
+- bass_clarinet: notes=16, pitch[54..59], avg_vel=22.4, last_pitch=55, last_on=46, last_end=47
+- trumpet: notes=26, pitch[70..80], avg_vel=112.2, last_pitch=76, last_on=47, last_end=48
+- violin: notes=16, pitch[73..77], avg_vel=22.4, last_pitch=77, last_on=46, last_end=47
+- cello: notes=14, pitch[57..62], avg_vel=22.1, last_pitch=57, last_on=45, last_end=46
+- double_bass: notes=14, pitch[41..46], avg_vel=22.4, last_pitch=44, last_on=46, last_end=47
+
+PROMPT 025:
+METER: 4/4
+
+TITLE
+Bar 50 — Final two half-bar tutti chords (strong cadence), 4/4.
+
+INSTRUMENTS (EXACT)
+[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].
+Monophony per instrument (no chords inside a single part).
+
+GOAL
+Conclude Part 1 with two bold tutti sonorities: one at tick 0 and one at tick 8 (half-notes on a 1/16 grid). These should sound like a decisive cadence in the piece’s language (non-triadic OK; crunchy interval-classes welcome). Keep center-weighted voicing (db LOW anchor; vc/bcl LOW↔MID; vn MID; af/tpt MID↔HIGH). Avoid adjacent-instrument unisons; sparse octave doublings are fine.
+
+PT REALIZATION (exact)
+• TIME: exactly two onsets per instrument at ticks 0 and 8 (N = 2). Use only add {1,2,3,4} and strictly increasing onsets (e.g., seed time=0 with a single add 8 to reach [0,8]).
+• DURATION: [8, 8] — each note sustains for a half-bar (0..8, 8..16). All last samples end at or before tick 16.
+• PITCH: add/sub only. For Hit 1 pick a legal MIDI per instrument matching its band-target; for Hit 2 pick a different legal pc (not equal to Hit 1 for that instrument), preferably a nearby register. Stay strictly within instrument hard ranges and band-legal pcs if you reference an aggregate.
+• VELOCITY: strong tutti ≈ 112 (constant per note).
+• METER: seeds numerator=4, denominator=4; transformations on numerator/denominator are constant add 0.
+
+STRUCTURE OF THE RETURN
+Return a single-bar bundle (4/4) with exactly six features (one per listed instrument) and a run_plan that produces:
+– time onsets [0,8],
+– duration [8,8],
+– pitch: two targets per instrument (different pcs),
+– velocity ~112.
+
+VALIDATION
+• Exactly two notes per instrument at [0,8] with durations [8,8].
+• Time strictly increasing; durations ≤ next onset; last note ends ≤ 16.
+• All MIDI values within each instrument’s hard range; adjacent-instrument unisons avoided; sparse octaves OK.
+• Meter fixed via seeds (add 0 on numerator/denominator).
+
+
+
+HARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)
+- alto_flute: [53..81]
+- bass_clarinet: [43..74]
+- trumpet: [60..82]
+- violin: [55..88]
+- cello: [48..74]
+- double_bass: [31..55]
+
+METER & GRID FOR THIS UNIT
+- Ticks per bar: 16
+- Seeds must set numerator=4, denominator=4 (transforms add 0)
+
+RANGE REMINDER
+Design pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;
+if a step would leave the range, reflect direction immediately to remain inside. No external clamping.
+
+
+SUMMARY 025:
+UNIT 025: bars=1, total_ticks=16, meter=4/4
+- alto_flute: notes=2, pitch[71..73], avg_vel=112.0, last_pitch=73, last_on=8, last_end=16
+- bass_clarinet: notes=2, pitch[59..60], avg_vel=112.0, last_pitch=60, last_on=8, last_end=16
+- trumpet: notes=2, pitch[77..79], avg_vel=112.0, last_pitch=79, last_on=8, last_end=16
+- violin: notes=2, pitch[74..76], avg_vel=112.0, last_pitch=76, last_on=8, last_end=16
+- cello: notes=2, pitch[52..57], avg_vel=112.0, last_pitch=57, last_on=8, last_end=16
+- double_bass: notes=2, pitch[41..43], avg_vel=112.0, last_pitch=43, last_on=8, last_end=16
+

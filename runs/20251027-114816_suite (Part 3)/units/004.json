@@ -1,0 +1,1653 @@
+{
+  "unit_label": "004",
+  "total_ticks": 48,
+  "schedule": [
+    {
+      "bar_local_index": 1,
+      "start_tick": 0,
+      "actual_end_tick": 12,
+      "slot_length_tick": 12,
+      "bar_ticks": 12,
+      "meter": {
+        "numerator": 3,
+        "denominator": 4
+      }
+    },
+    {
+      "bar_local_index": 2,
+      "start_tick": 12,
+      "actual_end_tick": 11,
+      "slot_length_tick": 12,
+      "bar_ticks": 12,
+      "meter": {
+        "numerator": 3,
+        "denominator": 4
+      }
+    },
+    {
+      "bar_local_index": 3,
+      "start_tick": 24,
+      "actual_end_tick": 12,
+      "slot_length_tick": 12,
+      "bar_ticks": 12,
+      "meter": {
+        "numerator": 3,
+        "denominator": 4
+      }
+    },
+    {
+      "bar_local_index": 4,
+      "start_tick": 36,
+      "actual_end_tick": 12,
+      "slot_length_tick": 12,
+      "bar_ticks": 12,
+      "meter": {
+        "numerator": 3,
+        "denominator": 4
+      }
+    }
+  ],
+  "per_instr": {
+    "alto_flute": {
+      "pitch": [
+        66,
+        67,
+        65,
+        65,
+        63,
+        64,
+        66,
+        65,
+        67,
+        65
+      ],
+      "time": [
+        0,
+        5,
+        8,
+        12,
+        18,
+        24,
+        26,
+        30,
+        36,
+        41
+      ],
+      "duration": [
+        2,
+        2,
+        3,
+        2,
+        3,
+        1,
+        2,
+        2,
+        2,
+        3
+      ],
+      "velocity": [
+        24,
+        24,
+        24,
+        23,
+        23,
+        24,
+        24,
+        24,
+        24,
+        24
+      ],
+      "numerator": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "denominator": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "bass_clarinet": {
+      "pitch": [
+        55,
+        53,
+        52,
+        55,
+        54,
+        49,
+        54,
+        56,
+        51,
+        53
+      ],
+      "time": [
+        0,
+        7,
+        12,
+        15,
+        20,
+        24,
+        30,
+        36,
+        40,
+        43
+      ],
+      "duration": [
+        2,
+        3,
+        2,
+        2,
+        3,
+        2,
+        3,
+        2,
+        3,
+        3
+      ],
+      "velocity": [
+        22,
+        22,
+        22,
+        22,
+        22,
+        22,
+        22,
+        22,
+        22,
+        22
+      ],
+      "numerator": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "denominator": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "trumpet": {
+      "pitch": [
+        72,
+        71,
+        73,
+        76,
+        72,
+        69,
+        71,
+        69,
+        74,
+        77
+      ],
+      "time": [
+        0,
+        5,
+        10,
+        12,
+        19,
+        24,
+        27,
+        30,
+        36,
+        42
+      ],
+      "duration": [
+        1,
+        2,
+        2,
+        1,
+        2,
+        1,
+        1,
+        2,
+        1,
+        2
+      ],
+      "velocity": [
+        26,
+        26,
+        26,
+        25,
+        25,
+        26,
+        26,
+        26,
+        26,
+        26
+      ],
+      "numerator": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "denominator": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "violin": {
+      "pitch": [
+        74,
+        72,
+        73,
+        73,
+        74,
+        72,
+        73,
+        76,
+        73,
+        78,
+        74,
+        76
+      ],
+      "time": [
+        0,
+        2,
+        7,
+        12,
+        14,
+        16,
+        19,
+        24,
+        31,
+        36,
+        39,
+        43
+      ],
+      "duration": [
+        1,
+        2,
+        2,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        1,
+        2,
+        2
+      ],
+      "velocity": [
+        24,
+        24,
+        24,
+        23,
+        23,
+        23,
+        23,
+        23,
+        23,
+        23,
+        23,
+        23
+      ],
+      "numerator": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "denominator": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "cello": {
+      "pitch": [
+        59,
+        61,
+        60,
+        58,
+        60,
+        62,
+        58,
+        60,
+        57,
+        62
+      ],
+      "time": [
+        0,
+        6,
+        12,
+        16,
+        20,
+        24,
+        26,
+        31,
+        36,
+        43
+      ],
+      "duration": [
+        2,
+        3,
+        2,
+        2,
+        3,
+        2,
+        2,
+        3,
+        3,
+        4
+      ],
+      "velocity": [
+        22,
+        22,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21,
+        21
+      ],
+      "numerator": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "denominator": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    "double_bass": {
+      "pitch": [
+        41,
+        39,
+        42,
+        43,
+        40,
+        42,
+        45,
+        41,
+        42
+      ],
+      "time": [
+        0,
+        8,
+        12,
+        17,
+        24,
+        32,
+        36,
+        39,
+        45
+      ],
+      "duration": [
+        3,
+        4,
+        3,
+        4,
+        3,
+        4,
+        2,
+        3,
+        3
+      ],
+      "velocity": [
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20,
+        20
+      ],
+      "numerator": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "denominator": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  },
+  "payload": {
+    "instrument_meta": {
+      "alto_flute": {
+        "display_name": "Alto Flute",
+        "gm_program": 73,
+        "bank": 0
+      },
+      "bass_clarinet": {
+        "display_name": "Bass Clarinet in Bb",
+        "gm_program": 71,
+        "bank": 0
+      },
+      "trumpet": {
+        "display_name": "Trumpet in C",
+        "gm_program": 56,
+        "bank": 0
+      },
+      "violin": {
+        "display_name": "Violin",
+        "gm_program": 40,
+        "bank": 0
+      },
+      "cello": {
+        "display_name": "Cello",
+        "gm_program": 42,
+        "bank": 0
+      },
+      "double_bass": {
+        "display_name": "Contrabass",
+        "gm_program": 43,
+        "bank": 0
+      }
+    },
+    "tracks": {
+      "alto_flute": [
+        {
+          "feature_path": "/alto_flute/pitch",
+          "data": [
+            66,
+            67,
+            65,
+            65,
+            63,
+            64,
+            66,
+            65,
+            67,
+            65
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/time",
+          "data": [
+            0,
+            5,
+            8,
+            12,
+            18,
+            24,
+            26,
+            30,
+            36,
+            41
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/duration",
+          "data": [
+            2,
+            2,
+            3,
+            2,
+            3,
+            1,
+            2,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/velocity",
+          "data": [
+            24,
+            24,
+            24,
+            23,
+            23,
+            24,
+            24,
+            24,
+            24,
+            24
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/numerator",
+          "data": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/denominator",
+          "data": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "bass_clarinet": [
+        {
+          "feature_path": "/bass_clarinet/pitch",
+          "data": [
+            55,
+            53,
+            52,
+            55,
+            54,
+            49,
+            54,
+            56,
+            51,
+            53
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/time",
+          "data": [
+            0,
+            7,
+            12,
+            15,
+            20,
+            24,
+            30,
+            36,
+            40,
+            43
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/duration",
+          "data": [
+            2,
+            3,
+            2,
+            2,
+            3,
+            2,
+            3,
+            2,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/velocity",
+          "data": [
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22,
+            22
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/numerator",
+          "data": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/denominator",
+          "data": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "trumpet": [
+        {
+          "feature_path": "/trumpet/pitch",
+          "data": [
+            72,
+            71,
+            73,
+            76,
+            72,
+            69,
+            71,
+            69,
+            74,
+            77
+          ]
+        },
+        {
+          "feature_path": "/trumpet/time",
+          "data": [
+            0,
+            5,
+            10,
+            12,
+            19,
+            24,
+            27,
+            30,
+            36,
+            42
+          ]
+        },
+        {
+          "feature_path": "/trumpet/duration",
+          "data": [
+            1,
+            2,
+            2,
+            1,
+            2,
+            1,
+            1,
+            2,
+            1,
+            2
+          ]
+        },
+        {
+          "feature_path": "/trumpet/velocity",
+          "data": [
+            26,
+            26,
+            26,
+            25,
+            25,
+            26,
+            26,
+            26,
+            26,
+            26
+          ]
+        },
+        {
+          "feature_path": "/trumpet/numerator",
+          "data": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/trumpet/denominator",
+          "data": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "violin": [
+        {
+          "feature_path": "/violin/pitch",
+          "data": [
+            74,
+            72,
+            73,
+            73,
+            74,
+            72,
+            73,
+            76,
+            73,
+            78,
+            74,
+            76
+          ]
+        },
+        {
+          "feature_path": "/violin/time",
+          "data": [
+            0,
+            2,
+            7,
+            12,
+            14,
+            16,
+            19,
+            24,
+            31,
+            36,
+            39,
+            43
+          ]
+        },
+        {
+          "feature_path": "/violin/duration",
+          "data": [
+            1,
+            2,
+            2,
+            1,
+            1,
+            2,
+            2,
+            2,
+            3,
+            1,
+            2,
+            2
+          ]
+        },
+        {
+          "feature_path": "/violin/velocity",
+          "data": [
+            24,
+            24,
+            24,
+            23,
+            23,
+            23,
+            23,
+            23,
+            23,
+            23,
+            23,
+            23
+          ]
+        },
+        {
+          "feature_path": "/violin/numerator",
+          "data": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/violin/denominator",
+          "data": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "cello": [
+        {
+          "feature_path": "/cello/pitch",
+          "data": [
+            59,
+            61,
+            60,
+            58,
+            60,
+            62,
+            58,
+            60,
+            57,
+            62
+          ]
+        },
+        {
+          "feature_path": "/cello/time",
+          "data": [
+            0,
+            6,
+            12,
+            16,
+            20,
+            24,
+            26,
+            31,
+            36,
+            43
+          ]
+        },
+        {
+          "feature_path": "/cello/duration",
+          "data": [
+            2,
+            3,
+            2,
+            2,
+            3,
+            2,
+            2,
+            3,
+            3,
+            4
+          ]
+        },
+        {
+          "feature_path": "/cello/velocity",
+          "data": [
+            22,
+            22,
+            21,
+            21,
+            21,
+            21,
+            21,
+            21,
+            21,
+            21
+          ]
+        },
+        {
+          "feature_path": "/cello/numerator",
+          "data": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/cello/denominator",
+          "data": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "double_bass": [
+        {
+          "feature_path": "/double_bass/pitch",
+          "data": [
+            41,
+            39,
+            42,
+            43,
+            40,
+            42,
+            45,
+            41,
+            42
+          ]
+        },
+        {
+          "feature_path": "/double_bass/time",
+          "data": [
+            0,
+            8,
+            12,
+            17,
+            24,
+            32,
+            36,
+            39,
+            45
+          ]
+        },
+        {
+          "feature_path": "/double_bass/duration",
+          "data": [
+            3,
+            4,
+            3,
+            4,
+            3,
+            4,
+            2,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/double_bass/velocity",
+          "data": [
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20,
+            20
+          ]
+        },
+        {
+          "feature_path": "/double_bass/numerator",
+          "data": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            3
+          ]
+        },
+        {
+          "feature_path": "/double_bass/denominator",
+          "data": [
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  "rendered_user_text": "METER: 3/4\n\nTITLE\nPart 3 — Bars 10–13 — Cloud Loop B (pp), varied reprise.\n\nINSTRUMENTS (EXACT)\n[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass].\nMonophony per instrument.\n\nSAFE OPS (ENGINE-FRIENDLY)\n• TIME / DURATION / VELOCITY / METER: `add` only; when N>1 for TIME, never add 0; no `mul`/`div`.\n• PITCH: `add`/`subtract` only.\n\nSECTION POLICY (each bar)\nSame density/timing/duration/velocity rules as Cloud Loop A, but build Aggregate B anew (new pcs→band mapping; adjust ≥ 1 band boundary for ≥ 3 instruments). Keep textures airy; avoid frequent vertical alignments.\n\nVARIATION vs Bars 1–4\nFor every instrument and bar, avoid literal onset copies; include at least one different duration value per instrument/bar.\n\nHARD RANGES / METER\nRanges as before; meter seeds 3/4; transforms add 0.\n\nOUTPUT\nReturn one JSON object with \"bars\":[ … ] for four bars (10–13).\n\n\nHARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)\n- alto_flute: [53..81]\n- bass_clarinet: [43..74]\n- trumpet: [60..82]\n- violin: [55..88]\n- cello: [48..74]\n- double_bass: [31..55]\n\nMETER & GRID FOR THIS UNIT\n- Ticks per bar: 12\n- Seeds must set numerator=3, denominator=4 (transforms add 0)\n\nRANGE REMINDER\nDesign pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;\nif a step would leave the range, reflect direction immediately to remain inside. No external clamping.\n",
+  "unit_summary_text": "UNIT 004: bars=4, total_ticks=48, meter=3/4\n- alto_flute: notes=10, pitch[63..67], avg_vel=23.8, last_pitch=65, last_on=41, last_end=44\n- bass_clarinet: notes=10, pitch[49..56], avg_vel=22.0, last_pitch=53, last_on=43, last_end=46\n- trumpet: notes=10, pitch[69..77], avg_vel=25.8, last_pitch=77, last_on=42, last_end=44\n- violin: notes=12, pitch[72..78], avg_vel=23.2, last_pitch=76, last_on=43, last_end=45\n- cello: notes=10, pitch[57..62], avg_vel=21.2, last_pitch=62, last_on=43, last_end=47\n- double_bass: notes=9, pitch[39..45], avg_vel=20.0, last_pitch=42, last_on=45, last_end=48",
+  "pt_journal": [
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 1,
+      "pt_name": "alto_flute_cloud_b10_1761562984953_444c",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 66,
+        "velocity": 24,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 1,
+      "pt_name": "bass_clarinet_cloud_b10_1761562984953_48cc",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 55,
+        "velocity": 22,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 1,
+      "pt_name": "trumpet_cloud_b10_1761562984953_60cf",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 72,
+        "velocity": 26,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 1,
+      "pt_name": "violin_cloud_b10_1761562984953_3938",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 74,
+        "velocity": 24,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 1,
+      "pt_name": "cello_cloud_b10_1761562984953_0f9b",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 59,
+        "velocity": 22,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 1,
+      "pt_name": "double_bass_cloud_b10_1761562984953_060b",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 3,
+        "pitch": 41,
+        "velocity": 20,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 2,
+      "pt_name": "alto_flute_cloud_b11_1761562993354_4427",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 65,
+        "velocity": 23,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 2,
+      "pt_name": "bass_clarinet_cloud_b11_1761562993354_8bc0",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 52,
+        "velocity": 22,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 2,
+      "pt_name": "trumpet_cloud_b11_1761562993354_7376",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 76,
+        "velocity": 25,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 2,
+      "pt_name": "violin_cloud_b11_1761562993354_a05d",
+      "N": 4,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 73,
+        "velocity": 23,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 4,
+        "duration": 4,
+        "pitch": 4,
+        "velocity": 4,
+        "numerator": 4,
+        "denominator": 4
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 2,
+      "pt_name": "cello_cloud_b11_1761562993354_3f8a",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 60,
+        "velocity": 21,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 2,
+      "pt_name": "double_bass_cloud_b11_1761562993354_164c",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 3,
+        "pitch": 42,
+        "velocity": 20,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 3,
+      "pt_name": "alto_flute_cloud_b12_1761563001838_28bc",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 64,
+        "velocity": 24,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 3,
+      "pt_name": "bass_clarinet_cloud_b12_1761563001838_513c",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 49,
+        "velocity": 22,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 3,
+      "pt_name": "trumpet_cloud_b12_1761563001838_4925",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 69,
+        "velocity": 26,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 3,
+      "pt_name": "violin_cloud_b12_1761563001838_ad90",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 76,
+        "velocity": 23,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 3,
+      "pt_name": "cello_cloud_b12_1761563001838_ce7e",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 62,
+        "velocity": 21,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 3,
+      "pt_name": "double_bass_cloud_b12_1761563001838_1d59",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 3,
+        "pitch": 40,
+        "velocity": 20,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 4,
+      "pt_name": "alto_flute_cloud_b13_1761563010344_a71f",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 67,
+        "velocity": 24,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 4,
+      "pt_name": "bass_clarinet_cloud_b13_1761563010344_db32",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 56,
+        "velocity": 22,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 4,
+      "pt_name": "trumpet_cloud_b13_1761563010344_2436",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 74,
+        "velocity": 26,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 4,
+      "pt_name": "violin_cloud_b13_1761563010344_9438",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 1,
+        "pitch": 78,
+        "velocity": 23,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 4,
+      "pt_name": "cello_cloud_b13_1761563010344_ac3f",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 3,
+        "pitch": 57,
+        "velocity": 21,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "004",
+      "bar_index": 4,
+      "pt_name": "double_bass_cloud_b13_1761563010344_06bb",
+      "N": 3,
+      "seeds": {
+        "time": 0,
+        "duration": 2,
+        "pitch": 45,
+        "velocity": 20,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 3,
+        "duration": 3,
+        "pitch": 3,
+        "velocity": 3,
+        "numerator": 3,
+        "denominator": 3
+      }
+    }
+  ],
+  "model_bundle_minjson": "{\"bars\":[{\"bundle_name\":\"Part3_Bar10_CloudLoopB\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":10,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b10_af_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[5]},{\"name\":\"add\",\"args\":[3]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":10,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b10_bcl_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[7]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":10,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b10_tpt_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[1]},{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":10,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b10_vn_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[2]},{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":10,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b10_vc_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[6]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":10,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b10_db_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"p3_b10_af_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":66,\"velocity\":24,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b10_bcl_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":55,\"velocity\":22,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b10_tpt_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":72,\"velocity\":26,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b10_vn_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":74,\"velocity\":24,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b10_vc_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":59,\"velocity\":22,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b10_db_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":3,\"pitch\":41,\"velocity\":20,\"numerator\":3,\"denominator\":4}}],\"created_feature_names\":[\"p3_b10_af_clB\",\"p3_b10_bcl_clB\",\"p3_b10_tpt_clB\",\"p3_b10_vn_clB\",\"p3_b10_vc_clB\",\"p3_b10_db_clB\"]},{\"bundle_name\":\"Part3_Bar11_CloudLoopB\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":11,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b11_af_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[6]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":11,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b11_bcl_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[3]},{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[3]},{\"name\":\"subtract\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":11,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b11_tpt_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[7]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[4]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":11,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b11_vn_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[2]},{\"name\":\"add\",\"args\":[2]},{\"name\":\"add\",\"args\":[3]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]},{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"subtract\",\"args\":[2]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":11,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b11_vc_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[4]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]},{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":11,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b11_db_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"p3_b11_af_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":65,\"velocity\":23,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b11_bcl_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":52,\"velocity\":22,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b11_tpt_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":76,\"velocity\":25,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b11_vn_clB\",\"N\":4,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":73,\"velocity\":23,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b11_vc_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":60,\"velocity\":21,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b11_db_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":3,\"pitch\":42,\"velocity\":20,\"numerator\":3,\"denominator\":4}}],\"created_feature_names\":[\"p3_b11_af_clB\",\"p3_b11_bcl_clB\",\"p3_b11_tpt_clB\",\"p3_b11_vn_clB\",\"p3_b11_vc_clB\",\"p3_b11_db_clB\"]},{\"bundle_name\":\"Part3_Bar12_CloudLoopB\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":12,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b12_af_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[2]},{\"name\":\"add\",\"args\":[4]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[2]},{\"name\":\"subtract\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":12,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b12_bcl_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[6]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":12,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b12_tpt_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[3]},{\"name\":\"add\",\"args\":[3]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[2]},{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":12,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b12_vn_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[7]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[3]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":12,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b12_vc_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[2]},{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[4]},{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":12,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b12_db_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"p3_b12_af_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":64,\"velocity\":24,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b12_bcl_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":49,\"velocity\":22,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b12_tpt_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":69,\"velocity\":26,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b12_vn_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":76,\"velocity\":23,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b12_vc_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":62,\"velocity\":21,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b12_db_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":3,\"pitch\":40,\"velocity\":20,\"numerator\":3,\"denominator\":4}}],\"created_feature_names\":[\"p3_b12_af_clB\",\"p3_b12_bcl_clB\",\"p3_b12_tpt_clB\",\"p3_b12_vn_clB\",\"p3_b12_vc_clB\",\"p3_b12_db_clB\"]},{\"bundle_name\":\"Part3_Bar13_CloudLoopB\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":13,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b13_af_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":13,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b13_bcl_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[4]},{\"name\":\"add\",\"args\":[3]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[5]},{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":13,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b13_tpt_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[6]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[3]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":13,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b13_vn_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[3]},{\"name\":\"add\",\"args\":[4]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[4]},{\"name\":\"add\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":13,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b13_vc_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[7]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":13,\"role\":\"cloud\"},\"pt\":{\"name\":\"p3_b13_db_clB\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[3]},{\"name\":\"add\",\"args\":[6]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[1]},{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[4]},{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"p3_b13_af_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":67,\"velocity\":24,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b13_bcl_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":56,\"velocity\":22,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b13_tpt_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":74,\"velocity\":26,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b13_vn_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":1,\"pitch\":78,\"velocity\":23,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b13_vc_clB\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":3,\"pitch\":57,\"velocity\":21,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"p3_b13_db_clB\",\"N\":3,\"seeds\":{\"time\":0,\"duration\":2,\"pitch\":45,\"velocity\":20,\"numerator\":3,\"denominator\":4}}],\"created_feature_names\":[\"p3_b13_af_clB\",\"p3_b13_bcl_clB\",\"p3_b13_tpt_clB\",\"p3_b13_vn_clB\",\"p3_b13_vc_clB\",\"p3_b13_db_clB\"]}]}"
+}

@@ -1,0 +1,839 @@
+{
+  "unit_label": "008",
+  "total_ticks": 32,
+  "schedule": [
+    {
+      "bar_local_index": 1,
+      "start_tick": 0,
+      "actual_end_tick": 16,
+      "slot_length_tick": 16,
+      "bar_ticks": 16,
+      "meter": {
+        "numerator": 4,
+        "denominator": 4
+      }
+    },
+    {
+      "bar_local_index": 2,
+      "start_tick": 16,
+      "actual_end_tick": 16,
+      "slot_length_tick": 16,
+      "bar_ticks": 16,
+      "meter": {
+        "numerator": 4,
+        "denominator": 4
+      }
+    }
+  ],
+  "per_instr": {
+    "alto_flute": {
+      "pitch": [
+        76,
+        77,
+        76
+      ],
+      "time": [
+        0,
+        8,
+        16
+      ],
+      "duration": [
+        8,
+        8,
+        16
+      ],
+      "velocity": [
+        112,
+        112,
+        52
+      ],
+      "numerator": [
+        4,
+        4,
+        4
+      ],
+      "denominator": [
+        4,
+        4,
+        4
+      ]
+    },
+    "bass_clarinet": {
+      "pitch": [
+        55,
+        60,
+        64
+      ],
+      "time": [
+        0,
+        8,
+        16
+      ],
+      "duration": [
+        8,
+        8,
+        16
+      ],
+      "velocity": [
+        112,
+        112,
+        50
+      ],
+      "numerator": [
+        4,
+        4,
+        4
+      ],
+      "denominator": [
+        4,
+        4,
+        4
+      ]
+    },
+    "trumpet": {
+      "pitch": [
+        64,
+        65,
+        69
+      ],
+      "time": [
+        0,
+        8,
+        16
+      ],
+      "duration": [
+        8,
+        8,
+        16
+      ],
+      "velocity": [
+        112,
+        112,
+        48
+      ],
+      "numerator": [
+        4,
+        4,
+        4
+      ],
+      "denominator": [
+        4,
+        4,
+        4
+      ]
+    },
+    "violin": {
+      "pitch": [
+        69,
+        72,
+        79
+      ],
+      "time": [
+        0,
+        8,
+        16
+      ],
+      "duration": [
+        8,
+        8,
+        16
+      ],
+      "velocity": [
+        112,
+        112,
+        52
+      ],
+      "numerator": [
+        4,
+        4,
+        4
+      ],
+      "denominator": [
+        4,
+        4,
+        4
+      ]
+    },
+    "cello": {
+      "pitch": [
+        50,
+        48,
+        57
+      ],
+      "time": [
+        0,
+        8,
+        16
+      ],
+      "duration": [
+        8,
+        8,
+        16
+      ],
+      "velocity": [
+        112,
+        112,
+        49
+      ],
+      "numerator": [
+        4,
+        4,
+        4
+      ],
+      "denominator": [
+        4,
+        4,
+        4
+      ]
+    },
+    "double_bass": {
+      "pitch": [
+        43,
+        41,
+        38
+      ],
+      "time": [
+        0,
+        8,
+        16
+      ],
+      "duration": [
+        8,
+        8,
+        16
+      ],
+      "velocity": [
+        112,
+        112,
+        48
+      ],
+      "numerator": [
+        4,
+        4,
+        4
+      ],
+      "denominator": [
+        4,
+        4,
+        4
+      ]
+    }
+  },
+  "payload": {
+    "instrument_meta": {
+      "alto_flute": {
+        "display_name": "Alto Flute",
+        "gm_program": 73,
+        "bank": 0
+      },
+      "bass_clarinet": {
+        "display_name": "Bass Clarinet in Bb",
+        "gm_program": 71,
+        "bank": 0
+      },
+      "trumpet": {
+        "display_name": "Trumpet in C",
+        "gm_program": 56,
+        "bank": 0
+      },
+      "violin": {
+        "display_name": "Violin",
+        "gm_program": 40,
+        "bank": 0
+      },
+      "cello": {
+        "display_name": "Cello",
+        "gm_program": 42,
+        "bank": 0
+      },
+      "double_bass": {
+        "display_name": "Contrabass",
+        "gm_program": 43,
+        "bank": 0
+      }
+    },
+    "tracks": {
+      "alto_flute": [
+        {
+          "feature_path": "/alto_flute/pitch",
+          "data": [
+            76,
+            77,
+            76
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/time",
+          "data": [
+            0,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/duration",
+          "data": [
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/velocity",
+          "data": [
+            112,
+            112,
+            52
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/numerator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/denominator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "bass_clarinet": [
+        {
+          "feature_path": "/bass_clarinet/pitch",
+          "data": [
+            55,
+            60,
+            64
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/time",
+          "data": [
+            0,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/duration",
+          "data": [
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/velocity",
+          "data": [
+            112,
+            112,
+            50
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/numerator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/denominator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "trumpet": [
+        {
+          "feature_path": "/trumpet/pitch",
+          "data": [
+            64,
+            65,
+            69
+          ]
+        },
+        {
+          "feature_path": "/trumpet/time",
+          "data": [
+            0,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/trumpet/duration",
+          "data": [
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/trumpet/velocity",
+          "data": [
+            112,
+            112,
+            48
+          ]
+        },
+        {
+          "feature_path": "/trumpet/numerator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "feature_path": "/trumpet/denominator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "violin": [
+        {
+          "feature_path": "/violin/pitch",
+          "data": [
+            69,
+            72,
+            79
+          ]
+        },
+        {
+          "feature_path": "/violin/time",
+          "data": [
+            0,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/violin/duration",
+          "data": [
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/violin/velocity",
+          "data": [
+            112,
+            112,
+            52
+          ]
+        },
+        {
+          "feature_path": "/violin/numerator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "feature_path": "/violin/denominator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "cello": [
+        {
+          "feature_path": "/cello/pitch",
+          "data": [
+            50,
+            48,
+            57
+          ]
+        },
+        {
+          "feature_path": "/cello/time",
+          "data": [
+            0,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/cello/duration",
+          "data": [
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/cello/velocity",
+          "data": [
+            112,
+            112,
+            49
+          ]
+        },
+        {
+          "feature_path": "/cello/numerator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "feature_path": "/cello/denominator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "double_bass": [
+        {
+          "feature_path": "/double_bass/pitch",
+          "data": [
+            43,
+            41,
+            38
+          ]
+        },
+        {
+          "feature_path": "/double_bass/time",
+          "data": [
+            0,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/double_bass/duration",
+          "data": [
+            8,
+            8,
+            16
+          ]
+        },
+        {
+          "feature_path": "/double_bass/velocity",
+          "data": [
+            112,
+            112,
+            48
+          ]
+        },
+        {
+          "feature_path": "/double_bass/numerator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        },
+        {
+          "feature_path": "/double_bass/denominator",
+          "data": [
+            4,
+            4,
+            4
+          ]
+        }
+      ]
+    }
+  },
+  "rendered_user_text": "METER: 4/4\n\nTITLE\nPart 3 — Bars 23–24 — Final Cadential Bracket (tutti, then open question).\n\nINSTRUMENTS (EXACT)\n[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Monophony per instrument.\n\nSAFE OPS (ENGINE-FRIENDLY)\n• TIME / DURATION / VELOCITY / METER: `add` only; no `mul`/`div`.\n• PITCH: `add`/`subtract` only.\n• For N=1 bars, implement TIME with seed time=0 and time.add 0.\n\nBAR 23 — Strong cadence (decisive)\n• TIME: onsets [0,8] (N=2). Implement as seed time=0 with time.add 8.\n• DURATION: [8,8] (seed dur=8; duration.add 0).\n• PITCH: add/sub only; robust, center-weighted voicing; Hit 2 uses different pcs for each instrument (not equal to Hit 1).\n• VELOCITY: strong tutti ≈ 112 (constant; velocity.add 0).\n• METER: seeds 4/4; transforms add 0.\n\nBAR 24 — Open question (calm, suspended)\nChoose **one**:\n(A) Whole-bar sustain (preferred): N=1, onset 0, dur 16 → implement with seed time=0 + time.add 0; seed dur=16 + duration.add 0; gentle voicing.\n(B) Two half-notes: N=2, onsets [0,8] via time.add 8; durs [8,8]; softer spacing.\n• PITCH: avoid triadic 3rd implications; allow open 5ths with added 2/9 or 11; airy spacing.\n• VELOCITY: mp→p taper across the bar(s): if N=1 keep a single soft value (≈ 56–48); if N=2 make the second softer.\n• METER: seeds 4/4; transforms add 0.\n\nHARD RANGES (MIDI)\naf 53..81 • bcl 43..74 • tpt 60..82 • vn 55..88 • vc 48..74 • db 31..55\n\nSTRUCTURE OF THE RETURN\nReturn one JSON object with \"bars\":[ … ] for two 4/4 bars (23–24). Per bar: six features, six dimensions (time, duration, pitch, velocity, numerator(add 0), denominator(add 0)); run_plan present; seeds set to 4/4.\n\nVALIDATION\nBar 23 exactly matches the [0,8]/[8,8]/≈112 spec; Bar 24 meets the chosen pattern and dynamic taper; no adjacent-instrument unisons; sparse octaves OK; last notes end ≤ 16.\n\n\nHARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)\n- alto_flute: [53..81]\n- bass_clarinet: [43..74]\n- trumpet: [60..82]\n- violin: [55..88]\n- cello: [48..74]\n- double_bass: [31..55]\n\nMETER & GRID FOR THIS UNIT\n- Ticks per bar: 16\n- Seeds must set numerator=4, denominator=4 (transforms add 0)\n\nRANGE REMINDER\nDesign pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;\nif a step would leave the range, reflect direction immediately to remain inside. No external clamping.\n",
+  "unit_summary_text": "UNIT 008: bars=2, total_ticks=32, meter=4/4\n- alto_flute: notes=3, pitch[76..77], avg_vel=92.0, last_pitch=76, last_on=16, last_end=32\n- bass_clarinet: notes=3, pitch[55..64], avg_vel=91.3, last_pitch=64, last_on=16, last_end=32\n- trumpet: notes=3, pitch[64..69], avg_vel=90.7, last_pitch=69, last_on=16, last_end=32\n- violin: notes=3, pitch[69..79], avg_vel=92.0, last_pitch=79, last_on=16, last_end=32\n- cello: notes=3, pitch[48..57], avg_vel=91.0, last_pitch=57, last_on=16, last_end=32\n- double_bass: notes=3, pitch[38..43], avg_vel=90.7, last_pitch=38, last_on=16, last_end=32",
+  "pt_journal": [
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 1,
+      "pt_name": "alto_flute_tutti_cadence_strong_b23_1761561786695_eb47",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 8,
+        "pitch": 76,
+        "velocity": 112,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 1,
+      "pt_name": "bass_clarinet_tutti_cadence_strong_b23_1761561786695_5745",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 8,
+        "pitch": 55,
+        "velocity": 112,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 1,
+      "pt_name": "trumpet_tutti_cadence_strong_b23_1761561786695_4cea",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 8,
+        "pitch": 64,
+        "velocity": 112,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 1,
+      "pt_name": "violin_tutti_cadence_strong_b23_1761561786695_71a5",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 8,
+        "pitch": 69,
+        "velocity": 112,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 1,
+      "pt_name": "cello_tutti_cadence_strong_b23_1761561786695_a325",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 8,
+        "pitch": 50,
+        "velocity": 112,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 1,
+      "pt_name": "double_bass_tutti_cadence_strong_b23_1761561786695_8f93",
+      "N": 2,
+      "seeds": {
+        "time": 0,
+        "duration": 8,
+        "pitch": 43,
+        "velocity": 112,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 2,
+        "duration": 2,
+        "pitch": 2,
+        "velocity": 2,
+        "numerator": 2,
+        "denominator": 2
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 2,
+      "pt_name": "alto_flute_open_question_sustain_b24_1761561794270_6d1e",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 16,
+        "pitch": 76,
+        "velocity": 52,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 2,
+      "pt_name": "bass_clarinet_open_question_sustain_b24_1761561794270_3782",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 16,
+        "pitch": 64,
+        "velocity": 50,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 2,
+      "pt_name": "trumpet_open_question_sustain_b24_1761561794270_5091",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 16,
+        "pitch": 69,
+        "velocity": 48,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 2,
+      "pt_name": "violin_open_question_sustain_b24_1761561794270_32e2",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 16,
+        "pitch": 79,
+        "velocity": 52,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 2,
+      "pt_name": "cello_open_question_sustain_b24_1761561794270_275d",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 16,
+        "pitch": 57,
+        "velocity": 49,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "008",
+      "bar_index": 2,
+      "pt_name": "double_bass_open_question_sustain_b24_1761561794270_6d66",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 16,
+        "pitch": 38,
+        "velocity": 48,
+        "numerator": 4,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    }
+  ],
+  "model_bundle_minjson": "{\"bars\":[{\"bundle_name\":\"Part 3 — Bar 23 — Final Cadential Bracket (tutti, decisive)\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":23,\"role\":\"tutti_cadence_strong\"},\"pt\":{\"name\":\"p3_b23_af_tutti\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":23,\"role\":\"tutti_cadence_strong\"},\"pt\":{\"name\":\"p3_b23_bcl_tutti\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[5]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":23,\"role\":\"tutti_cadence_strong\"},\"pt\":{\"name\":\"p3_b23_tpt_tutti\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[1]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":23,\"role\":\"tutti_cadence_strong\"},\"pt\":{\"name\":\"p3_b23_vn_tutti\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[3]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":23,\"role\":\"tutti_cadence_strong\"},\"pt\":{\"name\":\"p3_b23_vc_tutti\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":23,\"role\":\"tutti_cadence_strong\"},\"pt\":{\"name\":\"p3_b23_db_tutti\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[8]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"subtract\",\"args\":[2]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"p3_b23_af_tutti\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":8,\"pitch\":76,\"velocity\":112,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b23_bcl_tutti\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":8,\"pitch\":55,\"velocity\":112,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b23_tpt_tutti\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":8,\"pitch\":64,\"velocity\":112,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b23_vn_tutti\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":8,\"pitch\":69,\"velocity\":112,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b23_vc_tutti\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":8,\"pitch\":50,\"velocity\":112,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b23_db_tutti\",\"N\":2,\"seeds\":{\"time\":0,\"duration\":8,\"pitch\":43,\"velocity\":112,\"numerator\":4,\"denominator\":4}}],\"created_feature_names\":[\"p3_b23_af_tutti\",\"p3_b23_bcl_tutti\",\"p3_b23_tpt_tutti\",\"p3_b23_vn_tutti\",\"p3_b23_vc_tutti\",\"p3_b23_db_tutti\"]},{\"bundle_name\":\"Part 3 — Bar 24 — Final Cadential Bracket (open question, suspended)\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":24,\"role\":\"open_question_sustain\"},\"pt\":{\"name\":\"p3_b24_af_open\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":24,\"role\":\"open_question_sustain\"},\"pt\":{\"name\":\"p3_b24_bcl_open\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":24,\"role\":\"open_question_sustain\"},\"pt\":{\"name\":\"p3_b24_tpt_open\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":24,\"role\":\"open_question_sustain\"},\"pt\":{\"name\":\"p3_b24_vn_open\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":24,\"role\":\"open_question_sustain\"},\"pt\":{\"name\":\"p3_b24_vc_open\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":24,\"role\":\"open_question_sustain\"},\"pt\":{\"name\":\"p3_b24_db_open\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"p3_b24_af_open\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":16,\"pitch\":76,\"velocity\":52,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b24_bcl_open\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":16,\"pitch\":64,\"velocity\":50,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b24_tpt_open\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":16,\"pitch\":69,\"velocity\":48,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b24_vn_open\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":16,\"pitch\":79,\"velocity\":52,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b24_vc_open\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":16,\"pitch\":57,\"velocity\":49,\"numerator\":4,\"denominator\":4}},{\"feature_name\":\"p3_b24_db_open\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":16,\"pitch\":38,\"velocity\":48,\"numerator\":4,\"denominator\":4}}],\"created_feature_names\":[\"p3_b24_af_open\",\"p3_b24_bcl_open\",\"p3_b24_tpt_open\",\"p3_b24_vn_open\",\"p3_b24_vc_open\",\"p3_b24_db_open\"]}]}"
+}

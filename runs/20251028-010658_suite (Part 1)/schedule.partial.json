@@ -1,0 +1,127 @@
+[
+  {
+    "unit_label": "001",
+    "start_tick": 0,
+    "unit_ticks": 12
+  },
+  {
+    "unit_label": "002",
+    "start_tick": 12,
+    "unit_ticks": 8
+  },
+  {
+    "unit_label": "003",
+    "start_tick": 20,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "004",
+    "start_tick": 36,
+    "unit_ticks": 12
+  },
+  {
+    "unit_label": "005",
+    "start_tick": 48,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "006",
+    "start_tick": 64,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "007",
+    "start_tick": 80,
+    "unit_ticks": 36
+  },
+  {
+    "unit_label": "008",
+    "start_tick": 116,
+    "unit_ticks": 48
+  },
+  {
+    "unit_label": "009",
+    "start_tick": 164,
+    "unit_ticks": 8
+  },
+  {
+    "unit_label": "010",
+    "start_tick": 172,
+    "unit_ticks": 48
+  },
+  {
+    "unit_label": "011",
+    "start_tick": 220,
+    "unit_ticks": 8
+  },
+  {
+    "unit_label": "012",
+    "start_tick": 228,
+    "unit_ticks": 272
+  },
+  {
+    "unit_label": "013",
+    "start_tick": 500,
+    "unit_ticks": 12
+  },
+  {
+    "unit_label": "014",
+    "start_tick": 512,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "015",
+    "start_tick": 528,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "016",
+    "start_tick": 544,
+    "unit_ticks": 12
+  },
+  {
+    "unit_label": "017",
+    "start_tick": 556,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "018",
+    "start_tick": 572,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "019",
+    "start_tick": 588,
+    "unit_ticks": 12
+  },
+  {
+    "unit_label": "020",
+    "start_tick": 600,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "021",
+    "start_tick": 616,
+    "unit_ticks": 16
+  },
+  {
+    "unit_label": "022",
+    "start_tick": 632,
+    "unit_ticks": 8
+  },
+  {
+    "unit_label": "023",
+    "start_tick": 640,
+    "unit_ticks": 48
+  },
+  {
+    "unit_label": "024",
+    "start_tick": 688,
+    "unit_ticks": 48
+  },
+  {
+    "unit_label": "025",
+    "start_tick": 736,
+    "unit_ticks": 16
+  }
+]

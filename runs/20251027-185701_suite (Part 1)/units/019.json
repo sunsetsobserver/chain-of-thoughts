@@ -1,0 +1,546 @@
+{
+  "unit_label": "019",
+  "total_ticks": 12,
+  "schedule": [
+    {
+      "bar_local_index": 1,
+      "start_tick": 0,
+      "actual_end_tick": 12,
+      "slot_length_tick": 12,
+      "bar_ticks": 12,
+      "meter": {
+        "numerator": 3,
+        "denominator": 4
+      }
+    }
+  ],
+  "per_instr": {
+    "alto_flute": {
+      "pitch": [
+        76
+      ],
+      "time": [
+        0
+      ],
+      "duration": [
+        12
+      ],
+      "velocity": [
+        44
+      ],
+      "numerator": [
+        3
+      ],
+      "denominator": [
+        4
+      ]
+    },
+    "bass_clarinet": {
+      "pitch": [
+        57
+      ],
+      "time": [
+        0
+      ],
+      "duration": [
+        12
+      ],
+      "velocity": [
+        42
+      ],
+      "numerator": [
+        3
+      ],
+      "denominator": [
+        4
+      ]
+    },
+    "trumpet": {
+      "pitch": [
+        74
+      ],
+      "time": [
+        0
+      ],
+      "duration": [
+        12
+      ],
+      "velocity": [
+        46
+      ],
+      "numerator": [
+        3
+      ],
+      "denominator": [
+        4
+      ]
+    },
+    "violin": {
+      "pitch": [
+        69
+      ],
+      "time": [
+        0
+      ],
+      "duration": [
+        12
+      ],
+      "velocity": [
+        42
+      ],
+      "numerator": [
+        3
+      ],
+      "denominator": [
+        4
+      ]
+    },
+    "cello": {
+      "pitch": [
+        60
+      ],
+      "time": [
+        0
+      ],
+      "duration": [
+        12
+      ],
+      "velocity": [
+        44
+      ],
+      "numerator": [
+        3
+      ],
+      "denominator": [
+        4
+      ]
+    },
+    "double_bass": {
+      "pitch": [
+        39
+      ],
+      "time": [
+        0
+      ],
+      "duration": [
+        12
+      ],
+      "velocity": [
+        42
+      ],
+      "numerator": [
+        3
+      ],
+      "denominator": [
+        4
+      ]
+    }
+  },
+  "payload": {
+    "instrument_meta": {
+      "alto_flute": {
+        "display_name": "Alto Flute",
+        "gm_program": 73,
+        "bank": 0
+      },
+      "bass_clarinet": {
+        "display_name": "Bass Clarinet in Bb",
+        "gm_program": 71,
+        "bank": 0
+      },
+      "trumpet": {
+        "display_name": "Trumpet in C",
+        "gm_program": 56,
+        "bank": 0
+      },
+      "violin": {
+        "display_name": "Violin",
+        "gm_program": 40,
+        "bank": 0
+      },
+      "cello": {
+        "display_name": "Cello",
+        "gm_program": 42,
+        "bank": 0
+      },
+      "double_bass": {
+        "display_name": "Contrabass",
+        "gm_program": 43,
+        "bank": 0
+      }
+    },
+    "tracks": {
+      "alto_flute": [
+        {
+          "feature_path": "/alto_flute/pitch",
+          "data": [
+            76
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/time",
+          "data": [
+            0
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/duration",
+          "data": [
+            12
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/velocity",
+          "data": [
+            44
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/numerator",
+          "data": [
+            3
+          ]
+        },
+        {
+          "feature_path": "/alto_flute/denominator",
+          "data": [
+            4
+          ]
+        }
+      ],
+      "bass_clarinet": [
+        {
+          "feature_path": "/bass_clarinet/pitch",
+          "data": [
+            57
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/time",
+          "data": [
+            0
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/duration",
+          "data": [
+            12
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/velocity",
+          "data": [
+            42
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/numerator",
+          "data": [
+            3
+          ]
+        },
+        {
+          "feature_path": "/bass_clarinet/denominator",
+          "data": [
+            4
+          ]
+        }
+      ],
+      "trumpet": [
+        {
+          "feature_path": "/trumpet/pitch",
+          "data": [
+            74
+          ]
+        },
+        {
+          "feature_path": "/trumpet/time",
+          "data": [
+            0
+          ]
+        },
+        {
+          "feature_path": "/trumpet/duration",
+          "data": [
+            12
+          ]
+        },
+        {
+          "feature_path": "/trumpet/velocity",
+          "data": [
+            46
+          ]
+        },
+        {
+          "feature_path": "/trumpet/numerator",
+          "data": [
+            3
+          ]
+        },
+        {
+          "feature_path": "/trumpet/denominator",
+          "data": [
+            4
+          ]
+        }
+      ],
+      "violin": [
+        {
+          "feature_path": "/violin/pitch",
+          "data": [
+            69
+          ]
+        },
+        {
+          "feature_path": "/violin/time",
+          "data": [
+            0
+          ]
+        },
+        {
+          "feature_path": "/violin/duration",
+          "data": [
+            12
+          ]
+        },
+        {
+          "feature_path": "/violin/velocity",
+          "data": [
+            42
+          ]
+        },
+        {
+          "feature_path": "/violin/numerator",
+          "data": [
+            3
+          ]
+        },
+        {
+          "feature_path": "/violin/denominator",
+          "data": [
+            4
+          ]
+        }
+      ],
+      "cello": [
+        {
+          "feature_path": "/cello/pitch",
+          "data": [
+            60
+          ]
+        },
+        {
+          "feature_path": "/cello/time",
+          "data": [
+            0
+          ]
+        },
+        {
+          "feature_path": "/cello/duration",
+          "data": [
+            12
+          ]
+        },
+        {
+          "feature_path": "/cello/velocity",
+          "data": [
+            44
+          ]
+        },
+        {
+          "feature_path": "/cello/numerator",
+          "data": [
+            3
+          ]
+        },
+        {
+          "feature_path": "/cello/denominator",
+          "data": [
+            4
+          ]
+        }
+      ],
+      "double_bass": [
+        {
+          "feature_path": "/double_bass/pitch",
+          "data": [
+            39
+          ]
+        },
+        {
+          "feature_path": "/double_bass/time",
+          "data": [
+            0
+          ]
+        },
+        {
+          "feature_path": "/double_bass/duration",
+          "data": [
+            12
+          ]
+        },
+        {
+          "feature_path": "/double_bass/velocity",
+          "data": [
+            42
+          ]
+        },
+        {
+          "feature_path": "/double_bass/numerator",
+          "data": [
+            3
+          ]
+        },
+        {
+          "feature_path": "/double_bass/denominator",
+          "data": [
+            4
+          ]
+        }
+      ]
+    }
+  },
+  "rendered_user_text": "METER: 3/4\n\nTITLE\nBar 38 — Variation of Bar 4 (pp/ppp center-weighted chord; tiny registral/pitch-class shift).\n\nINSTRUMENTS (EXACT)\n[alto_flute, bass_clarinet, trumpet, violin, cello, double_bass]. Everyone plays; monophony only.\n\nPT REALIZATION — one sustained note per instrument\n• TIME: one onset at tick 0 (N=1).\n• DURATION: 12 (ends exactly at 12).\n• PITCH: choose a legal MIDI near the Bar-4 role/region but reflecting the new aggregate’s band pcs; constant.\n• VELOCITY: pp–ppp ≈ 40–48, constant.\n• METER: seeds numerator=3, denominator=4; transforms add 0.\n\nVALIDATION\nExactly one note per instrument; ends at tick 12; legal ranges; band-legal pcs; no overlaps.\n\n\nHARD RANGES (MIDI NUMBERS — MUST STAY INSIDE)\n- alto_flute: [53..81]\n- bass_clarinet: [43..74]\n- trumpet: [60..82]\n- violin: [55..88]\n- cello: [48..74]\n- double_bass: [31..55]\n\nMETER & GRID FOR THIS UNIT\n- Ticks per bar: 12\n- Seeds must set numerator=3, denominator=4 (transforms add 0)\n\nRANGE REMINDER\nDesign pitch seeds and add/sub steps so that the simulated pitches never exceed the hard ranges;\nif a step would leave the range, reflect direction immediately to remain inside. No external clamping.\n",
+  "unit_summary_text": "UNIT 019: bars=1, total_ticks=12, meter=3/4\n- alto_flute: notes=1, pitch[76..76], avg_vel=44.0, last_pitch=76, last_on=0, last_end=12\n- bass_clarinet: notes=1, pitch[57..57], avg_vel=42.0, last_pitch=57, last_on=0, last_end=12\n- trumpet: notes=1, pitch[74..74], avg_vel=46.0, last_pitch=74, last_on=0, last_end=12\n- violin: notes=1, pitch[69..69], avg_vel=42.0, last_pitch=69, last_on=0, last_end=12\n- cello: notes=1, pitch[60..60], avg_vel=44.0, last_pitch=60, last_on=0, last_end=12\n- double_bass: notes=1, pitch[39..39], avg_vel=42.0, last_pitch=39, last_on=0, last_end=12",
+  "pt_journal": [
+    {
+      "action": "execute_pt",
+      "unit": "019",
+      "bar_index": 1,
+      "pt_name": "alto_flute_tutti_sustained_chord_variation__MID_HIGH__pp__b38_1761596742838_3ec5",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 12,
+        "pitch": 76,
+        "velocity": 44,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "019",
+      "bar_index": 1,
+      "pt_name": "bass_clarinet_tutti_sustained_chord_variation__LOW_MID__ppp__b38_1761596742838_3567",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 12,
+        "pitch": 57,
+        "velocity": 42,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "019",
+      "bar_index": 1,
+      "pt_name": "trumpet_tutti_sustained_chord_variation__MID_HIGH__pp__b38_1761596742838_a33b",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 12,
+        "pitch": 74,
+        "velocity": 46,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "019",
+      "bar_index": 1,
+      "pt_name": "violin_tutti_sustained_chord_variation__MID__ppp__b38_1761596742838_ebf9",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 12,
+        "pitch": 69,
+        "velocity": 42,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "019",
+      "bar_index": 1,
+      "pt_name": "cello_tutti_sustained_chord_variation__LOW_MID__pp__b38_1761596742838_b8d6",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 12,
+        "pitch": 60,
+        "velocity": 44,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    },
+    {
+      "action": "execute_pt",
+      "unit": "019",
+      "bar_index": 1,
+      "pt_name": "double_bass_tutti_sustained_chord_variation__LOW__ppp__b38_1761596742838_a248",
+      "N": 1,
+      "seeds": {
+        "time": 0,
+        "duration": 12,
+        "pitch": 39,
+        "velocity": 42,
+        "numerator": 3,
+        "denominator": 4
+      },
+      "sample_counts": {
+        "time": 1,
+        "duration": 1,
+        "pitch": 1,
+        "velocity": 1,
+        "numerator": 1,
+        "denominator": 1
+      }
+    }
+  ],
+  "model_bundle_minjson": "{\"bars\":[{\"bundle_name\":\"Bar 38 — Variation of Bar 4 (pp/ppp center-weighted chord; tiny registral/pitch-class shift).\",\"features\":[{\"meta\":{\"instrument\":\"alto_flute\",\"bar\":38,\"role\":\"tutti sustained chord variation (MID↔HIGH, pp)\"},\"pt\":{\"name\":\"bar38_alto_flute_variation\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[12]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"bass_clarinet\",\"bar\":38,\"role\":\"tutti sustained chord variation (LOW↔MID, ppp)\"},\"pt\":{\"name\":\"bar38_bass_clarinet_variation\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[12]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"trumpet\",\"bar\":38,\"role\":\"tutti sustained chord variation (MID↔HIGH, pp)\"},\"pt\":{\"name\":\"bar38_trumpet_variation\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[12]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"violin\",\"bar\":38,\"role\":\"tutti sustained chord variation (MID, ppp)\"},\"pt\":{\"name\":\"bar38_violin_variation\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[12]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"cello\",\"bar\":38,\"role\":\"tutti sustained chord variation (LOW↔MID, pp)\"},\"pt\":{\"name\":\"bar38_cello_variation\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[12]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}},{\"meta\":{\"instrument\":\"double_bass\",\"bar\":38,\"role\":\"tutti sustained chord variation (LOW, ppp)\"},\"pt\":{\"name\":\"bar38_double_bass_variation\",\"dimensions\":[{\"feature_name\":\"time\",\"transformations\":[{\"name\":\"add\",\"args\":[12]}]},{\"feature_name\":\"duration\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"pitch\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"velocity\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"numerator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]},{\"feature_name\":\"denominator\",\"transformations\":[{\"name\":\"add\",\"args\":[0]}]}]}}],\"run_plan\":[{\"feature_name\":\"bar38_alto_flute_variation\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":12,\"pitch\":76,\"velocity\":44,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"bar38_bass_clarinet_variation\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":12,\"pitch\":57,\"velocity\":42,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"bar38_trumpet_variation\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":12,\"pitch\":74,\"velocity\":46,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"bar38_violin_variation\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":12,\"pitch\":69,\"velocity\":42,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"bar38_cello_variation\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":12,\"pitch\":60,\"velocity\":44,\"numerator\":3,\"denominator\":4}},{\"feature_name\":\"bar38_double_bass_variation\",\"N\":1,\"seeds\":{\"time\":0,\"duration\":12,\"pitch\":39,\"velocity\":42,\"numerator\":3,\"denominator\":4}}],\"created_feature_names\":[\"bar38_alto_flute_variation\",\"bar38_bass_clarinet_variation\",\"bar38_trumpet_variation\",\"bar38_violin_variation\",\"bar38_cello_variation\",\"bar38_double_bass_variation\"]}]}"
+}

@@ -1,0 +1,16 @@
+{
+  "units": [
+    "001",
+    "002",
+    "003",
+    "004",
+    "005"
+  ],
+  "total_ticks": 936,
+  "files": {
+    "payload": "composition_suite.json",
+    "schedule": "schedule.json",
+    "pt_journal": "pt_journal.json",
+    "prompts_and_summaries": "prompts_and_summaries.txt"
+  }
+}

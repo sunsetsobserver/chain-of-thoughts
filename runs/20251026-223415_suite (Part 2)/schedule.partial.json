@@ -1,0 +1,27 @@
+[
+  {
+    "unit_label": "001",
+    "start_tick": 0,
+    "unit_ticks": 228
+  },
+  {
+    "unit_label": "002",
+    "start_tick": 228,
+    "unit_ticks": 192
+  },
+  {
+    "unit_label": "003",
+    "start_tick": 420,
+    "unit_ticks": 156
+  },
+  {
+    "unit_label": "004",
+    "start_tick": 576,
+    "unit_ticks": 192
+  },
+  {
+    "unit_label": "005",
+    "start_tick": 768,
+    "unit_ticks": 168
+  }
+]
