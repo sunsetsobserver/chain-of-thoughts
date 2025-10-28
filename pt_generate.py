@@ -404,7 +404,7 @@ def generate_unit_from_template(
                     "strict": True
                 }
             },   
-            reasoning={"effort": "medium"}, # set minimal/low/medium/high (time vs. reasoning trade-off)
+            reasoning={"effort": "high"}, # set minimal/low/medium/high (time vs. reasoning trade-off)
         )
 
 
